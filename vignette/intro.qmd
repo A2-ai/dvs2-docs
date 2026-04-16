@@ -8,7 +8,7 @@ execute:
 # Helpers
 
 ```{r}
-source("mkdatasetfiles.R")
+source(here::here("vignette/mkdatasetfiles.R"))
 ```
 
 
