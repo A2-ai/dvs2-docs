@@ -42,4 +42,9 @@ quarto needs
 
 .rv$add("dplyr")
 
+gh repo clone A2-Ai/dvs2 .dvs -- --single-branch --depth=1
+cat "*" > .dvs/.gitignore
 
+cargo install --locked --force --git https://github.com/A2-ai/miniextendr cargo-revendor
+
+cd .dvs && git pull --rebase && cd -

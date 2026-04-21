@@ -106,8 +106,10 @@ Add the new files in the project to the dvs repository
 setwd(new_project)
 
 dvs_add("data/large/large_1.csv", message = "add one large file")
-dvs_add(c("data/small/small_1.csv", "data/small/small_2.csv", "data/small/small_1.csv") , message = "added 3 small corpus datasets")
-dvs_add("data/individual/", message = "added corpus dataset")
+dvs_add(c("data/small/small_1.csv", "data/small/small_2.csv", "data/small/small_1.csv") , message = "add 3 small corpus datasets")
+# dvs_add("data/individual", glob = "individiual_*.csv", message = "add all individual datasets")
+dvs_add(glob = "data/individual/individual_*.csv", message = "add all individual datasets")
+
 ```
 
 
