@@ -1,0 +1,156 @@
+{
+  "current_program_scene": "Normal",
+  "current_scene": "Normal",
+  "groups": [],
+  "modules": {
+    "auto-scene-switcher": {
+      "active": false
+    }
+  },
+  "name": "Browser Zoom Minimal",
+  "quick_transitions": [],
+  "scene_order": [
+    {
+      "name": "Normal"
+    },
+    {
+      "name": "Zoom"
+    }
+  ],
+  "sources": [
+    {
+      "balance": 0.5,
+      "deinterlace_field_order": 0,
+      "deinterlace_mode": 0,
+      "flags": 0,
+      "hotkeys": {},
+      "id": "window_capture",
+      "mixers": 255,
+      "monitoring_type": 0,
+      "muted": false,
+      "name": "Browser Window",
+      "private_settings": {},
+      "push-to-mute": false,
+      "push-to-mute-delay": 0,
+      "push-to-talk": false,
+      "push-to-talk-delay": 0,
+      "settings": {
+        "capture_cursor": true,
+        "client_area": false,
+        "method": 0,
+        "priority": 0,
+        "window": ""
+      },
+      "sync": 0,
+      "versioned_id": "window_capture"
+    },
+    {
+      "balance": 0.5,
+      "deinterlace_field_order": 0,
+      "deinterlace_mode": 0,
+      "flags": 0,
+      "hotkeys": {},
+      "id": "scene",
+      "mixers": 255,
+      "monitoring_type": 0,
+      "muted": false,
+      "name": "Normal",
+      "private_settings": {},
+      "push-to-mute": false,
+      "push-to-mute-delay": 0,
+      "push-to-talk": false,
+      "push-to-talk-delay": 0,
+      "settings": {
+        "id_counter": 1,
+        "items": [
+          {
+            "align": 5,
+            "bounds_align": 0,
+            "bounds_type": 0,
+            "crop_bottom": 0,
+            "crop_left": 0,
+            "crop_right": 0,
+            "crop_top": 0,
+            "group_item_backup": false,
+            "id": 1,
+            "locked": false,
+            "name": "Browser Window",
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "private_settings": {},
+            "rot": 0.0,
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "scale_filter": "disable",
+            "visible": true
+          }
+        ]
+      },
+      "sync": 0,
+      "versioned_id": "scene"
+    },
+    {
+      "balance": 0.5,
+      "deinterlace_field_order": 0,
+      "deinterlace_mode": 0,
+      "flags": 0,
+      "hotkeys": {},
+      "id": "scene",
+      "mixers": 255,
+      "monitoring_type": 0,
+      "muted": false,
+      "name": "Zoom",
+      "private_settings": {},
+      "push-to-mute": false,
+      "push-to-mute-delay": 0,
+      "push-to-talk": false,
+      "push-to-talk-delay": 0,
+      "settings": {
+        "id_counter": 1,
+        "items": [
+          {
+            "align": 5,
+            "bounds_align": 0,
+            "bounds_type": 0,
+            "crop_bottom": 250,
+            "crop_left": 300,
+            "crop_right": 300,
+            "crop_top": 150,
+            "group_item_backup": false,
+            "id": 1,
+            "locked": false,
+            "name": "Browser Window",
+            "pos": {
+              "x": -220.0,
+              "y": -120.0
+            },
+            "private_settings": {},
+            "rot": 0.0,
+            "scale": {
+              "x": 1.8,
+              "y": 1.8
+            },
+            "scale_filter": "disable",
+            "visible": true
+          }
+        ]
+      },
+      "sync": 0,
+      "versioned_id": "scene"
+    }
+  ],
+  "transition_duration": 250,
+  "transitions": [
+    {
+      "duration": 250,
+      "id": "fade",
+      "name": "Fade",
+      "settings": {}
+    }
+  ],
+  "version": 1
+}
