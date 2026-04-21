@@ -20,7 +20,7 @@ format:
 ![](images/a2ai-logo-color.png){.splash-logo fig-align="center"}
 
 ::: {.splash-topic}
-**dvs** &nbsp;·&nbsp; _pronounced "devous"_
+**dvs** &nbsp;·&nbsp; _pronounced "devious"_
 :::
 
 ::: {.splash-name}
