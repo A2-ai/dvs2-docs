@@ -5,15 +5,6 @@ execute:
   freeze: auto
 ---
 
-# Helpers
-
-```{r}
-source(here::here("R/mkdatasetfiles.R"))
-```
-
-
-See `vignette/random_files.qmd` for a demonstration of this function. 
-
 # Setup
 
 ```{r}
@@ -23,9 +14,20 @@ library(here)
 ```
 
 
+# Helpers
+
 ```{r}
-storage <- tempfile(fileext = "_storage")
-new_project <- tempfile(fileext = "_project")
+source(here::here("../R/mkdatasetfiles.R"))
+```
+
+
+See `vignette/random_files.qmd` for a demonstration of this function. 
+
+
+```{r}
+storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
+
 dir.create(storage)
 dir.create(new_project)
 ```
