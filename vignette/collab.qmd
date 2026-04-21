@@ -1,0 +1,152 @@
+---
+title: "dvs collaboration"
+subtitle: "sharing data across projects and users through a common storage directory"
+format: html
+execute:
+  freeze: auto
+---
+
+# Overview
+
+dvs separates *code* (tracked by git) from *data* (tracked by dvs). The
+intended team workflow is:
+
+1. **User A** adds data files → dvs copies blobs to **shared storage**, writes
+   meta files under `.dvs/`
+2. **User A** commits `dvs.toml` and the entire `.dvs/` tree to git (the meta
+   files are small and text-based)
+3. **User B** clones the repo — they get `dvs.toml` and `.dvs/` but *not* the
+   data files (those are gitignored)
+4. **User B** runs `dvs_get()` → dvs reads the meta files, locates blobs in
+   shared storage, and writes the data files locally
+
+The storage directory lives on shared infrastructure: a network mount,
+an NFS/CIFS share, or any path your OS exposes as a local filesystem. In
+this demo both users are simulated with separate temp dirs on the same
+machine pointing at the same storage path.
+
+# Setup
+
+```{r}
+library(dvs)
+library(fs)
+library(here)
+```
+
+```{r}
+source(here::here("R/mkdatasetfiles.R"))
+```
+
+```{r}
+shared_storage <- tempfile(fileext = "_storage",   tmpdir = here::here())
+project_a      <- tempfile(fileext = "_project_a", tmpdir = here::here())
+project_b      <- tempfile(fileext = "_project_b", tmpdir = here::here())
+dir.create(shared_storage)
+dir.create(project_a)
+dir.create(project_b)
+```
+
+# User A — add data
+
+```{r}
+#| warning: false
+setwd(project_a)
+mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data")
+```
+
+```{r}
+#| warning: false
+setwd(project_a)
+dvs_init(shared_storage)
+invisible(dvs_add(paths = fs::dir_ls("data", type = "file"), message = "add small corpus v1"))
+dvs_status()
+```
+
+The `.dvs/` tree and `dvs.toml` are what user A would commit to git:
+
+```{r}
+#| warning: false
+setwd(project_a)
+fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
+```
+
+```{r}
+cat(readLines(fs::path(project_a, "dvs.toml")), sep = "\n")
+```
+
+# Simulate a git clone (User B)
+
+When user B clones the repo they receive `dvs.toml` and the `.dvs/` meta tree,
+but `data/` is gitignored so the CSV files are absent:
+
+```{r}
+#| warning: false
+fs::file_copy(fs::path(project_a, "dvs.toml"), fs::path(project_b, "dvs.toml"))
+fs::dir_copy( fs::path(project_a, ".dvs"),     fs::path(project_b, ".dvs"))
+```
+
+User B's project shows all files as `absent`:
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_status()
+```
+
+# User B — get data
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_get(glob = "data/*.csv")
+```
+
+All files are now `current`:
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_status()
+```
+
+Verify the content is byte-for-byte identical to what user A added:
+
+```{r}
+#| warning: false
+files_a <- sort(fs::dir_ls(fs::path(project_a, "data"), type = "file"))
+files_b <- sort(fs::dir_ls(fs::path(project_b, "data"), type = "file"))
+
+identical(
+  lapply(files_a, read.csv),
+  lapply(files_b, read.csv)
+)
+```
+
+# What belongs in git
+
+| Path | Commit? | Notes |
+|------|:-------:|-------|
+| `dvs.toml` | ✅ | points to shared storage |
+| `.dvs/**/*.dvs` | ✅ | meta files — the version ledger |
+| `data/` | ❌ gitignore | large files live in dvs storage |
+| `rv/library/` | ❌ gitignore | cached R packages rebuild from `rproject.toml` |
+| `rv/scripts/` | ✅ | rv bootstrap helpers belong in the repo |
+
+Minimal additions to `.gitignore`:
+
+```text
+data/
+rv/library/
+```
+
+# Cleanup
+
+```{r}
+unlink(project_a,      recursive = TRUE)
+unlink(project_b,      recursive = TRUE)
+unlink(shared_storage, recursive = TRUE)
+```
+
+---
+
+**Next up**: [Configuration](config.html) — `dvs.toml` fields, compression tradeoffs, threads, and custom metadata folder names.

@@ -101,3 +101,7 @@ all.equal(individual_datasets[[1]], individual_datasets[[2]]) |>
 
 The generated individual files are not duplicates. Good.
 
+---
+
+Return to the [full index](index.html) for an overview of all dvs demo vignettes.
+

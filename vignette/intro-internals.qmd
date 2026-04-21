@@ -204,3 +204,7 @@ fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 unlink(new_project, recursive = TRUE)
 unlink(storage, recursive = TRUE)
 ```
+
+---
+
+**Next up**: [Lifecycle](lifecycle.html) — modifying tracked files, `unsynced` status, `dry_run` previews, and what happens when a storage blob goes missing.

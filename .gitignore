@@ -7,3 +7,7 @@ vignette/*_files/
 .quarto/
 _freeze/
 .DS_Store
+rv/library/
+
+/.quarto/
+**/*.quarto_ipynb

@@ -185,3 +185,9 @@ unlink(new_project, recursive = TRUE)
 unlink(storage, recursive = TRUE)
 ```
 
+---
+
+This was the happy path — init, add, status, get. Everything worked as expected.
+
+**Next up**: [Internals](intro-internals.html) — explore the `.dvs/` folder layout, meta files, and how content-addressed blob storage works under the hood. To try the same operations from the command line instead, see [CLI](intro-cli.html).
+

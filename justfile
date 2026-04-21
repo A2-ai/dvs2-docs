@@ -1,3 +1,5 @@
+set working-directory := justfile_directory()
+
 default:
     @just --list
 
@@ -5,8 +7,14 @@ default:
 
 # Render all vignettes
 render:
+    quarto render vignette/index.qmd
     quarto render vignette/intro.qmd
+    quarto render vignette/intro-cli.qmd
     quarto render vignette/intro-internals.qmd
+    quarto render vignette/lifecycle.qmd
+    quarto render vignette/collab.qmd
+    quarto render vignette/config.qmd
+    quarto render vignette/audit.qmd
     quarto render vignette/random_files.qmd
     quarto render vignette/setup.qmd
 
@@ -20,7 +28,7 @@ preview NAME:
 
 # Open all rendered HTMLs
 open:
-    open vignette/intro.html vignette/intro-internals.html vignette/random_files.html vignette/setup.html
+    open vignette/index.html vignette/intro.html vignette/intro-cli.html vignette/intro-internals.html vignette/lifecycle.html vignette/collab.html vignette/config.html vignette/audit.html vignette/random_files.html vignette/setup.html
 
 # === rv / R package management ===
 
@@ -49,7 +57,7 @@ clone-dvs:
 
 # Pull the latest dvs2 source
 update-dvs:
-    cd .dvs && git pull --rebase
+    git -C .dvs pull --rebase
 
 # Install the cargo-revendor build helper
 install-cargo-revendor:

@@ -1,0 +1,207 @@
+---
+title: "dvs lifecycle"
+subtitle: "modify, re-add, dry-run, and storage integrity failures"
+format: html
+execute:
+  freeze: auto
+---
+
+# Setup
+
+```{r}
+library(dvs)
+library(fs)
+library(here)
+```
+
+
+```{r}
+source(here::here("R/mkdatasetfiles.R"))
+```
+
+```{r}
+storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
+dir.create(storage)
+dir.create(new_project)
+```
+
+```{r}
+#| warning: false
+setwd(new_project)
+mkdatasetfiles(n_files = 1, size_mb = 25, prefix = "large_", dir = "data/large")
+mkdatasetfiles(n_files = 3, size_mb = 1,  prefix = "small_", dir = "data/small")
+```
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_init(storage)
+invisible(dvs_add("data/large/large_1.csv",
+                  message = "initial add of large file"))
+invisible(dvs_add(paths = fs::dir_ls("data/small", type = "file"),
+                  message = "initial add of small files"))
+```
+
+All files are `current`:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_status()
+```
+
+# Modify a tracked file
+
+Append a row to `large_1.csv` — the file now differs from the hash dvs recorded:
+
+```{r}
+#| warning: false
+setwd(new_project)
+cat("99,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
+```
+
+`dvs_status()` reports the hash mismatch as `unsynced`:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_status(status = "unsynced")
+```
+
+Re-add with a new message. dvs writes a new blob and overwrites the meta file:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_add("data/large/large_1.csv", message = "add row 99 — corrected dataset")
+```
+
+Back to `current`:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_status(status = "current")
+```
+
+# `dry_run`
+
+`dry_run = TRUE` reports what *would* happen without writing anything.
+
+Modify the file again:
+
+```{r}
+#| warning: false
+setwd(new_project)
+cat("100,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
+```
+
+Preview `dvs_add` without committing:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_add("data/large/large_1.csv", message = "dry run preview", dry_run = TRUE)
+```
+
+Status is still `unsynced` — nothing was written:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_status(status = "unsynced")
+```
+
+Delete a file, then preview `dvs_get` without restoring:
+
+```{r}
+#| warning: false
+setwd(new_project)
+unlink("data/small/small_1.csv")
+dvs_get("data/small/small_1.csv", dry_run = TRUE)
+```
+
+Status still shows `absent`:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_status(status = "absent")
+```
+
+Restore for real:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_get("data/small/small_1.csv")
+dvs_status()
+```
+
+# Integrity failure: missing storage blob
+
+dvs blobs are content-addressed — the hash in the meta file is the key. If a
+blob is missing from storage (e.g. accidental deletion), `dvs_get` returns an
+`error` column describing the failure rather than restoring the file.
+
+Locate and delete the blob for `small_2.csv`:
+
+```{r}
+#| warning: false
+setwd(new_project)
+meta_path <- grep(
+  "small_2",
+  fs::dir_ls(".dvs", recurse = TRUE, all = TRUE, glob = "*.dvs", type = "file"),
+  value = TRUE
+)
+meta  <- jsonlite::fromJSON(meta_path)
+hash  <- meta$hashes$blake3
+blob  <- fs::path(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
+
+cat("blob:", as.character(blob), "\n")
+cat("exists:", fs::file_exists(blob), "\n")
+fs::file_delete(blob)
+cat("exists after delete:", fs::file_exists(blob), "\n")
+```
+
+Remove the local copy so a restore is needed:
+
+```{r}
+#| warning: false
+setwd(new_project)
+unlink("data/small/small_2.csv")
+dvs_status(status = "absent")
+```
+
+`dvs_get` returns normally but with a non-empty `error` column — the blob is
+gone so the file cannot be restored:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_get("data/small/small_2.csv")
+```
+
+# Untracking files
+
+There is **no `dvs_remove` in the current release**. To stop tracking a file,
+delete its meta file under `.dvs/` manually:
+
+```r
+# dvs will no longer track large_1.csv after its meta file is removed
+fs::file_delete(".dvs/data/large/large_1.csv.dvs")
+```
+
+After the meta file is gone `dvs_status()` no longer reports on that file.
+
+# Cleanup
+
+```{r}
+unlink(new_project, recursive = TRUE)
+unlink(storage,     recursive = TRUE)
+```
+
+---
+
+**Next up**: [Collaboration](collab.html) — two projects sharing one storage directory; what to commit to git and what to gitignore.

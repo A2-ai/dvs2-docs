@@ -17,8 +17,8 @@ repositories = [
     # {name = "dplyr", git = "https://github.com/tidyverse/dplyr.git", tag = "v1.1.4"},
 dependencies = [
     "quarto",
-    { name = "dvs", git = "https://github.com/a2-ai/dvs2", branch = "main", directory = "dvs-rpkg" },
-    # { name = "dvs", path = ".dvs/dvs-rpkg" },
+    # { name = "dvs", git = "https://github.com/a2-ai/dvs2", branch = "main", directory = "dvs-rpkg" },
+    { name = "dvs", path = ".dvs/dvs-rpkg" },
     "usethis",
     "here",
     "stringr",
