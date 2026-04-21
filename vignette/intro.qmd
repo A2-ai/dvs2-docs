@@ -39,7 +39,7 @@ setwd(new_project)
 
 mkdatasetfiles(n_files = 1, size_mb = 25, prefix = "large_", dir = "data/large")
 mkdatasetfiles(n_files = 3, size_mb = 1,  prefix = "small_", dir = "data/small")
-mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual") # TODO: increase chunk size
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual")
 ```
 
 
@@ -105,20 +105,15 @@ Add the new files in the project to the dvs repository
 #| warning: false
 setwd(new_project)
 
-dvs_add("data/large/large_1.csv", message = "add one large file")
-dvs_add(c("data/small/small_1.csv", "data/small/small_2.csv", "data/small/small_1.csv") , message = "add 3 small corpus datasets")
-# dvs_add("data/individual", glob = "individiual_*.csv", message = "add all individual datasets")
-dvs_add(glob = "data/individual/individual_*.csv", message = "add all individual datasets")
+# single file
+dvs_add("data/large/large_1.csv", message = "add one large dataset")
 
-```
+# whole folder
+dvs_add("data/small", message = "add small corpus datasets")
 
-
-
-```{r}
-#| warning: false
-setwd(new_project)
-
-dvs_add("data/many_files", glob = "*.csv", message = "added individual datasets")
+# glob
+# dvs_add("data/individual", glob = "individiual_*.csv", message = "add individual datasets via glob")
+dvs_add(glob = "data/individual/individual_*.csv", message = "add individual datasets via glob")
 ```
 
 
@@ -137,11 +132,11 @@ Let us accidentally delete a few individual files:
 #| warning: false
 setwd(new_project)
 
-unlink("data/many_files/individual_4.csv")
-unlink("data/many_files/individual_8.csv")
-unlink("data/many_files/individual_15.csv")
-unlink("data/many_files/individual_16.csv")
-unlink("data/many_files/individual_23.csv")
+unlink("data/individual/individual_4.csv")
+unlink("data/individual/individual_8.csv")
+unlink("data/individual/individual_15.csv")
+unlink("data/individual/individual_16.csv")
+unlink("data/individual/individual_23.csv")
 ```
 
 
@@ -155,16 +150,13 @@ dvs_status(status = "absent")
 ```
 
 
-TODO: demonstrate the manual filtering with `dplyr`
+Or filter manually with `dplyr`:
 
 ```{r}
-
 #| warning: false
 setwd(new_project)
 
 dplyr::filter(dvs_status(), status == "absent")
-
-
 ```
 
 
@@ -175,7 +167,7 @@ Let us restore them:
 #| warning: false
 setwd(new_project)
 
-dvs_get("data/many_files", glob = "individual_*.csv")
+dvs_get("data/individual", glob = "individual_*.csv")
 ```
 
 
