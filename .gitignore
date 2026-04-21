@@ -4,3 +4,4 @@ tmp_random_files/
 vignette/*_files/
 .quarto/
 _freeze/
+.DS_Store
