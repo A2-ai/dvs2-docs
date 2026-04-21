@@ -15,6 +15,7 @@ render:
     quarto render vignette/audit.qmd
     quarto render vignette/random_files.qmd
     quarto render vignette/setup.qmd
+    quarto render vignette/splash.qmd
 
 # Render a single vignette (e.g. `just render-one intro`)
 render-one NAME:
@@ -26,7 +27,7 @@ preview NAME:
 
 # Open all rendered HTMLs
 open:
-    open vignette/index.html vignette/intro.html vignette/intro-cli.html vignette/intro-internals.html vignette/lifecycle.html vignette/collab.html vignette/config.html vignette/audit.html vignette/random_files.html vignette/setup.html
+    open vignette/index.html vignette/intro.html vignette/intro-cli.html vignette/intro-internals.html vignette/lifecycle.html vignette/collab.html vignette/config.html vignette/audit.html vignette/random_files.html vignette/setup.html vignette/splash.html
 
 # Publish all rendered vignettes to alx.dev.a2-ai.cloud (dvs2-demo project)
 publish:
@@ -40,6 +41,7 @@ publish:
     alx publish vignette/audit.html          -S vignette/audit.qmd          -S R/mkdatasetfiles.R   -t audit          --overwrite --skip-warnings --no-prompt
     alx publish vignette/random_files.html   -S vignette/random_files.qmd   -S R/mkdatasetfiles.R   -t random_files   --overwrite --skip-warnings --no-prompt
     alx publish vignette/setup.html          -S vignette/setup.qmd                                  -t setup          --overwrite --skip-warnings --no-prompt
+    alx publish vignette/splash.html         -S vignette/splash.qmd         -S vignette/splash.scss   -t splash         --overwrite --skip-warnings --no-prompt
 
 # === rv / R package management ===
 

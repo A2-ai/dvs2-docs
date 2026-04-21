@@ -2,6 +2,7 @@
 format:
   revealjs:
     theme: [default, splash.scss]
+    embed-resources: true
     slide-number: false
     controls: false
     progress: false
