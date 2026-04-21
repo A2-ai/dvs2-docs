@@ -36,9 +36,9 @@ dir.create(new_project)
 #| warning: false
 setwd(new_project)
 
-mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large")
-mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small")
-mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual")
+mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 ```{r}
@@ -103,8 +103,15 @@ setwd(new_project)
 
 large_meta <- grep("large_1", meta_files, value = TRUE)
 large_meta
+```
 
-cat(readLines(large_meta, warn = FALSE), sep = "\n")
+```{r}
+#| results: asis
+#| warning: false
+setwd(new_project)
+cat("```json\n")
+cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
+cat("\n```\n")
 ```
 # Storage internals
 
@@ -122,8 +129,17 @@ The audit log lives in the storage directory as `audit.log.jsonl`.
 
 audit <- fs::path(storage, "audit.log.jsonl")
 audit
+```
 
-cat(readLines(audit), sep = "\n")
+```{r}
+#| results: asis
+lines <- readLines(audit)
+cat("```json\n")
+for (l in lines) {
+  cat(jsonlite::toJSON(jsonlite::fromJSON(l, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
+  cat("\n")
+}
+cat("```\n")
 ```
 
 # Storage directory

@@ -4,6 +4,7 @@ project:
 
 format:
   html:
+    embed-resources: true
     mainfont: Outfit
     theme:
       - default

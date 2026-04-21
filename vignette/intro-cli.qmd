@@ -31,9 +31,9 @@ dir.create(new_project)
 ```{r}
 #| warning: false
 setwd(new_project)
-mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large")
-mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small")
-mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual")
+mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 Pass the paths to the shell so bash chunks can use them:

@@ -51,7 +51,7 @@ dir.create(project_b)
 ```{r}
 #| warning: false
 setwd(project_a)
-mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data")
+mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 ```{r}

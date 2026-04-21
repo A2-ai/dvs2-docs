@@ -30,7 +30,7 @@ Run a sequence of dvs operations to populate the log:
 ```{r}
 #| warning: false
 setwd(new_project)
-mkdatasetfiles(n_files = 3, size_mb = 2, prefix = "file_", dir = "data")
+mkdatasetfiles(n_files = 3, size_mb = 2, prefix = "file_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 dvs_init(storage)
 ```
 
@@ -67,7 +67,17 @@ storage directory. Each line is one operation:
 
 ```{r}
 audit_path <- fs::path(storage, "audit.log.jsonl")
-cat(readLines(audit_path), sep = "\n")
+```
+
+```{r}
+#| results: asis
+lines <- readLines(audit_path)
+cat("```json\n")
+for (l in lines) {
+  cat(jsonlite::toJSON(jsonlite::fromJSON(l, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
+  cat("\n")
+}
+cat("```\n")
 ```
 
 # Parsing the log

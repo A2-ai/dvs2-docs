@@ -28,7 +28,7 @@ dir.create(new_project)
 ```{r}
 #| warning: false
 setwd(new_project)
-mkdatasetfiles(n_files = 5, size_mb = 5, prefix = "file_", dir = "data")
+mkdatasetfiles(n_files = 5, size_mb = 5, prefix = "file_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 dvs_init(storage)
 ```
 
@@ -61,13 +61,13 @@ for (d in c(storage_zstd, storage_none, project_zstd, project_none)) dir.create(
 ```{r}
 #| warning: false
 setwd(project_zstd)
-mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data")
+mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 ```{r}
 #| warning: false
 setwd(project_none)
-mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data")
+mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 ```{r}
@@ -123,7 +123,7 @@ dir.create(project_t)
 ```{r}
 #| warning: false
 setwd(project_t)
-mkdatasetfiles(n_files = 50, size_mb = 3, prefix = "f_", dir = "data")
+mkdatasetfiles(n_files = 50, size_mb = 3, prefix = "f_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 dvs_init(storage_t)
 ```
 
@@ -174,7 +174,7 @@ dir.create(project_m)
 ```{r}
 #| warning: false
 setwd(project_m)
-mkdatasetfiles(n_files = 1, size_mb = 1, prefix = "d_", dir = "data")
+mkdatasetfiles(n_files = 1, size_mb = 1, prefix = "d_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 dvs_init(storage_m, metadata_folder_name = "datalock")
 invisible(dvs_add(glob = "data/*.csv", message = "custom folder name demo"))
 ```

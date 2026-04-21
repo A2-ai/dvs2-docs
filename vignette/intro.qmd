@@ -40,9 +40,9 @@ Let us add 1x25MB file (large), 3x1MB (small) and 50x3MB files (individual)
 #| warning: false
 setwd(new_project)
 
-mkdatasetfiles(n_files = 1, size_mb = 25, prefix = "large_", dir = "data/large") -> large_file
-mkdatasetfiles(n_files = 3, size_mb = 1,  prefix = "small_", dir = "data/small") -> small_files
-mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual") -> individual_files
+mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> large_file
+mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> small_files
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> individual_files
 ```
 
 
@@ -189,5 +189,5 @@ unlink(storage, recursive = TRUE)
 
 This was the happy path — init, add, status, get. Everything worked as expected.
 
-**Next up**: [Internals](intro-internals.html) — explore the `.dvs/` folder layout, meta files, and how content-addressed blob storage works under the hood. To try the same operations from the command line instead, see [CLI](intro-cli.html).
+**Next up**: [CLI](intro-cli.html) — the same operations driven from the terminal via the `dvs` binary. After that, [Internals](intro-internals.html) digs into the `.dvs/` folder layout, meta files, and content-addressed blob storage.
 
