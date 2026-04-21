@@ -23,4 +23,6 @@ dependencies = [
     "here",
     "stringr",
     "dplyr",
+    "fs",
+    "jsonlite",
 ]

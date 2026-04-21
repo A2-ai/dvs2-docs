@@ -76,6 +76,16 @@ mkdatasetfiles <- function(n_files,
     on.exit(if (!is.null(pb)) close(pb), add = TRUE)
   }
 
+  had_seed <- exists(".Random.seed", envir = globalenv(), inherits = FALSE)
+  saved_seed <- if (had_seed) get(".Random.seed", envir = globalenv(), inherits = FALSE)
+  on.exit({
+    if (had_seed) {
+      assign(".Random.seed", saved_seed, envir = globalenv())
+    } else if (exists(".Random.seed", envir = globalenv(), inherits = FALSE)) {
+      rm(".Random.seed", envir = globalenv())
+    }
+  }, add = TRUE)
+
   for (i in seq_len(n_files)) {
     set.seed(i)
 
