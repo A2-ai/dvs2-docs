@@ -1,5 +1,3 @@
-set working-directory := justfile_directory()
-
 default:
     @just --list
 
