@@ -17,7 +17,7 @@ format:
 
 ##  {.splash}
 
-![](../media/a2ai-logo-color.png){.splash-logo fig-align="center"}
+![](../media/a2ai-logo-color.png){.splash-logo fig-align="center" width="50%"}
 
 ::: {.splash-topic}
 **dvs** &nbsp;·&nbsp; _pronounced "devous"_

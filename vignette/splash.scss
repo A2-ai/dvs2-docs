@@ -11,10 +11,19 @@ $presentation-heading-font: "Outfit", "Rubik", sans-serif !default;
 
 .splash-logo img,
 img.splash-logo {
-  max-width: 420px;
-  width: 50%;
+  width: min(50vw, 420px);
+  max-width: calc(100vw - 3rem);
+  height: auto;
   margin: 0 auto 2rem auto;
   display: block;
+}
+
+@media (max-width: 700px) {
+  .splash-logo img,
+  img.splash-logo {
+    width: min(70vw, 320px);
+    max-width: calc(100vw - 2rem);
+  }
 }
 
 .splash-topic {
