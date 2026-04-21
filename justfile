@@ -1,6 +1,8 @@
 default:
     @just --list
 
+# === Vignettes ===
+
 # Render all vignettes
 render:
     quarto render vignette/intro.qmd
@@ -12,7 +14,35 @@ render:
 render-one NAME:
     quarto render vignette/{{NAME}}.qmd
 
-# Clone the dvs2 source into .dvs (required for rv to build dvs-rpkg from source)
+# Live-preview a vignette in the browser
+preview NAME:
+    quarto preview vignette/{{NAME}}.qmd
+
+# Open all rendered HTMLs
+open:
+    open vignette/intro.html vignette/intro-internals.html vignette/random_files.html vignette/setup.html
+
+# === rv / R package management ===
+
+# rv init
+rv-init:
+    rv init
+
+# rv add the dvs package from a local clone at .dvs/dvs-rpkg
+add-dvs:
+    rv add dvs --git https://github.com/a2-ai/dvs2 --directory dvs-rpkg --branch main
+
+# rv add vignette + helper dependencies
+add-deps:
+    rv add usethis quarto here stringr stringi dplyr
+
+# rv sync
+sync:
+    rv sync
+
+# === dvs source repo ===
+
+# Clone dvs2 into .dvs (required to build dvs-rpkg from source via rv)
 clone-dvs:
     gh repo clone A2-ai/dvs2 .dvs -- --single-branch --depth=1
     echo '*' > .dvs/.gitignore
@@ -21,16 +51,39 @@ clone-dvs:
 update-dvs:
     cd .dvs && git pull --rebase
 
-# Sync R packages via rv
-sync:
-    rv sync
-
-# Initial project bootstrap: clone dvs source, install cargo-revendor, sync
-init:
-    just clone-dvs
+# Install the cargo-revendor build helper
+install-cargo-revendor:
     cargo install --locked --force --git https://github.com/A2-ai/miniextendr cargo-revendor
+
+# === Bootstrap ===
+
+# Bootstrap a brand-new sibling project (equivalent to dev/LOG.R)
+new-project NAME:
+    mkdir {{NAME}}
+    cd {{NAME}} && Rscript -e 'usethis::create_project(".")'
+    cd {{NAME}} && rv init
+    cd {{NAME}} && rv add dvs --git https://github.com/a2-ai/dvs2 --directory dvs-rpkg --branch main
+    cd {{NAME}} && rv add usethis quarto here stringr stringi dplyr
+    cd {{NAME}} && gh repo clone A2-ai/dvs2 .dvs -- --single-branch --depth=1
+    cd {{NAME}} && echo '*' > .dvs/.gitignore
+    cd {{NAME}} && rv sync
+
+# Bootstrap the current project from scratch (clone dvs, install tooling, sync)
+bootstrap:
+    just clone-dvs
+    just install-cargo-revendor
     just sync
+
+# === Housekeeping ===
 
 # Remove rendered artefacts and generated data
 clean:
     rm -rf vignette/*.html vignette/*_files tmp_random_files _freeze .quarto
+
+# Full reset: clean + drop .dvs clone
+reset: clean
+    rm -rf .dvs
+
+# Show tree respecting .treeignore
+tree *ARGS:
+    tree --gitfile .treeignore {{ARGS}}
