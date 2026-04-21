@@ -1,0 +1,96 @@
+---
+title: "Project setup"
+format: html
+execute:
+  freeze: auto
+  eval: false
+---
+
+# Create project
+
+```{r}
+dir.create("demo_dvs2_rpkg")
+setwd("demo_dvs2_rpkg")
+usethis::create_project(".")
+```
+
+# Initialize rv
+
+```{bash}
+rv init
+```
+
+Expected output:
+
+```
+rv project successfully initialized at .
+
+rv repositories active!
+  repositories:
+  PRISM: https://prism.a2-ai.cloud/rpkgs/nimbus/2025.08
+
+rv libpaths active!
+  library paths:
+  /data/user-homes/mossa/demo_dvs2_rpkg/rv/library/4.5/x86_64/noble
+  /opt/R/4.5.1/lib/R/library
+```
+
+Restart R (Session -> Restart R).
+
+# Add dvs
+
+```{r}
+.rv$add("dvs", "--git https://github.com/a2-ai/dvs2", "--directory dvs-rpkg", "--branch main")
+```
+
+# Pin registry
+
+Browse [prism.a2-ai.cloud](https://prism.a2-ai.cloud/) and pick a registry (e.g. `latest`).
+
+Edit `rproject.toml`:
+
+```toml
+repositories = [
+  #{alias = "PRISM", url = "https://prism.a2-ai.cloud/rpkgs/nimbus/2025.08/"},
+  {alias = "PRISM", url = "https://prism.a2-ai.cloud/rpkgs/nimbus/2026.03/"},
+]
+```
+
+```{r}
+.rv$sync()
+```
+
+# Quarto project
+
+```{r}
+usethis::create_quarto_project(".")
+```
+
+Work inside `vignette/intro.qmd`.
+
+# Vignette dependencies
+
+```{r}
+.rv$add("here")
+.rv$add("stringr", "stringi")
+.rv$add("dplyr")
+```
+
+# Clone dvs source
+
+```{bash}
+gh repo clone A2-Ai/dvs2 .dvs -- --single-branch --depth=1
+cat "*" > .dvs/.gitignore
+```
+
+# Install cargo-revendor
+
+```{bash}
+cargo install --locked --force --git https://github.com/A2-ai/miniextendr cargo-revendor
+```
+
+# Update dvs source
+
+```{bash}
+cd .dvs && git pull --rebase && cd -
+```
