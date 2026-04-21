@@ -1,0 +1,32 @@
+---
+format:
+  revealjs:
+    theme: [default, splash.scss]
+    slide-number: false
+    controls: false
+    progress: false
+    transition: fade
+    background-transition: fade
+    center: true
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+---
+
+##  {.splash}
+
+![](../media/a2ai-logo-color.png){.splash-logo fig-align="center"}
+
+::: {.splash-topic}
+**dvs** &nbsp;·&nbsp; _pronounced "devous"_
+:::
+
+::: {.splash-name}
+Mossa Merhi Reimert
+:::
+
+::: {.splash-title}
+Sr. Scientific Software Engineer
+:::

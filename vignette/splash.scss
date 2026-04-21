@@ -1,0 +1,42 @@
+/*-- scss:defaults --*/
+
+$font-family-sans-serif: "Outfit", "Rubik", sans-serif !default;
+$presentation-heading-font: "Outfit", "Rubik", sans-serif !default;
+
+/*-- scss:rules --*/
+
+.reveal .slides section.splash {
+  text-align: center;
+}
+
+.splash-logo img,
+img.splash-logo {
+  max-width: 420px;
+  width: 50%;
+  margin: 0 auto 2rem auto;
+  display: block;
+}
+
+.splash-topic {
+  font-family: "Outfit", "Rubik", sans-serif;
+  font-weight: 500;
+  font-size: 1.5em;
+  margin-top: 1.5rem;
+  color: #1f6f83;
+}
+
+.splash-name {
+  font-family: "Outfit", "Rubik", sans-serif;
+  font-weight: 600;
+  font-size: 2.2em;
+  letter-spacing: 0.01em;
+  margin-top: 2rem;
+}
+
+.splash-title {
+  font-family: "Outfit", "Rubik", sans-serif;
+  font-weight: 400;
+  font-size: 1.2em;
+  color: #555;
+  margin-top: 0.3rem;
+}
