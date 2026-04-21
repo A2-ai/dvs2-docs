@@ -1,5 +1,5 @@
 ---
-title: "dvs internals"
+title: "Introduction to dvs internals"
 format: html
 execute:
   freeze: auto
@@ -9,12 +9,6 @@ execute:
 
 Same project as `vignette/intro.qmd`: 1x25MB `large`, 3x1MB `small`, 50x3MB `individual` CSVs under `data/`, with a dvs repository initialized against an external `storage` directory.
 
-# Helpers
-
-```{r}
-source(here::here("R/mkdatasetfiles.R"))
-```
-
 # Setup
 
 ```{r}
@@ -23,9 +17,17 @@ library(fs)
 library(here)
 ```
 
+
+# Helpers
+
 ```{r}
-storage <- tempfile(fileext = "_storage")
-new_project <- tempfile(fileext = "_project")
+source(here::here("R/mkdatasetfiles.R"))
+```
+
+
+```{r}
+storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
 dir.create(storage)
 dir.create(new_project)
 ```
@@ -104,6 +106,12 @@ large_meta
 
 cat(readLines(large_meta, warn = FALSE), sep = "\n")
 ```
+# Storage internals
+
+```{r}
+fs::dir_tree(storage, all = TRUE, regexp = "\\.git", invert = TRUE)
+```
+
 
 # Audit log
 
@@ -163,6 +171,14 @@ Initialized with `compression = "none"`, the stored object is the original CSV, 
 
 readLines(large_blob, n = 5)
 ```
+
+```{r}
+readLines(
+  n = 5, fs::path(new_project, "data", "large", "large_1.csv")
+)
+```
+
+
 
 # `.dvs/` mirrors `data/`
 

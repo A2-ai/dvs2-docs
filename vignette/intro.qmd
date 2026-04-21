@@ -1,5 +1,6 @@
 ---
-title: "Introduction to dvs: data version control system"
+title: "Introduction to dvs"
+subtitle: "a data version control system"
 format: html
 execute:
   freeze: auto
@@ -39,9 +40,9 @@ Let us add 1x25MB file (large), 3x1MB (small) and 50x3MB files (individual)
 #| warning: false
 setwd(new_project)
 
-mkdatasetfiles(n_files = 1, size_mb = 25, prefix = "large_", dir = "data/large")
-mkdatasetfiles(n_files = 3, size_mb = 1,  prefix = "small_", dir = "data/small")
-mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual")
+mkdatasetfiles(n_files = 1, size_mb = 25, prefix = "large_", dir = "data/large") -> large_file
+mkdatasetfiles(n_files = 3, size_mb = 1,  prefix = "small_", dir = "data/small") -> small_files
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual") -> individual_files
 ```
 
 
@@ -89,8 +90,6 @@ fs::dir_info(
   dplyr::reframe(size = sum(size), .by = c(data_dir))
 ```
 
-
-
 Initialize a dvs repository
 
 ```{r}
@@ -98,6 +97,12 @@ Initialize a dvs repository
 setwd(new_project)
 
 dvs_init(storage)
+```
+
+```{r}
+cat(
+  readLines(fs::path(new_project, "dvs.toml"))
+)
 ```
 
 
@@ -134,8 +139,8 @@ Let us accidentally delete a few individual files:
 #| warning: false
 setwd(new_project)
 
-unlink("data/individual/individual_4.csv")
-unlink("data/individual/individual_8.csv")
+unlink("data/individual/individual_04.csv")
+unlink("data/individual/individual_08.csv")
 unlink("data/individual/individual_15.csv")
 unlink("data/individual/individual_16.csv")
 unlink("data/individual/individual_23.csv")
@@ -171,9 +176,6 @@ setwd(new_project)
 
 dvs_get(glob = "data/individual/individual_*.csv")
 ```
-
-
-
 
 
 ## Cleanup
