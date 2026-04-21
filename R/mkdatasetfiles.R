@@ -25,7 +25,7 @@ mkdatasetfiles <- function(n_files,
   dir.create(dir, recursive = TRUE, showWarnings = FALSE)
 
   target_bytes <- as.numeric(size_mb) * 1024^2
-  chunk_target_bytes <- as.numeric(chunk_size_mb) * 1024^2
+  chunk_target_bytes <- min(as.numeric(chunk_size_mb) * 1024^2, target_bytes)
   width <- max(1L, nchar(as.character(n_files)))
 
   dataset[] <- lapply(dataset, as.character)

@@ -2,6 +2,8 @@
 .dvs/
 tmp_random_files/
 vignette/*_files/
+*_storage/
+*_project/
 .quarto/
 _freeze/
 .DS_Store

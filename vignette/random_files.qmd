@@ -1,7 +1,6 @@
 ---
-title: "random_files"
+title: "Random Files"
 format: html
-
 execute:
   freeze: auto
 ---

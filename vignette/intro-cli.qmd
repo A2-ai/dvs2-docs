@@ -1,0 +1,110 @@
+---
+title: "Introduction to dvs CLI"
+format: html
+execute:
+  freeze: auto
+---
+
+# Setup
+
+```{r}
+library(dvs)
+library(fs)
+library(here)
+```
+
+# Helpers
+
+```{r}
+source(here::here("R/mkdatasetfiles.R"))
+```
+
+See `vignette/random_files.qmd` for a demonstration of this function.
+
+```{r}
+storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
+
+dir.create(storage)
+dir.create(new_project)
+```
+
+1x25MB file (large), 3x1MB (small), 50x3MB files (individual):
+
+```{r}
+#| warning: false
+setwd(new_project)
+
+mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large")
+mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small")
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual")
+```
+
+```{r}
+#| warning: false
+setwd(new_project)
+
+dvs_init(storage)
+```
+
+```{r}
+#| warning: false
+cat(readLines(fs::path(new_project, "dvs.toml")), sep = "\n")
+```
+
+# CLI
+
+The same operations can be driven from the terminal via the `dvs` binary. For this demonstration we will not invoke the CLI directly — the commands below are shown for reference.
+
+## Add
+
+```{bash}
+#| eval: false
+dvs add data/large/large_1.csv --message "add one large dataset"
+dvs add data/small/ --message "add small corpus datasets"
+dvs add "data/individual/individual_*.csv" --message "add individual datasets via glob"
+```
+
+```{r}
+#| warning: false
+#| echo: false
+#| results: hide
+setwd(new_project)
+
+invisible(dvs_add("data/large/large_1.csv", message = "add one large dataset"))
+invisible(dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "add small corpus datasets"))
+invisible(dvs_add(glob = "data/individual/individual_*.csv", message = "add individual datasets via glob"))
+```
+
+```{r}
+#| warning: false
+setwd(new_project)
+
+meta_files <- fs::dir_ls(".dvs", recurse = TRUE, all = TRUE, glob = "*.dvs", type = "file")
+meta_files <- meta_files[!grepl("\\.git", meta_files)]
+large_meta <- grep("large_1", meta_files, value = TRUE)
+
+cat(readLines(large_meta, warn = FALSE), sep = "\n")
+```
+
+## Status
+
+```{bash}
+#| eval: false
+dvs status
+dvs status --status absent
+```
+
+## Get
+
+```{bash}
+#| eval: false
+dvs get "data/individual/individual_*.csv"
+```
+
+# Cleanup
+
+```{r}
+unlink(new_project, recursive = TRUE)
+unlink(storage, recursive = TRUE)
+```

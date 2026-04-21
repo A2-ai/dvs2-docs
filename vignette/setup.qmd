@@ -33,6 +33,33 @@ rv add dvs --git https://github.com/a2-ai/dvs2 --directory dvs-rpkg --branch mai
 rv add usethis quarto here stringr stringi dplyr
 ```
 
+Optionally pin a registry: browse [prism.a2-ai.cloud](https://prism.a2-ai.cloud/) and edit `rproject.toml`:
+
+```toml
+repositories = [
+  {alias = "PRISM", url = "https://prism.a2-ai.cloud/rpkgs/nimbus/2026.03/"},
+]
+```
+
+## dvs source and build tool
+
+Clone the dvs source and install the cargo build helper — this must happen before `rv sync` so the local clone is available when dvs builds from source:
+
+```{bash}
+gh repo clone A2-ai/dvs2 .dvs -- --single-branch --depth=1
+echo '*' > .dvs/.gitignore
+
+cargo install --locked --force --git https://github.com/A2-ai/miniextendr cargo-revendor
+```
+
+```
+Cloning into '.dvs'...
+```
+
+```{r}
+.rv$sync()
+```
+
 ```
 rv project successfully initialized at .
 
@@ -49,18 +76,6 @@ sync completed in 2.0s (30 installed, 0 removed)
 sync completed in 2.2s (32 installed, 0 removed)
 ```
 
-Optionally pin a registry: browse [prism.a2-ai.cloud](https://prism.a2-ai.cloud/) and edit `rproject.toml`:
-
-```toml
-repositories = [
-  {alias = "PRISM", url = "https://prism.a2-ai.cloud/rpkgs/nimbus/2026.03/"},
-]
-```
-
-```{r}
-.rv$sync()
-```
-
 ## Quarto scaffolding
 
 ```{r}
@@ -69,18 +84,7 @@ usethis::create_quarto_project(".")
 
 Work inside `vignette/intro.qmd`.
 
-## dvs source and build tool
-
-```{bash}
-gh repo clone A2-ai/dvs2 .dvs -- --single-branch --depth=1
-echo '*' > .dvs/.gitignore
-
-cargo install --locked --force --git https://github.com/A2-ai/miniextendr cargo-revendor
-```
-
-```
-Cloning into '.dvs'...
-```
+## Updating dvs source
 
 To pull the latest `dvs-rpkg` source locally later:
 

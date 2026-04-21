@@ -18,7 +18,7 @@ library(here)
 # Helpers
 
 ```{r}
-source(here::here("../R/mkdatasetfiles.R"))
+source(here::here("R/mkdatasetfiles.R"))
 ```
 
 
