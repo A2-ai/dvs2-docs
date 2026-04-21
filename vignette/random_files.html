@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>random_files</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="random_files_files/libs/clipboard/clipboard.min.js"></script>
+<script src="random_files_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="random_files_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="random_files_files/libs/quarto-html/popper.min.js"></script>
+<script src="random_files_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="random_files_files/libs/quarto-html/anchor.min.js"></script>
+<link href="random_files_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="random_files_files/libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="random_files_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="random_files_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="random_files_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">random_files</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>The <code>mkdatasetfiles()</code> helper lives in <code>R/mkdatasetfiles.R</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mkdatasetfiles <span class="ot">&lt;-</span> <span class="cf">function</span>(n_files,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                           dir,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                           size_mb,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">prefix =</span> <span class="st">"file_"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">dataset =</span> datasets<span class="sc">::</span>ChickWeight,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">extra_cols =</span> <span class="dv">10</span>L,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">max_int =</span> <span class="dv">1000</span>L,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">chunk_size_mb =</span> <span class="dv">8</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                           <span class="at">chunk_rows =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                           <span class="at">show_progress =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(n_files) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">is.numeric</span>(n_files), n_files <span class="sc">&gt;=</span> <span class="dv">1</span>, n_files <span class="sc">==</span> <span class="fu">as.integer</span>(n_files),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(dir) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">nzchar</span>(dir),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(size_mb) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">is.numeric</span>(size_mb), size_mb <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(prefix) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">nzchar</span>(prefix),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.data.frame</span>(dataset),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(extra_cols) <span class="sc">==</span> <span class="dv">1</span>L, extra_cols <span class="sc">&gt;=</span> <span class="dv">0</span>, extra_cols <span class="sc">==</span> <span class="fu">as.integer</span>(extra_cols),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(max_int) <span class="sc">==</span> <span class="dv">1</span>L, max_int <span class="sc">&gt;=</span> <span class="dv">1</span>, max_int <span class="sc">==</span> <span class="fu">as.integer</span>(max_int),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(chunk_size_mb) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">is.numeric</span>(chunk_size_mb), chunk_size_mb <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.null</span>(chunk_rows) <span class="sc">||</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>      (<span class="fu">length</span>(chunk_rows) <span class="sc">==</span> <span class="dv">1</span>L <span class="sc">&amp;&amp;</span> chunk_rows <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">&amp;&amp;</span> chunk_rows <span class="sc">==</span> <span class="fu">as.integer</span>(chunk_rows)),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.logical</span>(show_progress), <span class="fu">length</span>(show_progress) <span class="sc">==</span> <span class="dv">1</span>L</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  target_bytes <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(size_mb) <span class="sc">*</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  chunk_target_bytes <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(chunk_size_mb) <span class="sc">*</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  width <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>L, <span class="fu">nchar</span>(<span class="fu">as.character</span>(n_files)))</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  dataset[] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(dataset, as.character)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  n_base <span class="ot">&lt;-</span> <span class="fu">nrow</span>(dataset)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (n_base <span class="sc">==</span> <span class="dv">0</span>L) <span class="fu">stop</span>(<span class="st">"`dataset` must have at least one row."</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  base_names <span class="ot">&lt;-</span> <span class="fu">names</span>(dataset)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  extra_names <span class="ot">&lt;-</span> <span class="cf">if</span> (extra_cols <span class="sc">&gt;</span> <span class="dv">0</span>L) <span class="fu">paste0</span>(<span class="st">"rand"</span>, <span class="fu">seq_len</span>(extra_cols)) <span class="cf">else</span> <span class="fu">character</span>(<span class="dv">0</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  header_raw <span class="ot">&lt;-</span> <span class="fu">charToRaw</span>(<span class="fu">paste0</span>(<span class="fu">paste</span>(<span class="fu">c</span>(base_names, extra_names), <span class="at">collapse =</span> <span class="st">","</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  base_row_lines <span class="ot">&lt;-</span> <span class="fu">do.call</span>(paste, <span class="fu">c</span>(dataset, <span class="fu">list</span>(<span class="at">sep =</span> <span class="st">","</span>)))</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  rand_lut <span class="ot">&lt;-</span> <span class="cf">if</span> (extra_cols <span class="sc">&gt;</span> <span class="dv">0</span>L) <span class="fu">as.character</span>(<span class="dv">0</span><span class="sc">:</span>(max_int <span class="sc">-</span> <span class="dv">1</span>L)) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  out_files <span class="ot">&lt;-</span> <span class="fu">character</span>(n_files)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  make_chunk_lines <span class="ot">&lt;-</span> <span class="cf">if</span> (extra_cols <span class="sc">&gt;</span> <span class="dv">0</span>L) {</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(start_row, n_rows) {</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>      idx <span class="ot">&lt;-</span> ((<span class="fu">seq.int</span>(start_row, <span class="at">length.out =</span> n_rows) <span class="sc">-</span> <span class="dv">1</span>L) <span class="sc">%%</span> n_base) <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>      rand_chr <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>        rand_lut[<span class="fu">sample.int</span>(max_int, n_rows <span class="sc">*</span> extra_cols, <span class="at">replace =</span> <span class="cn">TRUE</span>)],</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">nrow =</span> n_rows,</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>        <span class="at">ncol =</span> extra_cols</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>      rand_lines <span class="ot">&lt;-</span> <span class="fu">do.call</span>(</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>        paste,</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="fu">as.data.frame</span>(rand_chr, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>), <span class="fu">list</span>(<span class="at">sep =</span> <span class="st">","</span>))</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(base_row_lines[idx], <span class="st">","</span>, rand_lines)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(start_row, n_rows) {</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>      idx <span class="ot">&lt;-</span> ((<span class="fu">seq.int</span>(start_row, <span class="at">length.out =</span> n_rows) <span class="sc">-</span> <span class="dv">1</span>L) <span class="sc">%%</span> n_base) <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>      base_row_lines[idx]</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  chunk_rows <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(chunk_rows)) {</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>    sample_n <span class="ot">&lt;-</span> <span class="fu">min</span>(n_base, <span class="dv">1000</span>L)</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>    sample_lines <span class="ot">&lt;-</span> <span class="fu">make_chunk_lines</span>(<span class="dv">1</span>L, sample_n)</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>    sample_bytes <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(utils<span class="sc">::</span><span class="fu">object.size</span>(sample_lines))</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>    bytes_per_row <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, <span class="fu">ceiling</span>(sample_bytes <span class="sc">/</span> sample_n))</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(<span class="dv">1</span>L, <span class="fu">as.integer</span>(<span class="fu">floor</span>(chunk_target_bytes <span class="sc">/</span> bytes_per_row)))</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.integer</span>(chunk_rows)</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  pb <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (show_progress) {</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>    pb <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">txtProgressBar</span>(<span class="at">min =</span> <span class="dv">0</span>L, <span class="at">max =</span> n_files, <span class="at">style =</span> <span class="dv">3</span>)</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(pb)) <span class="fu">close</span>(pb), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(n_files)) {</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set.seed</span>(i)</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>    out_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, <span class="fu">sprintf</span>(<span class="st">"%s%0*d.csv"</span>, prefix, width, i))</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>    out_files[i] <span class="ot">&lt;-</span> out_path</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>    file_con <span class="ot">&lt;-</span> <span class="fu">file</span>(out_path, <span class="at">open =</span> <span class="st">"wb"</span>)</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="fu">close</span>(file_con), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>    <span class="fu">writeBin</span>(header_raw, file_con)</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>    bytes_written <span class="ot">&lt;-</span> <span class="fu">length</span>(header_raw)</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>    start_row <span class="ot">&lt;-</span> <span class="dv">1</span>L</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>    <span class="cf">repeat</span> {</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>      remaining_bytes <span class="ot">&lt;-</span> target_bytes <span class="sc">-</span> bytes_written</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (remaining_bytes <span class="sc">&lt;=</span> <span class="dv">0</span>L) <span class="cf">break</span></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>      lines <span class="ot">&lt;-</span> <span class="fu">make_chunk_lines</span>(start_row, chunk_rows)</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>      line_bytes <span class="ot">&lt;-</span> <span class="fu">nchar</span>(lines, <span class="at">type =</span> <span class="st">"bytes"</span>) <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>      keep_n <span class="ot">&lt;-</span> <span class="fu">findInterval</span>(remaining_bytes, <span class="fu">cumsum</span>(line_bytes))</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (keep_n <span class="sc">==</span> <span class="dv">0</span>L) <span class="cf">break</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (keep_n <span class="sc">&lt;</span> <span class="fu">length</span>(lines)) {</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>        lines <span class="ot">&lt;-</span> lines[<span class="fu">seq_len</span>(keep_n)]</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>        line_bytes <span class="ot">&lt;-</span> line_bytes[<span class="fu">seq_len</span>(keep_n)]</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>      <span class="fu">writeChar</span>(<span class="fu">paste</span>(lines, <span class="at">collapse =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>), file_con, <span class="at">eos =</span> <span class="cn">NULL</span>, <span class="at">useBytes =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>      <span class="fu">writeBin</span>(<span class="fu">as.raw</span>(<span class="dv">10</span>L), file_con)</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>      bytes_written <span class="ot">&lt;-</span> bytes_written <span class="sc">+</span> <span class="fu">sum</span>(line_bytes)</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>      start_row <span class="ot">&lt;-</span> ((start_row <span class="sc">+</span> <span class="fu">length</span>(lines) <span class="sc">-</span> <span class="dv">1</span>L) <span class="sc">%%</span> n_base) <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(lines) <span class="sc">&lt;</span> chunk_rows) <span class="cf">break</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>    <span class="fu">close</span>(file_con)</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="cn">NULL</span>, <span class="at">add =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (show_progress) utils<span class="sc">::</span><span class="fu">setTxtProgressBar</span>(pb, i)</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">file.path</span>(<span class="fu">normalizePath</span>(dir, <span class="at">winslash =</span> <span class="st">"/"</span>, <span class="at">mustWork =</span> <span class="cn">FALSE</span>), <span class="fu">basename</span>(out_files)))</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Load it:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R/mkdatasetfiles.R"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>1 small file</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">dir =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"tmp_random_files"</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">prefix =</span> <span class="st">"small_"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">size_mb =</span> <span class="dv">1</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">chunk_rows =</span> <span class="dv">200</span>L,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">dataset =</span> Theoph, <span class="at">extra_cols =</span> <span class="dv">25</span>) <span class="ot">-&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  small_file</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<p>view the file</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read.csv</span>(small_file, <span class="at">nrows =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Subject   Wt Dose Time  conc rand1 rand2 rand3 rand4 rand5 rand6 rand7 rand8
+1       1 79.6 4.02 0.00  0.74   835   217   463   793   915   685   184   796
+2       1 79.6 4.02 0.25  2.84   678   609   673   108   340   918   438   592
+3       1 79.6 4.02 0.57  6.57   128   193   732   687   485   217   779   519
+4       1 79.6 4.02 1.12 10.50   929    18   492   518   563   462   112   549
+5       1 79.6 4.02 2.02  9.66   508   272   674   623   471   988   509   120
+  rand9 rand10 rand11 rand12 rand13 rand14 rand15 rand16 rand17 rand18 rand19
+1   736    386    473    879    805    668    531    755    643    653    839
+2   815    944    680    124    923    341    706    725    333    971     84
+3   978    723    569    441    220     51    956    447    146    956    542
+4    79    345    829    120    721    639    637    957    250    353    909
+5   725    729    589    406    172    370    716    127    360    472    490
+  rand20 rand21 rand22 rand23 rand24 rand25
+1    475    406    260    457    103    897
+2    661    743    286     35    255    810
+3    584    654     63    529    271    229
+4    813    429    862     36    215    485
+5    447    670    673    591    727    847</code></pre>
+</div>
+</div>
+<p>File size</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_info</span>(small_file)[,<span class="fu">c</span>(<span class="st">"size"</span>, <span class="st">"type"</span>, <span class="st">"path"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+         size type  path                                                        
+  &lt;fs::bytes&gt; &lt;fct&gt; &lt;fs::path&gt;                                                  
+1       1024K file  …ocuments/a2ai_github/dvs2-demo/tmp_random_files/small_1.csv</code></pre>
+</div>
+</div>
+<p>That’s a 1MB. Good!</p>
+<p>1 large file</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>, </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">chunk_rows =</span> <span class="dv">200000</span>L,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">dir =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"tmp_random_files"</span>), </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">size_mb =</span> <span class="dv">25</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">prefix =</span> <span class="st">"large_"</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">dataset =</span> Theoph, <span class="at">extra_cols =</span> <span class="dv">25</span>) <span class="ot">-&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  large_file</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_info</span>(large_file)[,<span class="fu">c</span>(<span class="st">"size"</span>, <span class="st">"type"</span>, <span class="st">"path"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+         size type  path                                                        
+  &lt;fs::bytes&gt; &lt;fct&gt; &lt;fs::path&gt;                                                  
+1         25M file  …ocuments/a2ai_github/dvs2-demo/tmp_random_files/large_1.csv</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>large_file_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(large_file)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">duplicated</span>(large_file_data) <span class="sc">|&gt;</span> <span class="fu">table</span>(<span class="at">useNA =</span> <span class="st">"always"</span>) <span class="sc">|&gt;</span> <span class="fu">print</span>() <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ FALSE   &lt;NA&gt; 
+222825      0 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of cases in table: 222825 
+Number of factors: 1 </code></pre>
+</div>
+</div>
+<p>2 individual files</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">2</span>, <span class="at">dir =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"tmp_random_files"</span>), <span class="at">size_mb =</span> <span class="dv">10</span>, <span class="at">prefix =</span> <span class="st">"individual_"</span>, <span class="at">dataset =</span> Theoph, <span class="at">extra_cols =</span> <span class="dv">10</span>) <span class="ot">-&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  individual_files</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |===================================                                   |  50%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<p>file info to confirm</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_info</span>(individual_files)[,<span class="fu">c</span>(<span class="st">"size"</span>, <span class="st">"type"</span>, <span class="st">"path"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+         size type  path                                                        
+  &lt;fs::bytes&gt; &lt;fct&gt; &lt;fs::path&gt;                                                  
+1         10M file  …nts/a2ai_github/dvs2-demo/tmp_random_files/individual_1.csv
+2         10M file  …nts/a2ai_github/dvs2-demo/tmp_random_files/individual_2.csv</code></pre>
+</div>
+</div>
+<p>Are they identical?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>individual_datasets <span class="ot">&lt;-</span> <span class="fu">lapply</span>(individual_files, \(path) <span class="fu">read.csv</span>(path))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(individual_datasets[[<span class="dv">1</span>]], individual_datasets[[<span class="dv">2</span>]]) <span class="sc">|&gt;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">isTRUE</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p>The generated individual files are not duplicates. Good.</p>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

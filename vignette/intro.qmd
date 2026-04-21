@@ -8,7 +8,7 @@ execute:
 # Helpers
 
 ```{r}
-source(here::here("vignette/mkdatasetfiles.R"))
+source(here::here("R/mkdatasetfiles.R"))
 ```
 
 
@@ -109,7 +109,7 @@ setwd(new_project)
 dvs_add("data/large/large_1.csv", message = "add one large dataset")
 
 # whole folder
-dvs_add("data/small", message = "add small corpus datasets")
+dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "add small corpus datasets")
 
 # glob
 # dvs_add("data/individual", glob = "individiual_*.csv", message = "add individual datasets via glob")
@@ -167,7 +167,7 @@ Let us restore them:
 #| warning: false
 setwd(new_project)
 
-dvs_get("data/individual", glob = "individual_*.csv")
+dvs_get(glob = "data/individual/individual_*.csv")
 ```
 
 

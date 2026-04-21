@@ -1,1 +1,6 @@
 .Rproj.user
+.dvs/
+tmp_random_files/
+vignette/*_files/
+.quarto/
+_freeze/

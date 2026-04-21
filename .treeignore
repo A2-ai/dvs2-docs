@@ -1,0 +1,10 @@
+.git/
+target/
+rv/
+*_files/
+.quarto/
+_freeze/
+.Rproj.user/
+.Rhistory
+.RData
+tmp_random_files/
