@@ -84,17 +84,6 @@ usethis::create_quarto_project(".")
 
 Work inside `vignette/intro.qmd`.
 
-## `.gitignore` essentials
-
-After bootstrapping, add these entries to `.gitignore` so package caches and
-generated data are never accidentally committed:
-
-```text
-rv/library/    # cached R packages — rebuilt by `rv sync` from rproject.toml
-data/          # actual data files — tracked by dvs, not git
-_freeze/       # quarto render cache
-.quarto/
-```
 
 ## Updating dvs source
 
@@ -107,3 +96,15 @@ git -C .dvs pull --rebase
 ---
 
 **Next up**: [Introduction](intro.html) — the core dvs R API: `dvs_init`, `dvs_add`, `dvs_status`, `dvs_get`.
+<!-- 
+## `.gitignore` essentials
+
+After bootstrapping, add these entries to `.gitignore` so package caches and
+generated data are never accidentally committed:
+
+```text
+rv/library/    # cached R packages — rebuilt by `rv sync` from rproject.toml
+data/          # actual data files — tracked by dvs, not git
+_freeze/       # quarto render cache
+.quarto/
+``` -->

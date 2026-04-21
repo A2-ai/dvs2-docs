@@ -22,13 +22,13 @@ tracks them through small, text-based meta files that live alongside your code.
 | [Audit log](audit.html) | Parsing and querying `audit.log.jsonl` with purrr + dplyr |
 | [Random files](random_files.html) | `mkdatasetfiles()` helper used throughout these vignettes |
 
-## Current limitations
+<!-- ## Roadmap / Current limitations
 
 | Feature | Status |
 |---------|--------|
 | `dvs_remove` / untrack a file | **Not implemented** — delete the `.dvs` meta file manually |
 | Remote / cloud storage backends | **Not implemented** — storage must be a locally-mounted path |
-| File history / snapshots | **Not implemented** — dvs is content-addressed; re-adding rewrites the meta |
+| File history / snapshots | **Not implemented** — dvs is content-addressed; re-adding rewrites the meta | -->
 
 ## Quick reference
 
