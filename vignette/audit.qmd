@@ -69,9 +69,20 @@ storage directory. Each line is one operation:
 audit_path <- fs::path(storage, "audit.log.jsonl")
 ```
 
+Raw file — one JSON object per line:
+
 ```{r}
 #| results: asis
 lines <- readLines(audit_path)
+cat("```json\n")
+cat(lines, sep = "\n")
+cat("\n```\n")
+```
+
+Same entries, pretty-printed:
+
+```{r}
+#| results: asis
 cat("```json\n")
 for (l in lines) {
   cat(jsonlite::toJSON(jsonlite::fromJSON(l, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))

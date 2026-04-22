@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Setup a dvs demo project</title>
+<title>dvs configuration</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2280,7 +2280,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Setup a dvs demo project</h1>
+<h1 class="title">dvs configuration</h1>
+<p class="subtitle lead">dvs.toml fields, compression tradeoffs, threads, and metadata folder name</p>
 </div>
 
 
@@ -2297,84 +2298,245 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
-<p>Follow these steps to bootstrap a new project that uses the <code>dvs</code> R package from source.</p>
-<section id="r-environment" class="level2">
-<h2 class="anchored" data-anchor-id="r-environment">R environment</h2>
+<section id="setup" class="level1">
+<h1>Setup</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;demo_dvs2_rpkg&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&quot;demo_dvs2_rpkg&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_project</span>(<span class="st">&quot;.&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo</code></pre>
 </div>
-<pre><code>✔ Setting active project to &quot;.../demo_dvs2_rpkg&quot;.
-✔ Creating &#39;R/&#39;.
-✔ Writing a sentinel file &#39;.here&#39;.
-☐ Build robust paths within your project via `here::here()`.
-ℹ Learn more at &lt;https://here.r-lib.org&gt;.
-✔ Setting active project to &quot;&lt;no active project&gt;&quot;.</code></pre>
-<p>Restart R (Session -&gt; Restart R), then initialize rv and add packages:</p>
+</div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">rv</span> init</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">rv</span> add dvs <span class="at">--git</span> https://github.com/a2-ai/dvs2 <span class="at">--directory</span> dvs-rpkg <span class="at">--branch</span> main</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">rv</span> add usethis quarto here stringr stringi dplyr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Optionally pin a registry: browse <a href="https://prism.a2-ai.cloud/">prism.a2-ai.cloud</a> and edit <code>rproject.toml</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">repositories</span> <span class="op">=</span> <span class="op">[</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span><span class="dt">alias</span><span class="op"> =</span> <span class="st">&quot;PRISM&quot;</span><span class="op">, </span><span class="dt">url</span><span class="op"> =</span> <span class="st">&quot;https://prism.a2-ai.cloud/rpkgs/nimbus/2026.03/&quot;</span><span class="op">},</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>storage     <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(storage)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(new_project)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">5</span>, <span class="at">size_mb =</span> <span class="dv">5</span>, <span class="at">prefix =</span> <span class="st">&quot;file_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(storage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DVS Initialized</code></pre>
+</div>
+</div>
 </section>
-<section id="dvs-source-and-build-tool" class="level2">
-<h2 class="anchored" data-anchor-id="dvs-source-and-build-tool">dvs source and build tool</h2>
-<p>Clone the dvs source and install the cargo build helper — this must happen before <code>rv sync</code> so the local clone is available when dvs builds from source:</p>
+<section id="dvs.toml" class="level1">
+<h1><code>dvs.toml</code></h1>
+<p><code>dvs_init()</code> writes a <code>dvs.toml</code> at the project root:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> repo clone A2-ai/dvs2 .dvs <span class="at">--</span> <span class="at">--single-branch</span> <span class="at">--depth</span><span class="op">=</span>1</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;*&#39;</span> <span class="op">&gt;</span> .dvs/.gitignore</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> install <span class="at">--locked</span> <span class="at">--force</span> <span class="at">--git</span> https://github.com/A2-ai/miniextendr cargo-revendor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">readLines</span>(fs<span class="sc">::</span><span class="fu">path</span>(new_project, <span class="st">&quot;dvs.toml&quot;</span>)), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>compression = &quot;zstd&quot;
+
+[backend]
+path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo/file2a7a5b37b515_storage&quot;
+group = &quot;staff&quot;</code></pre>
 </div>
-<pre><code>Cloning into &#39;.dvs&#39;...</code></pre>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>.rv<span class="sc">$</span><span class="fu">sync</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<pre><code>rv project successfully initialized at .
-
-From local cache (2):
-  + cli       3.6.6  binary  https://cloud.r-project.org/        1ms
-  + dvs  0.3.0.9000  source  https://github.com/a2-ai/dvs2     54.1s
-
-sync completed in 60.9s (2 installed, 0 removed)
-
-... (usethis + deps install)
-sync completed in 2.0s (30 installed, 0 removed)
-
-... (quarto + deps install)
-sync completed in 2.2s (32 installed, 0 removed)</code></pre>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>storage_path</code></td>
+<td>Where dvs copies blobs. Any directory reachable from this machine — local path or network mount.</td>
+</tr>
+<tr class="even">
+<td><code>metadata_folder_name</code></td>
+<td>Defaults to <code>.dvs</code>. The folder that mirrors your data tree and holds meta files. Change if <code>.dvs</code> collides with another tool.</td>
+</tr>
+<tr class="odd">
+<td><code>compression</code></td>
+<td><code>&quot;zstd&quot;</code> (default) or <code>&quot;none&quot;</code>. zstd typically halves storage footprint for tabular data.</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="quarto-scaffolding" class="level2">
-<h2 class="anchored" data-anchor-id="quarto-scaffolding">Quarto scaffolding</h2>
+<section id="compression-zstd-vs-none" class="level1">
+<h1>Compression: <code>zstd</code> vs <code>none</code></h1>
+<p>Same data, two different compression settings — compare resulting storage size.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_quarto_project</span>(<span class="st">&quot;.&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>storage_zstd <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_zstd_storage&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>storage_none <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_none_storage&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>project_zstd <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_zstd_project&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>project_none <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_none_project&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (d <span class="cf">in</span> <span class="fu">c</span>(storage_zstd, storage_none, project_zstd, project_none)) <span class="fu">dir.create</span>(d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Work inside <code>vignette/intro.qmd</code>.</p>
-</section>
-<section id="updating-dvs-source" class="level2">
-<h2 class="anchored" data-anchor-id="updating-dvs-source">Updating dvs source</h2>
-<p>To pull the latest <code>dvs-rpkg</code> source locally later:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">-C</span> .dvs pull <span class="at">--rebase</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(project_zstd)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">5</span>, <span class="at">size_mb =</span> <span class="dv">10</span>, <span class="at">prefix =</span> <span class="st">&quot;data_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(project_none)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">5</span>, <span class="at">size_mb =</span> <span class="dv">10</span>, <span class="at">prefix =</span> <span class="st">&quot;data_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(project_zstd)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(storage_zstd, <span class="at">compression =</span> <span class="st">&quot;zstd&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DVS Initialized</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add with zstd compression&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(project_none)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(storage_none, <span class="at">compression =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DVS Initialized</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add with no compression&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Compare storage sizes:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>storage_summary <span class="ot">&lt;-</span> <span class="cf">function</span>(path, label) {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  info <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">dir_info</span>(path, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git|audit</span><span class="sc">\\</span><span class="st">.log&quot;</span>, path))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">compression  =</span> label,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_blobs      =</span> <span class="fu">nrow</span>(info),</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">size_bytes   =</span> <span class="fu">sum</span>(<span class="fu">as.numeric</span>(info<span class="sc">$</span>size)),</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">size_mb      =</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">as.numeric</span>(info<span class="sc">$</span>size)) <span class="sc">/</span> <span class="fl">1e6</span>, <span class="dv">2</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage_summary</span>(storage_zstd, <span class="st">&quot;zstd&quot;</span>),</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">storage_summary</span>(storage_none, <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>comparison <span class="sc">|&gt;</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ratio =</span> <span class="fu">round</span>(size_bytes <span class="sc">/</span> size_bytes[compression <span class="sc">==</span> <span class="st">&quot;none&quot;</span>], <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  compression n_blobs size_bytes size_mb ratio
+  &lt;chr&gt;         &lt;int&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+1 zstd              5   22042575    22.0  0.42
+2 none              5   52428720    52.4  1   </code></pre>
+</div>
+</div>
+</section>
+<section id="threads" class="level1">
+<h1>Threads</h1>
+<p><code>set_dvs_threads()</code> controls how many parallel threads dvs uses for hashing and copying blobs. The default is auto-detect (one thread per logical CPU).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>storage_t <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_threads_storage&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>project_t <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_threads_project&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(storage_t)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(project_t)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(project_t)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">50</span>, <span class="at">size_mb =</span> <span class="dv">3</span>, <span class="at">prefix =</span> <span class="st">&quot;f_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(storage_t)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DVS Initialized</code></pre>
+</div>
+</div>
+<p>Time <code>dvs_add</code> with a single thread:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set_dvs_threads</span>(<span class="dv">1</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">system.time</span>({</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setwd</span>(project_t)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;1 thread&quot;</span>))</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;1 thread :&quot;</span>, <span class="fu">round</span>(t1[<span class="st">&quot;elapsed&quot;</span>], <span class="dv">2</span>), <span class="st">&quot;s</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1 thread : 0.98 s</code></pre>
+</div>
+</div>
+<p>Re-stage files by appending a byte so dvs sees them as unsynced:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(project_t)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (f <span class="cf">in</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>)) <span class="fu">write</span>(<span class="st">&quot;&quot;</span>, f, <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Time with four threads:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set_dvs_threads</span>(<span class="dv">4</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>t4 <span class="ot">&lt;-</span> <span class="fu">system.time</span>({</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setwd</span>(project_t)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;4 threads&quot;</span>))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;4 threads:&quot;</span>, <span class="fu">round</span>(t4[<span class="st">&quot;elapsed&quot;</span>], <span class="dv">2</span>), <span class="st">&quot;s</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>4 threads: 0.25 s</code></pre>
+</div>
+</div>
+</section>
+<section id="custom-metadata-folder-name" class="level1">
+<h1>Custom metadata folder name</h1>
+<p><code>metadata_folder_name</code> overrides the default <code>.dvs</code> folder. Useful when another tool in the project already claims that name.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>storage_m <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_meta_storage&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>project_m <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_meta_project&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(storage_m)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(project_m)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(project_m)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>, <span class="at">size_mb =</span> <span class="dv">1</span>, <span class="at">prefix =</span> <span class="st">&quot;d_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(storage_m, <span class="at">metadata_folder_name =</span> <span class="st">&quot;datalock&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DVS Initialized</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;custom folder name demo&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The meta files live under <code>datalock/</code> instead of <code>.dvs/</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(project_m)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;datalock&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>datalock
+├── .cache
+│   └── dvs.db
+└── data
+    └── d_1.csv.dvs</code></pre>
+</div>
+</div>
+<p>The <code>dvs.toml</code> records the custom name so all subsequent operations pick it up automatically:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">readLines</span>(fs<span class="sc">::</span><span class="fu">path</span>(project_m, <span class="st">&quot;dvs.toml&quot;</span>)), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>compression = &quot;zstd&quot;
+metadata_folder_name = &quot;datalock&quot;
+
+[backend]
+path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo/file2a7ad04f2b5_meta_storage&quot;
+group = &quot;staff&quot;</code></pre>
+</div>
+</div>
+</section>
+<section id="group-unix-only" class="level1">
+<h1><code>group</code> (Unix only)</h1>
+<p><code>dvs_init(storage, group = &quot;mygroup&quot;)</code> sets the Unix group on the storage directory and all blobs written to it. This ensures that members of the group can read and write blobs without permission errors on shared filesystems.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># example — not executed here</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="st">&quot;/mnt/shared/storage&quot;</span>, <span class="at">group =</span> <span class="st">&quot;data-team&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="cleanup" class="level1">
+<h1>Cleanup</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (d <span class="cf">in</span> <span class="fu">c</span>(storage, new_project,</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>            storage_zstd, storage_none, project_zstd, project_none,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>            storage_t, project_t,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>            storage_m, project_m)) {</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlink</span>(d, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <hr>
-<p><strong>Next up</strong>: <a href="intro.html">Introduction</a> — the core dvs R API: <code>dvs_init</code>, <code>dvs_add</code>, <code>dvs_status</code>, <code>dvs_get</code>. <!-- 
-## `.gitignore` essentials
-
-After bootstrapping, add these entries to `.gitignore` so package caches and
-generated data are never accidentally committed:
-
-```text
-rv/library/    # cached R packages — rebuilt by `rv sync` from rproject.toml
-data/          # actual data files — tracked by dvs, not git
-_freeze/       # quarto render cache
-.quarto/
-``` --></p>
+<p><strong>Next up</strong>: <a href="audit.html">Audit log</a> — parsing and querying <code>audit.log.jsonl</code> with purrr and dplyr.</p>
 </section>
 
 </main>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Setup a dvs demo project</title>
+<title>dvs lifecycle</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2280,7 +2280,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Setup a dvs demo project</h1>
+<h1 class="title">dvs lifecycle</h1>
+<p class="subtitle lead">modify, re-add, dry-run, and storage integrity failures</p>
 </div>
 
 
@@ -2297,84 +2298,248 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
-<p>Follow these steps to bootstrap a new project that uses the <code>dvs</code> R package from source.</p>
-<section id="r-environment" class="level2">
-<h2 class="anchored" data-anchor-id="r-environment">R environment</h2>
+<section id="setup" class="level1">
+<h1>Setup</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;demo_dvs2_rpkg&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&quot;demo_dvs2_rpkg&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_project</span>(<span class="st">&quot;.&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo</code></pre>
 </div>
-<pre><code>✔ Setting active project to &quot;.../demo_dvs2_rpkg&quot;.
-✔ Creating &#39;R/&#39;.
-✔ Writing a sentinel file &#39;.here&#39;.
-☐ Build robust paths within your project via `here::here()`.
-ℹ Learn more at &lt;https://here.r-lib.org&gt;.
-✔ Setting active project to &quot;&lt;no active project&gt;&quot;.</code></pre>
-<p>Restart R (Session -&gt; Restart R), then initialize rv and add packages:</p>
+</div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">rv</span> init</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">rv</span> add dvs <span class="at">--git</span> https://github.com/a2-ai/dvs2 <span class="at">--directory</span> dvs-rpkg <span class="at">--branch</span> main</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">rv</span> add usethis quarto here stringr stringi dplyr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Optionally pin a registry: browse <a href="https://prism.a2-ai.cloud/">prism.a2-ai.cloud</a> and edit <code>rproject.toml</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">repositories</span> <span class="op">=</span> <span class="op">[</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span><span class="dt">alias</span><span class="op"> =</span> <span class="st">&quot;PRISM&quot;</span><span class="op">, </span><span class="dt">url</span><span class="op"> =</span> <span class="st">&quot;https://prism.a2-ai.cloud/rpkgs/nimbus/2026.03/&quot;</span><span class="op">},</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>storage     <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(storage)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(new_project)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>, <span class="at">size_mb =</span> <span class="dv">25</span>, <span class="at">prefix =</span> <span class="st">&quot;large_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/large&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>, <span class="at">size_mb =</span> <span class="dv">1</span>,  <span class="at">prefix =</span> <span class="st">&quot;small_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/small&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(storage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DVS Initialized</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">message =</span> <span class="st">&quot;initial add of large file&quot;</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">message =</span> <span class="st">&quot;initial add of small files&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>All files are <code>current</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 8
+  path                   status  hash   size      created_by compression message
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;  &lt;dvs_byt&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  
+1 data/large/large_1.csv current 45c0c… 25.0 MB   elea       zstd        initia…
+2 data/small/small_1.csv current e0fb0… 1024.0 KB elea       zstd        initia…
+3 data/small/small_2.csv current 1574a… 1024.0 KB elea       zstd        initia…
+4 data/small/small_3.csv current 9d97b… 1024.0 KB elea       zstd        initia…
+# ℹ 1 more variable: add_time &lt;dttm&gt;</code></pre>
+</div>
+</div>
 </section>
-<section id="dvs-source-and-build-tool" class="level2">
-<h2 class="anchored" data-anchor-id="dvs-source-and-build-tool">dvs source and build tool</h2>
-<p>Clone the dvs source and install the cargo build helper — this must happen before <code>rv sync</code> so the local clone is available when dvs builds from source:</p>
+<section id="modify-a-tracked-file" class="level1">
+<h1>Modify a tracked file</h1>
+<p>Append a row to <code>large_1.csv</code> — the file now differs from the hash dvs recorded:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> repo clone A2-ai/dvs2 .dvs <span class="at">--</span> <span class="at">--single-branch</span> <span class="at">--depth</span><span class="op">=</span>1</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;*&#39;</span> <span class="op">&gt;</span> .dvs/.gitignore</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> install <span class="at">--locked</span> <span class="at">--force</span> <span class="at">--git</span> https://github.com/A2-ai/miniextendr cargo-revendor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;99,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<pre><code>Cloning into &#39;.dvs&#39;...</code></pre>
+<p><code>dvs_status()</code> reports the hash mismatch as <code>unsynced</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>.rv<span class="sc">$</span><span class="fu">sync</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 8
+  path   status hash  size    created_by compression message add_time           
+  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; &lt;dvs_b&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;   &lt;dttm&gt;             
+1 data/… unsyn… 45c0… 25.0 MB elea       zstd        initia… 2026-04-22 14:33:26</code></pre>
 </div>
-<pre><code>rv project successfully initialized at .
-
-From local cache (2):
-  + cli       3.6.6  binary  https://cloud.r-project.org/        1ms
-  + dvs  0.3.0.9000  source  https://github.com/a2-ai/dvs2     54.1s
-
-sync completed in 60.9s (2 installed, 0 removed)
-
-... (usethis + deps install)
-sync completed in 2.0s (30 installed, 0 removed)
-
-... (quarto + deps install)
-sync completed in 2.2s (32 installed, 0 removed)</code></pre>
+</div>
+<p>Re-add with a new message. dvs writes a new blob and overwrites the meta file:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add row 99 — corrected dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  path                   outcome hash                        size    stored_size
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                       &lt;dvs_b&gt; &lt;dvs_byts&gt; 
+1 data/large/large_1.csv copied  3d25427f55c367c3385717f614… 25.0 MB 10.5 MB    </code></pre>
+</div>
+</div>
+<p>Back to <code>current</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;current&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 8
+  path                   status  hash   size      created_by compression message
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;  &lt;dvs_byt&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  
+1 data/large/large_1.csv current 3d254… 25.0 MB   elea       zstd        add ro…
+2 data/small/small_1.csv current e0fb0… 1024.0 KB elea       zstd        initia…
+3 data/small/small_2.csv current 1574a… 1024.0 KB elea       zstd        initia…
+4 data/small/small_3.csv current 9d97b… 1024.0 KB elea       zstd        initia…
+# ℹ 1 more variable: add_time &lt;dttm&gt;</code></pre>
+</div>
+</div>
 </section>
-<section id="quarto-scaffolding" class="level2">
-<h2 class="anchored" data-anchor-id="quarto-scaffolding">Quarto scaffolding</h2>
+<section id="dry_run" class="level1">
+<h1><code>dry_run</code></h1>
+<p><code>dry_run = TRUE</code> reports what <em>would</em> happen without writing anything.</p>
+<p>Modify the file again:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_quarto_project</span>(<span class="st">&quot;.&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;100,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Work inside <code>vignette/intro.qmd</code>.</p>
-</section>
-<section id="updating-dvs-source" class="level2">
-<h2 class="anchored" data-anchor-id="updating-dvs-source">Updating dvs source</h2>
-<p>To pull the latest <code>dvs-rpkg</code> source locally later:</p>
+<p>Preview <code>dvs_add</code> without committing:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">-C</span> .dvs pull <span class="at">--rebase</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;dry run preview&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  path                   outcome hash                        size    stored_size
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                       &lt;dvs_b&gt; &lt;dvs_byts&gt; 
+1 data/large/large_1.csv copied  38c2d4d8bbc6b017aa6a03b243… 25.0 MB NA         </code></pre>
+</div>
+</div>
+<p>Status is still <code>unsynced</code> — nothing was written:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 8
+  path   status hash  size    created_by compression message add_time           
+  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; &lt;dvs_b&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;   &lt;dttm&gt;             
+1 data/… unsyn… 3d25… 25.0 MB elea       zstd        add ro… 2026-04-22 14:33:26</code></pre>
+</div>
+</div>
+<p>Delete a file, then preview <code>dvs_get</code> without restoring:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  path                   outcome size      
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;dvs_byts&gt;
+1 data/small/small_1.csv copied  1024.0 KB </code></pre>
+</div>
+</div>
+<p>Status still shows <code>absent</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 8
+  path                   status hash    size      created_by compression message
+  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;   &lt;dvs_byt&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  
+1 data/small/small_1.csv absent e0fb0b… 1024.0 KB elea       zstd        initia…
+# ℹ 1 more variable: add_time &lt;dttm&gt;</code></pre>
+</div>
+</div>
+<p>Restore for real:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  path                   outcome size      
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;dvs_byts&gt;
+1 data/small/small_1.csv copied  1024.0 KB </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 8
+  path                   status   hash  size      created_by compression message
+  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt; &lt;dvs_byt&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  
+1 data/large/large_1.csv unsynced 3d25… 25.0 MB   elea       zstd        add ro…
+2 data/small/small_1.csv current  e0fb… 1024.0 KB elea       zstd        initia…
+3 data/small/small_2.csv current  1574… 1024.0 KB elea       zstd        initia…
+4 data/small/small_3.csv current  9d97… 1024.0 KB elea       zstd        initia…
+# ℹ 1 more variable: add_time &lt;dttm&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="integrity-failure-missing-storage-blob" class="level1">
+<h1>Integrity failure: missing storage blob</h1>
+<p>dvs blobs are content-addressed — the hash in the meta file is the key. If a blob is missing from storage (e.g. accidental deletion), <code>dvs_get</code> returns an <code>error</code> column describing the failure rather than restoring the file.</p>
+<p>Locate and delete the blob for <code>small_2.csv</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>meta_path <span class="ot">&lt;-</span> <span class="fu">grep</span>(</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;small_2&quot;</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">glob =</span> <span class="st">&quot;*.dvs&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>),</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="cn">TRUE</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>meta  <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(meta_path)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>hash  <span class="ot">&lt;-</span> meta<span class="sc">$</span>hashes<span class="sc">$</span>blake3</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>blob  <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">path</span>(storage, <span class="fu">substr</span>(hash, <span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">substr</span>(hash, <span class="dv">3</span>, <span class="fu">nchar</span>(hash)))</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;blob:&quot;</span>, <span class="fu">as.character</span>(blob), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>blob: /Users/elea/Documents/a2ai_github/dvs2-demo/file27cd2558894_storage/15/74af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;exists:&quot;</span>, fs<span class="sc">::</span><span class="fu">file_exists</span>(blob), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>exists: TRUE </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_delete</span>(blob)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;exists after delete:&quot;</span>, fs<span class="sc">::</span><span class="fu">file_exists</span>(blob), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>exists after delete: FALSE </code></pre>
+</div>
+</div>
+<p>Remove the local copy so a restore is needed:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 8
+  path                   status hash    size      created_by compression message
+  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;   &lt;dvs_byt&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  
+1 data/small/small_2.csv absent 1574af… 1024.0 KB elea       zstd        initia…
+# ℹ 1 more variable: add_time &lt;dttm&gt;</code></pre>
+</div>
+</div>
+<p><code>dvs_get</code> returns normally but with a non-empty <code>error</code> column — the blob is gone so the file cannot be restored:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  path                   error                                                  
+  &lt;chr&gt;                  &lt;chr&gt;                                                  
+1 data/small/small_2.csv Storage file missing for hash: Hashes(blake3=1574af6b3…</code></pre>
+</div>
+</div>
+</section>
+<section id="untracking-files" class="level1">
+<h1>Untracking files</h1>
+<p>There is <strong>no <code>dvs_remove</code> in the current release</strong>. To stop tracking a file, delete its meta file under <code>.dvs/</code> manually:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dvs will no longer track large_1.csv after its meta file is removed</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_delete</span>(<span class="st">&quot;.dvs/data/large/large_1.csv.dvs&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>After the meta file is gone <code>dvs_status()</code> no longer reports on that file.</p>
+</section>
+<section id="cleanup" class="level1">
+<h1>Cleanup</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(new_project, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(storage,     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <hr>
-<p><strong>Next up</strong>: <a href="intro.html">Introduction</a> — the core dvs R API: <code>dvs_init</code>, <code>dvs_add</code>, <code>dvs_status</code>, <code>dvs_get</code>. <!-- 
-## `.gitignore` essentials
-
-After bootstrapping, add these entries to `.gitignore` so package caches and
-generated data are never accidentally committed:
-
-```text
-rv/library/    # cached R packages — rebuilt by `rv sync` from rproject.toml
-data/          # actual data files — tracked by dvs, not git
-_freeze/       # quarto render cache
-.quarto/
-``` --></p>
+<p><strong>Next up</strong>: <a href="collab.html">Collaboration</a> — two projects sharing one storage directory; what to commit to git and what to gitignore.</p>
 </section>
 
 </main>

@@ -8,6 +8,8 @@ vignette/*_files/
 _freeze/
 .DS_Store
 rv/library/
+.alx/
+.alexandria-cli/
 
 /.quarto/
 **/*.quarto_ipynb

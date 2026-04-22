@@ -107,12 +107,16 @@ cd "$DVS_PROJECT"
 dvs status --current
 ```
 
-Show extended metadata columns:
+Show extended metadata columns with `--with-metadata`:
 
 ```{bash}
 cd "$DVS_PROJECT"
 dvs status --with-metadata
 ```
+
+In the R package these metadata columns (`hash`, `created_by`, `add_time`,
+`compression`, `message`) are returned by default — they're already computed
+when resolving status, so `dvs_status()` surfaces them without an extra flag.
 
 Delete a few files to produce `absent` entries:
 
@@ -134,9 +138,16 @@ dvs status --unsynced
 
 Every command accepts `--json` for machine-readable output:
 
-```{bash}
-cd "$DVS_PROJECT"
-dvs status --absent --json
+```{r}
+#| results: asis
+#| warning: false
+setwd(new_project)
+out <- system2("dvs", c("status", "--absent", "--json"), stdout = TRUE)
+cat("```json\n")
+cat(jsonlite::toJSON(jsonlite::fromJSON(paste(out, collapse = "\n"),
+                                        simplifyVector = FALSE),
+                     pretty = TRUE, auto_unbox = TRUE))
+cat("\n```\n")
 ```
 
 # `dvs get`
