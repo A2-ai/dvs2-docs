@@ -2306,8 +2306,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="cell-output cell-output-stderr">
 <pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-errors</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print tibbles wide so all columns appear on one row</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width =</span> <span class="dv">1000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print tibbles wide so all columns appear on one row.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># options(width = Inf) is rejected by base R (max 10000); 10000 is the ceiling.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width =</span> <span class="dv">10000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Create a temporary storage directory and project root, then expose them to the shell so the bash chunks below can use <code>$DVS_PROJECT</code> and <code>$DVS_STORAGE</code>.</p>
 <div class="cell">
@@ -2508,9 +2509,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> outside_file)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 2
-  path                                                                               error                  
-  &lt;chr&gt;                                                                              &lt;chr&gt;                  
-1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmpgum1al/file17bc542a74591.csv path is outside project</code></pre>
+  path                                                                              error                  
+  &lt;chr&gt;                                                                             &lt;chr&gt;                  
+1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpMCkZjY/file18245302a34e.csv path is outside project</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2520,7 +2521,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span>
 <span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.XeKjmd6YNB.csv: path is outside project
+<pre><code>Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.ucxFQaUsm4.csv: path is outside project
 Some files failed to add</code></pre>
 </div>
 </div>
@@ -2615,7 +2616,7 @@ Some files failed to add</code></pre>
 <pre><code># A tibble: 1 × 7
   path        status  hash                                                             size       created_by compression add_time           
   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                                                            &lt;dvs_byts&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;dttm&gt;             
-1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e 2 B        elea       zstd        2026-04-22 15:26:15</code></pre>
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e 2 B        elea       zstd        2026-04-22 15:27:25</code></pre>
 </div>
 </div>
 <div class="cell">

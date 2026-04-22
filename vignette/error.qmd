@@ -12,8 +12,9 @@ execute:
 library(dvs)
 library(here)
 
-# Print tibbles wide so all columns appear on one row
-options(width = 1000)
+# Print tibbles wide so all columns appear on one row.
+# options(width = Inf) is rejected by base R (max 10000); 10000 is the ceiling.
+options(width = 10000)
 ```
 
 Create a temporary storage directory and project root, then expose them to the
