@@ -1,0 +1,502 @@
+---
+title: "dvs Error Reference"
+subtitle: "every error dvs can raise, shown side-by-side for R and the CLI"
+format: html
+execute:
+  freeze: auto
+---
+
+# Setup
+
+```{r}
+library(dvs)
+library(here)
+
+# Print tibbles wide so all columns appear on one row.
+# options(width = Inf) is rejected by base R (max 10000); 10000 is the ceiling.
+options(width = 10000)
+```
+
+Create a temporary storage directory and project root, then expose them to the
+shell so the bash chunks below can use `$DVS_PROJECT` and `$DVS_STORAGE`.
+
+```{r}
+storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
+
+dir.create(storage)
+dir.create(new_project)
+
+# Make it a git repo so dvs can find the project root
+system2("git", c("init", new_project), stdout = FALSE, stderr = FALSE)
+
+Sys.setenv(DVS_PROJECT = new_project, DVS_STORAGE = storage)
+```
+
+# `init` errors
+
+## Storage path is inside the repository
+
+Passing a storage path that resolves to a subdirectory of the project root is
+rejected — dvs refuses to version-control its own blob store.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_init(storage_path = file.path(new_project, "inside_storage"),
+         root_dir     = new_project)
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs init "$DVS_PROJECT/inside_storage"
+```
+
+## Project already initialised — `dvs.toml` exists
+
+Once `dvs.toml` is present a second `init` call fails immediately.
+
+```{r}
+#| error: true
+# First init succeeds
+setwd(new_project)
+dvs_init(storage_path = storage, root_dir = new_project)
+
+# Second init fails
+dvs_init(storage_path = storage, root_dir = new_project)
+```
+
+```{bash}
+#| error: true
+# dvs.toml already created by the R chunk above
+cd "$DVS_PROJECT"
+dvs init "$DVS_STORAGE"
+```
+
+## Backend storage already exists
+
+If `dvs.toml` is deleted but the storage directory still contains a previous
+backend layout, re-running init refuses rather than silently reusing the
+backend.
+
+```{r}
+#| error: true
+# Use fresh temp dirs so we don't disrupt the main demo project
+bse_storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+bse_project <- tempfile(fileext = "_project", tmpdir = here::here())
+dir.create(bse_storage); dir.create(bse_project)
+system2("git", c("init", bse_project), stdout = FALSE, stderr = FALSE)
+
+setwd(bse_project)
+dvs_init(storage_path = bse_storage, root_dir = bse_project)
+
+# Remove dvs.toml but leave the storage intact
+file.remove(file.path(bse_project, "dvs.toml"))
+
+# Second init detects the existing backend
+dvs_init(storage_path = bse_storage, root_dir = bse_project)
+```
+
+```{bash}
+#| error: true
+BSE_STORAGE=$(mktemp -d)
+BSE_PROJECT=$(mktemp -d)
+git -C "$BSE_PROJECT" init -q
+cd "$BSE_PROJECT"
+dvs init "$BSE_STORAGE" > /dev/null
+rm dvs.toml
+dvs init "$BSE_STORAGE"
+rm -rf "$BSE_STORAGE" "$BSE_PROJECT"
+```
+
+# `add` errors
+
+## Not inside a DVS project
+
+Calling `dvs_add` / `dvs add` from a directory that has no `dvs.toml` anywhere
+in its ancestor chain fails before touching the filesystem.
+
+```{r}
+#| error: true
+outside <- tempfile(tmpdir = here::here())
+dir.create(outside)
+setwd(outside)
+
+dvs_add(paths = "anything.csv")
+```
+
+```{bash}
+#| error: true
+OUTSIDE=$(mktemp -d)
+cd "$OUTSIDE"
+dvs add anything.csv
+rm -rf "$OUTSIDE"
+```
+
+## No files to add — empty glob
+
+A glob pattern that matches no files raises in the R package; the CLI prints
+`No files to add` and exits 0.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_add(glob = "data/*.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs add --glob "data/*.csv"
+```
+
+## Path not found
+
+Passing an explicit path that doesn't exist on disk aborts before any files
+are processed — neither surface does partial work.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_add(paths = "nonexistent_file.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs add nonexistent_file.csv
+```
+
+## Path resolves to a directory (no glob)
+
+Passing a bare directory name with no glob matches no files. The R package
+raises, the CLI prints `No files to add` and exits 0 — mild surface
+divergence.
+
+```{r}
+#| error: true
+setwd(new_project)
+dir.create(file.path(new_project, "mydir"), showWarnings = FALSE)
+dvs_add(paths = "mydir")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+mkdir -p mydir
+dvs add mydir
+```
+
+## Path is outside the project root
+
+You're inside the project but ask dvs to track a file that lives elsewhere on
+disk, by absolute path. R returns a 2-column tibble — `path` + `error` — with
+the failure recorded as a row rather than an R-level condition.
+
+```{r}
+#| error: true
+setwd(new_project)
+outside_file <- tempfile(fileext = ".csv")
+writeLines("a,b,c", outside_file)
+res <- dvs_add(paths = outside_file)
+res |> print(width = Inf, n = Inf)
+```
+
+Inspect the result columns directly — `path` is the offending path, `error`
+is a plain character string:
+
+```{r}
+str(res)
+res$path
+res$error
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+OUTSIDE_FILE=$(mktemp -t dvs_outside).csv
+echo "a,b,c" > "$OUTSIDE_FILE"
+dvs add "$OUTSIDE_FILE"
+rm -f "$OUTSIDE_FILE"
+```
+
+## Mixed paths: one exists, one does not
+
+When only some paths exist, both surfaces abort at the first missing path —
+no partial add.
+
+```{r}
+#| error: true
+setwd(new_project)
+writeLines("x", file.path(new_project, "present.csv"))
+dvs_add(paths = c("present.csv", "missing.csv"))
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+echo "x" > present.csv
+dvs add present.csv missing.csv
+```
+
+# `status` errors
+
+## Not inside a DVS project
+
+`dvs_status` / `dvs status` require a `dvs.toml` in the ancestor tree.
+
+```{r}
+#| error: true
+outside2 <- tempfile(tmpdir = here::here())
+dir.create(outside2)
+setwd(outside2)
+dvs_status()
+```
+
+```{bash}
+#| error: true
+OUTSIDE2=$(mktemp -d)
+cd "$OUTSIDE2"
+dvs status
+rm -rf "$OUTSIDE2"
+```
+
+## Path outside the project root
+
+Unlike `add`, an absolute path outside the project does **not** produce an
+error for `status` — the path just doesn't match anything tracked and you
+get the empty-set response.
+
+```{r}
+#| error: true
+setwd(new_project)
+outside_status <- tempfile(fileext = ".csv")
+writeLines("a,b,c", outside_status)
+dvs_status(paths = outside_status) |> print(width = Inf, n = Inf)
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+OUTSIDE_S=$(mktemp -t dvs_outside_s).csv
+echo "a,b,c" > "$OUTSIDE_S"
+dvs status "$OUTSIDE_S"
+rm -f "$OUTSIDE_S"
+```
+
+## Mixed paths: one tracked, one does not exist
+
+Unlike `add`, `status` quietly drops paths it can't match — you get a tibble
+with only the tracked path and no error or warning about the missing one.
+
+```{r}
+#| error: true
+setwd(new_project)
+# Track one real file so we have something to match against
+writeLines("x", file.path(new_project, "present.csv"))
+dvs_add(paths = "present.csv")
+
+dvs_status(paths = c("present.csv", "missing.csv")) |>
+  print(width = Inf, n = Inf)
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs status present.csv missing.csv
+```
+
+## Unparseable meta file
+
+If a `.dvs` metadata file is corrupted (non-JSON content), the parse error
+surfaces as a per-file row in the result rather than a top-level abort — the
+rest of the tree still resolves.
+
+```{r}
+#| error: true
+# Fresh project so we can corrupt one meta file without affecting the rest
+ump_storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+ump_project <- tempfile(fileext = "_project", tmpdir = here::here())
+dir.create(ump_storage); dir.create(ump_project)
+system2("git", c("init", ump_project), stdout = FALSE, stderr = FALSE)
+
+setwd(ump_project)
+dvs_init(storage_path = ump_storage, root_dir = ump_project)
+writeLines("x", file.path(ump_project, "corrupt.csv"))
+dvs_add(paths = "corrupt.csv")
+
+# Corrupt the meta file
+writeLines("garbage", file.path(ump_project, ".dvs", "corrupt.csv.dvs"))
+
+dvs_status() |> print(width = Inf, n = Inf)
+
+Sys.setenv(UMP_PROJECT = ump_project)
+```
+
+```{bash}
+#| error: true
+cd "$UMP_PROJECT"
+dvs status
+```
+
+# `get` errors
+
+## Not inside a DVS project
+
+```{r}
+#| error: true
+outside3 <- tempfile(tmpdir = here::here())
+dir.create(outside3)
+setwd(outside3)
+dvs_get(paths = "something.csv")
+```
+
+```{bash}
+#| error: true
+OUTSIDE3=$(mktemp -d)
+cd "$OUTSIDE3"
+dvs get something.csv
+rm -rf "$OUTSIDE3"
+```
+
+## No files to get — empty glob
+
+When the glob resolves to zero tracked files, `dvs get` aborts.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_get(glob = "data/nope_*.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs get --glob "data/nope_*.csv"
+```
+
+## File is not tracked by DVS
+
+Requesting a file that exists on disk but has never been `dvs add`-ed.
+
+```{r}
+#| error: true
+setwd(new_project)
+writeLines("col1,col2", file.path(new_project, "untracked.csv"))
+dvs_get(paths = "untracked.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+echo "col1,col2" > untracked.csv
+dvs get untracked.csv
+```
+
+## File is not found at all
+
+Requesting a path that neither exists on disk nor has metadata.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_get(paths = "ghost.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs get ghost.csv
+```
+
+## Storage blob missing for tracked file
+
+The metadata `.dvs` file exists but the corresponding blob has been deleted
+from storage — simulating a corrupted or partially-synced store.
+
+```{r}
+#| error: true
+# Use a fresh project; the main demo project still has live state we don't
+# want to wreck for downstream chunks.
+bm_storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+bm_project <- tempfile(fileext = "_project", tmpdir = here::here())
+dir.create(bm_storage); dir.create(bm_project)
+system2("git", c("init", bm_project), stdout = FALSE, stderr = FALSE)
+
+setwd(bm_project)
+dvs_init(storage_path = bm_storage, root_dir = bm_project)
+writeLines("x,y,z", file.path(bm_project, "tracked.csv"))
+dvs_add(paths = "tracked.csv")
+
+# Remove the local copy and delete every blob from storage
+file.remove(file.path(bm_project, "tracked.csv"))
+blob_files <- list.files(bm_storage, recursive = TRUE, full.names = TRUE)
+invisible(file.remove(blob_files[!grepl("audit", blob_files)]))
+
+dvs_get(paths = "tracked.csv") |> print(width = Inf, n = Inf)
+
+Sys.setenv(BM_PROJECT = bm_project)
+```
+
+```{bash}
+#| error: true
+cd "$BM_PROJECT"
+dvs get tracked.csv
+```
+
+## Retrieved file does not match expected hash
+
+The blob exists and decompresses successfully, but its content hashes to
+something other than the hash recorded in the meta file. Simulates
+content-level corruption of the blob.
+
+```{r}
+#| error: true
+# Fresh project + storage
+hm_storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+hm_project <- tempfile(fileext = "_project", tmpdir = here::here())
+dir.create(hm_storage); dir.create(hm_project)
+system2("git", c("init", hm_project), stdout = FALSE, stderr = FALSE)
+
+setwd(hm_project)
+dvs_init(storage_path = hm_storage, root_dir = hm_project)
+writeLines("original", file.path(hm_project, "tampered.csv"))
+dvs_add(paths = "tampered.csv")
+
+# Replace the stored blob with zstd-compressed different content under the
+# same filename (so the hash-keyed path resolves, but the decompressed bytes
+# no longer match the recorded hash).
+blob <- list.files(hm_storage, recursive = TRUE, full.names = TRUE)
+blob <- blob[!grepl("audit", blob)]
+Sys.chmod(blob, mode = "0644")
+# zstd -q reads stdin and writes compressed bytes to stdout
+system2("bash", c("-c",
+                  sprintf("printf 'DIFFERENT BYTES' | zstd -q > %s",
+                          shQuote(blob))))
+
+# Remove local file so get actually goes to storage
+file.remove(file.path(hm_project, "tampered.csv"))
+
+dvs_get(paths = "tampered.csv") |> print(width = Inf, n = Inf)
+
+Sys.setenv(HM_PROJECT = hm_project)
+```
+
+```{bash}
+#| error: true
+cd "$HM_PROJECT"
+dvs get tampered.csv
+```
+
+# Cleanup
+
+```{r}
+setwd(here::here())
+unlink(new_project, recursive = TRUE)
+unlink(storage,     recursive = TRUE)
+for (d in c("bse_project", "bse_storage", "ump_project", "ump_storage",
+            "bm_project", "bm_storage", "hm_project", "hm_storage")) {
+  if (exists(d)) unlink(get(d), recursive = TRUE)
+}
+```

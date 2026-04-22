@@ -20,6 +20,7 @@ tracks them through small, text-based meta files that live alongside your code.
 | [Collaboration](collab.html) | Two projects sharing one storage; what to commit vs gitignore |
 | [Configuration](config.html) | `dvs.toml` fields, compression tradeoffs, threads, custom folder names |
 | [Audit log](audit.html) | Parsing and querying `audit.log.jsonl` with purrr + dplyr |
+| [Errors](error.html) | Every error `dvs` raises, R and CLI side-by-side |
 | [Random files](random_files.html) | `mkdatasetfiles()` helper used throughout these vignettes |
 
 <!-- ## Roadmap / Current limitations
