@@ -2465,32 +2465,29 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </section>
 <section id="path-is-outside-the-project-root" class="level2">
 <h2 class="anchored" data-anchor-id="path-is-outside-the-project-root">Path is outside the project root</h2>
-<p>An explicit path that canonicalises to a location above (or beside) the project root is rejected with a per-file error.</p>
+<p>You’re inside the project but ask dvs to track a file that lives somewhere else on disk — by absolute path, or by a relative path that escapes the project root. Both are rejected with a per-file error.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>outside_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>)</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;a,b,c&quot;</span>, outside_file)</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Use a relative path that escapes the project root</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>rel_outside <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">&quot;..&quot;</span>, <span class="fu">basename</span>(outside_file))</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> rel_outside)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `dvs_add_impl()`:
-! Path not found: ../file11eab273319bd.csv</code></pre>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Absolute path to a file outside the project</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> outside_file)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  path                                                                     error
+  &lt;chr&gt;                                                                    &lt;chr&gt;
+1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpauG2Qn/file153591… path…</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="va">OUTSIDE_FILE</span><span class="op">=</span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">--suffix</span><span class="op">=</span>.csv<span class="va">)</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="va">OUTSIDE_FILE</span><span class="op">=</span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-t</span> dvs_outside<span class="va">)</span>.csv</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;a,b,c&quot;</span> <span class="op">&gt;</span> <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>mktemp: unrecognized option `--suffix=.csv&#39;
-usage: mktemp [-d] [-p tmpdir] [-q] [-t prefix] [-u] template ...
-       mktemp [-d] [-p tmpdir] [-q] [-u] -t prefix 
-bash: line 3: : No such file or directory
-error: a value is required for &#39;[PATHS]...&#39; but none was supplied
-
-For more information, try &#39;--help&#39;.</code></pre>
+<pre><code>Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.qTRhH0G9mF.csv: path is outside project
+Some files failed to add</code></pre>
 </div>
 </div>
 </section>
@@ -2528,6 +2525,29 @@ For more information, try &#39;--help&#39;.</code></pre>
 </div>
 </div>
 </section>
+<section id="path-outside-the-project-root" class="level2">
+<h2 class="anchored" data-anchor-id="path-outside-the-project-root">Path outside the project root</h2>
+<p>Unlike <code>add</code>, querying status for an absolute path outside the project does <strong>not</strong> raise a path-outside-project error — the path simply doesn’t match anything tracked, so you get the empty-set response instead. The same is true for <code>get</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>outside_status <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;a,b,c&quot;</span>, outside_status)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">paths =</span> outside_status)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 0</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="va">OUTSIDE_S</span><span class="op">=</span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-t</span> dvs_outside_s<span class="va">)</span>.csv</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;a,b,c&quot;</span> <span class="op">&gt;</span> <span class="st">&quot;</span><span class="va">$OUTSIDE_S</span><span class="st">&quot;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="st">&quot;</span><span class="va">$OUTSIDE_S</span><span class="st">&quot;</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> <span class="st">&quot;</span><span class="va">$OUTSIDE_S</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No tracked files</code></pre>
+</div>
+</div>
+</section>
 <section id="errors-not-demonstrated-here-2" class="level2">
 <h2 class="anchored" data-anchor-id="errors-not-demonstrated-here-2">Errors not demonstrated here</h2>
 <ul>
@@ -2541,20 +2561,20 @@ For more information, try &#39;--help&#39;.</code></pre>
 <section id="not-inside-a-dvs-project-2" class="level2">
 <h2 class="anchored" data-anchor-id="not-inside-a-dvs-project-2">Not inside a DVS project</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>outside3 <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(outside3)</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(outside3)</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="st">&quot;something.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>outside3 <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(outside3)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(outside3)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="st">&quot;something.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `dvs_get_impl()`:
 ! Not in a DVS repository</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="va">OUTSIDE3</span><span class="op">=</span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-d</span><span class="va">)</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$OUTSIDE3</span><span class="st">&quot;</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get something.csv</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> <span class="st">&quot;</span><span class="va">$OUTSIDE3</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="va">OUTSIDE3</span><span class="op">=</span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-d</span><span class="va">)</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$OUTSIDE3</span><span class="st">&quot;</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get something.csv</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> <span class="st">&quot;</span><span class="va">$OUTSIDE3</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Not in a DVS repository</code></pre>
 </div>
@@ -2564,17 +2584,17 @@ For more information, try &#39;--help&#39;.</code></pre>
 <h2 class="anchored" data-anchor-id="no-files-to-get-empty-glob">No files to get — empty glob</h2>
 <p>When the glob resolves to zero tracked files, <code>dvs get</code> aborts.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="co"># No files have been added yet under data/; glob matches nothing in metadata</span></span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">glob =</span> <span class="st">&quot;data/nope_*.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="co"># No files have been added yet under data/; glob matches nothing in metadata</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">glob =</span> <span class="st">&quot;data/nope_*.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `dvs_get_impl()`:
 ! No files to get</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get <span class="at">--glob</span> <span class="st">&quot;data/nope_*.csv&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get <span class="at">--glob</span> <span class="st">&quot;data/nope_*.csv&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>No files to get</code></pre>
 </div>
@@ -2584,18 +2604,18 @@ For more information, try &#39;--help&#39;.</code></pre>
 <h2 class="anchored" data-anchor-id="file-is-not-tracked-by-dvs">File is not tracked by DVS</h2>
 <p>Requesting a file that exists on disk but has never been <code>dvs add</code>-ed.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;col1,col2&quot;</span>, <span class="fu">file.path</span>(new_project, <span class="st">&quot;untracked.csv&quot;</span>))</span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="st">&quot;untracked.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;col1,col2&quot;</span>, <span class="fu">file.path</span>(new_project, <span class="st">&quot;untracked.csv&quot;</span>))</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="st">&quot;untracked.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `dvs_get_impl()`:
 ! No files to get</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;col1,col2&quot;</span> <span class="op">&gt;</span> untracked.csv</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get untracked.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;col1,col2&quot;</span> <span class="op">&gt;</span> untracked.csv</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get untracked.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>No files to get</code></pre>
 </div>
@@ -2605,16 +2625,16 @@ For more information, try &#39;--help&#39;.</code></pre>
 <h2 class="anchored" data-anchor-id="file-is-not-found-at-all">File is not found at all</h2>
 <p>Requesting a path that neither exists on disk nor has metadata.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="st">&quot;ghost.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="st">&quot;ghost.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `dvs_get_impl()`:
 ! No files to get</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get ghost.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get ghost.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>No files to get</code></pre>
 </div>
@@ -2624,30 +2644,30 @@ For more information, try &#39;--help&#39;.</code></pre>
 <h2 class="anchored" data-anchor-id="storage-blob-missing-for-tracked-file">Storage blob missing for tracked file</h2>
 <p>The metadata <code>.dvs</code> file exists but the corresponding blob has been deleted from storage — simulating a corrupted or partially-synced store.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a real file so we have metadata</span></span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;x,y,z&quot;</span>, <span class="fu">file.path</span>(new_project, <span class="st">&quot;tracked.csv&quot;</span>))</span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> <span class="st">&quot;tracked.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a real file so we have metadata</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;x,y,z&quot;</span>, <span class="fu">file.path</span>(new_project, <span class="st">&quot;tracked.csv&quot;</span>))</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> <span class="st">&quot;tracked.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 5
   path        outcome hash                                     size  stored_size
   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                                    &lt;dvs&gt; &lt;dvs_byts&gt; 
 1 tracked.csv copied  1357bc0161e229426dd1fba64a6adfd193f6676… 6 B   15 B       </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the local copy so get actually attempts a retrieve</span></span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="fu">file.path</span>(new_project, <span class="st">&quot;tracked.csv&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the local copy so get actually attempts a retrieve</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="fu">file.path</span>(new_project, <span class="st">&quot;tracked.csv&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Delete every blob from storage so the retrieve has nothing to copy</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>blob_dirs <span class="ot">&lt;-</span> <span class="fu">list.dirs</span>(storage, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>blob_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(storage, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>blob_files <span class="ot">&lt;-</span> blob_files[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;audit&quot;</span>, blob_files)]</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">file.remove</span>(blob_files))</span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Now get should fail: metadata exists but blob is gone</span></span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="st">&quot;tracked.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Delete every blob from storage so the retrieve has nothing to copy</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>blob_dirs <span class="ot">&lt;-</span> <span class="fu">list.dirs</span>(storage, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>blob_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(storage, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>blob_files <span class="ot">&lt;-</span> blob_files[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;audit&quot;</span>, blob_files)]</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">file.remove</span>(blob_files))</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Now get should fail: metadata exists but blob is gone</span></span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="st">&quot;tracked.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 2
   path        error                                                             
@@ -2656,9 +2676,9 @@ For more information, try &#39;--help&#39;.</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tracked.csv was deleted and its blob removed by the R chunk above</span></span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get tracked.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tracked.csv was deleted and its blob removed by the R chunk above</span></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get tracked.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Error: tracked.csv - Storage file missing for hash: Hashes(blake3=1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a)
 Some files failed to get</code></pre>
@@ -2676,9 +2696,9 @@ Some files failed to get</code></pre>
 <section id="cleanup" class="level1">
 <h1>Cleanup</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>())</span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(new_project, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(storage,     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>())</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(new_project, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(storage,     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 

@@ -155,25 +155,26 @@ dvs add mydir
 
 ## Path is outside the project root
 
-An explicit path that canonicalises to a location above (or beside) the project
-root is rejected with a per-file error.
+You're inside the project but ask dvs to track a file that lives somewhere
+else on disk — by absolute path, or by a relative path that escapes the
+project root. Both are rejected with a per-file error.
 
 ```{r}
 #| error: true
 setwd(new_project)
 outside_file <- tempfile(fileext = ".csv")
 writeLines("a,b,c", outside_file)
-# Use a relative path that escapes the project root
-rel_outside <- file.path("..", basename(outside_file))
-dvs_add(paths = rel_outside)
+# Absolute path to a file outside the project
+dvs_add(paths = outside_file)
 ```
 
 ```{bash}
 #| error: true
 cd "$DVS_PROJECT"
-OUTSIDE_FILE=$(mktemp --suffix=.csv)
+OUTSIDE_FILE=$(mktemp -t dvs_outside).csv
 echo "a,b,c" > "$OUTSIDE_FILE"
 dvs add "$OUTSIDE_FILE"
+rm -f "$OUTSIDE_FILE"
 ```
 
 ## Errors not demonstrated here
@@ -203,6 +204,30 @@ OUTSIDE2=$(mktemp -d)
 cd "$OUTSIDE2"
 dvs status
 rm -rf "$OUTSIDE2"
+```
+
+## Path outside the project root
+
+Unlike `add`, querying status for an absolute path outside the project does
+**not** raise a path-outside-project error — the path simply doesn't match
+anything tracked, so you get the empty-set response instead. The same is
+true for `get`.
+
+```{r}
+#| error: true
+setwd(new_project)
+outside_status <- tempfile(fileext = ".csv")
+writeLines("a,b,c", outside_status)
+dvs_status(paths = outside_status)
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+OUTSIDE_S=$(mktemp -t dvs_outside_s).csv
+echo "a,b,c" > "$OUTSIDE_S"
+dvs status "$OUTSIDE_S"
+rm -f "$OUTSIDE_S"
 ```
 
 ## Errors not demonstrated here
