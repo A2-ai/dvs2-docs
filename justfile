@@ -13,6 +13,7 @@ render:
     quarto render vignette/collab.qmd
     quarto render vignette/config.qmd
     quarto render vignette/audit.qmd
+    quarto render vignette/error.qmd
     quarto render vignette/random_files.qmd
     quarto render vignette/setup.qmd
     quarto render vignette/splash.qmd
@@ -27,7 +28,7 @@ preview NAME:
 
 # Open all rendered HTMLs
 open:
-    open vignette/index.html vignette/intro.html vignette/intro-cli.html vignette/intro-internals.html vignette/lifecycle.html vignette/collab.html vignette/config.html vignette/audit.html vignette/random_files.html vignette/setup.html vignette/splash.html
+    open vignette/index.html vignette/intro.html vignette/intro-cli.html vignette/intro-internals.html vignette/lifecycle.html vignette/collab.html vignette/config.html vignette/audit.html vignette/error.html vignette/random_files.html vignette/setup.html vignette/splash.html
 
 # Publish all rendered vignettes to alx.dev.a2-ai.cloud (dvs2-demo project)
 publish:
@@ -39,6 +40,7 @@ publish:
     alx publish vignette/collab.html         -S vignette/collab.qmd         -S R/mkdatasetfiles.R   -t collab         --overwrite --skip-warnings --no-prompt
     alx publish vignette/config.html         -S vignette/config.qmd         -S R/mkdatasetfiles.R   -t config         --overwrite --skip-warnings --no-prompt
     alx publish vignette/audit.html          -S vignette/audit.qmd          -S R/mkdatasetfiles.R   -t audit          --overwrite --skip-warnings --no-prompt
+    alx publish vignette/error.html          -S vignette/error.qmd                                  -t error          --overwrite --skip-warnings --no-prompt
     alx publish vignette/random_files.html   -S vignette/random_files.qmd   -S R/mkdatasetfiles.R   -t random_files   --overwrite --skip-warnings --no-prompt
     alx publish vignette/setup.html          -S vignette/setup.qmd                                  -t setup          --overwrite --skip-warnings --no-prompt
     alx publish vignette/splash.html         -S vignette/splash.qmd         -S vignette/splash.scss   -t splash         --overwrite --skip-warnings --no-prompt

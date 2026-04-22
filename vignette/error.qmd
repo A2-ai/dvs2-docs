@@ -1,0 +1,330 @@
+---
+title: "dvs Error Reference"
+subtitle: "every error dvs can raise, shown side-by-side for R and the CLI"
+format: html
+execute:
+  freeze: auto
+---
+
+# Setup
+
+```{r}
+library(dvs)
+library(here)
+```
+
+Create a temporary storage directory and project root, then expose them to the
+shell so the bash chunks below can use `$DVS_PROJECT` and `$DVS_STORAGE`.
+
+```{r}
+storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
+
+dir.create(storage)
+dir.create(new_project)
+
+# Make it a git repo so dvs can find the project root
+system2("git", c("init", new_project), stdout = FALSE, stderr = FALSE)
+
+Sys.setenv(DVS_PROJECT = new_project, DVS_STORAGE = storage)
+```
+
+# `init` errors
+
+## Storage path is inside the repository
+
+Passing a storage path that resolves to a subdirectory of the project root is
+rejected — dvs refuses to version-control its own blob store.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_init(storage_path = file.path(new_project, "inside_storage"),
+         root_dir     = new_project)
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs init "$DVS_PROJECT/inside_storage"
+```
+
+## Project already initialised — `dvs.toml` exists
+
+Once `dvs.toml` is present a second `init` call fails immediately.
+
+```{r}
+#| error: true
+# First init succeeds
+setwd(new_project)
+dvs_init(storage_path = storage, root_dir = new_project)
+
+# Second init fails
+dvs_init(storage_path = storage, root_dir = new_project)
+```
+
+```{bash}
+#| error: true
+# dvs.toml already created by the R chunk above
+cd "$DVS_PROJECT"
+dvs init "$DVS_STORAGE"
+```
+
+## Errors not demonstrated here
+
+- **Backend storage already exists** (`dvs is already initialized (backend storage exists)`): triggered by removing `dvs.toml` and `.dvs/` while leaving the storage directory intact, then re-running init. Requires filesystem surgery; straightforward to contrive but not illuminating.
+
+---
+
+# `add` errors
+
+## Not inside a DVS project
+
+Calling `dvs_add` / `dvs add` from a directory that has no `dvs.toml` anywhere
+in its ancestor chain fails before touching the filesystem.
+
+```{r}
+#| error: true
+# Use a fresh temp dir with no dvs.toml
+outside <- tempfile(tmpdir = here::here())
+dir.create(outside)
+setwd(outside)
+
+dvs_add(paths = "anything.csv")
+```
+
+```{bash}
+#| error: true
+OUTSIDE=$(mktemp -d)
+cd "$OUTSIDE"
+dvs add anything.csv
+rm -rf "$OUTSIDE"
+```
+
+## No files to add — empty glob
+
+A glob pattern that matches no files returns an empty set; dvs raises an error
+rather than silently doing nothing.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_add(glob = "data/*.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs add --glob "data/*.csv"
+```
+
+## File does not exist
+
+Requesting a specific path that is not present on disk is a per-file error;
+the overall command exits non-zero.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_add(paths = "nonexistent_file.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs add nonexistent_file.csv
+```
+
+## Path resolves to a directory, not a file
+
+Passing a plain directory name (without a glob) is rejected.
+
+```{r}
+#| error: true
+setwd(new_project)
+dir.create(file.path(new_project, "mydir"), showWarnings = FALSE)
+dvs_add(paths = "mydir")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+mkdir -p mydir
+dvs add mydir
+```
+
+## Path is outside the project root
+
+An explicit path that canonicalises to a location above (or beside) the project
+root is rejected with a per-file error.
+
+```{r}
+#| error: true
+setwd(new_project)
+outside_file <- tempfile(fileext = ".csv")
+writeLines("a,b,c", outside_file)
+# Use a relative path that escapes the project root
+rel_outside <- file.path("..", basename(outside_file))
+dvs_add(paths = rel_outside)
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+OUTSIDE_FILE=$(mktemp --suffix=.csv)
+echo "a,b,c" > "$OUTSIDE_FILE"
+dvs add "$OUTSIDE_FILE"
+```
+
+## Errors not demonstrated here
+
+- **Path not found during glob resolution** (`Path not found: <path>`): fired by `resolve_paths_for_add` when an explicit path argument does not exist on disk at all (distinct from a valid-but-untracked path). The "file does not exist" demo above exercises the post-resolution `file not found` variant; the pre-resolution path is harder to distinguish at the R / shell surface level.
+- **Failed to resolve path** (symlink / IO error): requires a broken symlink or unavailable mount; environment-specific.
+
+---
+
+# `status` errors
+
+## Not inside a DVS project
+
+`dvs_status` / `dvs status` require a `dvs.toml` in the ancestor tree.
+
+```{r}
+#| error: true
+outside2 <- tempfile(tmpdir = here::here())
+dir.create(outside2)
+setwd(outside2)
+dvs_status()
+```
+
+```{bash}
+#| error: true
+OUTSIDE2=$(mktemp -d)
+cd "$OUTSIDE2"
+dvs status
+rm -rf "$OUTSIDE2"
+```
+
+## Errors not demonstrated here
+
+- **Unparseable meta file** (`error: failed to determine relative path` / serde JSON error): requires manually corrupting a `.dvs` metadata file. The error surfaces as a per-file `StatusDetail::Error` row rather than a top-level abort.
+
+---
+
+# `get` errors
+
+## Not inside a DVS project
+
+```{r}
+#| error: true
+outside3 <- tempfile(tmpdir = here::here())
+dir.create(outside3)
+setwd(outside3)
+dvs_get(paths = "something.csv")
+```
+
+```{bash}
+#| error: true
+OUTSIDE3=$(mktemp -d)
+cd "$OUTSIDE3"
+dvs get something.csv
+rm -rf "$OUTSIDE3"
+```
+
+## No files to get — empty glob
+
+When the glob resolves to zero tracked files, `dvs get` aborts.
+
+```{r}
+#| error: true
+setwd(new_project)
+# No files have been added yet under data/; glob matches nothing in metadata
+dvs_get(glob = "data/nope_*.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs get --glob "data/nope_*.csv"
+```
+
+## File is not tracked by DVS
+
+Requesting a file that exists on disk but has never been `dvs add`-ed.
+
+```{r}
+#| error: true
+setwd(new_project)
+writeLines("col1,col2", file.path(new_project, "untracked.csv"))
+dvs_get(paths = "untracked.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+echo "col1,col2" > untracked.csv
+dvs get untracked.csv
+```
+
+## File is not found at all
+
+Requesting a path that neither exists on disk nor has metadata.
+
+```{r}
+#| error: true
+setwd(new_project)
+dvs_get(paths = "ghost.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs get ghost.csv
+```
+
+## Storage blob missing for tracked file
+
+The metadata `.dvs` file exists but the corresponding blob has been deleted
+from storage — simulating a corrupted or partially-synced store.
+
+```{r}
+#| error: true
+setwd(new_project)
+
+# Add a real file so we have metadata
+writeLines("x,y,z", file.path(new_project, "tracked.csv"))
+dvs_add(paths = "tracked.csv")
+
+# Remove the local copy so get actually attempts a retrieve
+file.remove(file.path(new_project, "tracked.csv"))
+
+# Delete every blob from storage so the retrieve has nothing to copy
+blob_dirs <- list.dirs(storage, recursive = TRUE, full.names = TRUE)
+blob_files <- list.files(storage, recursive = TRUE, full.names = TRUE)
+blob_files <- blob_files[!grepl("audit", blob_files)]
+invisible(file.remove(blob_files))
+
+# Now get should fail: metadata exists but blob is gone
+dvs_get(paths = "tracked.csv")
+```
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+# tracked.csv was deleted and its blob removed by the R chunk above
+dvs get tracked.csv
+```
+
+## Errors not demonstrated here
+
+- **Retrieved file does not match expected hash** (`Retrieved file does not match expected hash`): requires writing a blob with corrupted content under the correct hash path, so decompression succeeds but the post-retrieve hash check fails. Needs direct filesystem manipulation of the content-addressed store.
+
+---
+
+# Cleanup
+
+```{r}
+setwd(here::here())
+unlink(new_project, recursive = TRUE)
+unlink(storage,     recursive = TRUE)
+```
