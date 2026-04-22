@@ -191,14 +191,25 @@ dvs add mydir
 ## Path is outside the project root
 
 You're inside the project but ask dvs to track a file that lives elsewhere on
-disk, by absolute path.
+disk, by absolute path. R returns a 2-column tibble — `path` + `error` — with
+the failure recorded as a row rather than an R-level condition.
 
 ```{r}
 #| error: true
 setwd(new_project)
 outside_file <- tempfile(fileext = ".csv")
 writeLines("a,b,c", outside_file)
-dvs_add(paths = outside_file)
+res <- dvs_add(paths = outside_file)
+res |> print(width = Inf, n = Inf)
+```
+
+Inspect the result columns directly — `path` is the offending path, `error`
+is a plain character string:
+
+```{r}
+str(res)
+res$path
+res$error
 ```
 
 ```{bash}
