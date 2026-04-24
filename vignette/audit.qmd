@@ -22,24 +22,24 @@ source(here::here("R/mkdatasetfiles.R"))
 ```
 
 ```{r}
-storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
-new_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(storage)
-dir.create(new_project)
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
 ```
 
 Run a sequence of dvs operations to populate the log:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 mkdatasetfiles(n_files = 3, size_mb = 2, prefix = "file_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(storage)
+dvs_init(here::here(storage))
 ```
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 invisible(dvs_add("data/file_1.csv", message = "initial add of file 1"))
 invisible(dvs_add("data/file_2.csv", message = "initial add of file 2"))
 invisible(dvs_add("data/file_3.csv", message = "initial add of file 3"))
@@ -49,7 +49,7 @@ Simulate a restore (get):
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 unlink("data/file_1.csv")
 dvs_get("data/file_1.csv")
 ```
@@ -58,7 +58,7 @@ Modify `file_2.csv` and re-add:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 cat("99,0,0,0,0,0\n", file = "data/file_2.csv", append = TRUE)
 invisible(dvs_add("data/file_2.csv", message = "updated file 2 — added row 99"))
 ```
@@ -69,7 +69,7 @@ The audit log is a newline-delimited JSON file (`audit.log.jsonl`) in the
 storage directory. Each line is one operation:
 
 ```{r}
-audit_path <- fs::path(storage, "audit.log.jsonl")
+audit_path <- here::here(storage, "audit.log.jsonl")
 ```
 
 Raw file — one JSON object per line:
@@ -166,8 +166,8 @@ audit_tbl |>
 # Cleanup
 
 ```{r}
-unlink(new_project, recursive = TRUE)
-unlink(storage,     recursive = TRUE)
+unlink(here::here(new_project), recursive = TRUE)
+unlink(here::here(storage),     recursive = TRUE)
 ```
 
 ---

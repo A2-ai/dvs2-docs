@@ -29,15 +29,15 @@ source(here::here("R/mkdatasetfiles.R"))
 
 
 ```{r}
-storage <- tempfile(fileext = "_storage", tmpdir = here::here())
-new_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(storage)
-dir.create(new_project)
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
 ```
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
@@ -46,9 +46,9 @@ mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/i
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
-dvs_init(storage, compression = "none")
+dvs_init(here::here(storage), compression = "none")
 
 dvs_add("data/large/large_1.csv", message = "add one large dataset")
 dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "add small corpus datasets")
@@ -61,14 +61,14 @@ dvs_add(glob = "data/individual/individual_*.csv", message = "add individual dat
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
   dplyr::filter(!grepl("\\.git", path)) |>
@@ -77,7 +77,7 @@ fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
   dplyr::filter(!grepl("\\.git", path)) |>
@@ -91,7 +91,7 @@ Each tracked data file has a `.dvs` meta file under `.dvs/`, mirroring the data 
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 meta_files <- fs::dir_ls(".dvs", recurse = TRUE, all = TRUE, glob = "*.dvs", type = "file")
 meta_files <- meta_files[!grepl("\\.git", meta_files)]
@@ -102,7 +102,7 @@ Contents of the meta file for `data/large/large_1.csv`:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 large_meta <- grep("large_1", meta_files, value = TRUE)
 large_meta
@@ -111,7 +111,7 @@ large_meta
 ```{r}
 #| results: asis
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 cat("```json\n")
 cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
 cat("\n```\n")
@@ -119,7 +119,7 @@ cat("\n```\n")
 # Storage internals
 
 ```{r}
-fs::dir_tree(storage, all = TRUE, regexp = "\\.git", invert = TRUE)
+fs::dir_tree(here::here(storage), all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 
 
@@ -130,7 +130,7 @@ The audit log lives in the storage directory as `audit.log.jsonl`.
 ```{r}
 #| warning: false
 
-audit <- fs::path(storage, "audit.log.jsonl")
+audit <- here::here(storage, "audit.log.jsonl")
 audit
 ```
 
@@ -148,13 +148,13 @@ cat("```\n")
 # Storage directory
 
 ```{r}
-fs::dir_tree(storage, all = TRUE, regexp = "\\.git", invert = TRUE)
+fs::dir_tree(here::here(storage), all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 
 ```{r}
-fs::dir_info(storage, recurse = TRUE, all = TRUE, type = "file") |>
+fs::dir_info(here::here(storage), recurse = TRUE, all = TRUE, type = "file") |>
   dplyr::filter(!grepl("\\.git", path)) |>
-  dplyr::mutate(subdir = path |> fs::path_dir() |> fs::path_rel(storage)) |>
+  dplyr::mutate(subdir = path |> fs::path_dir() |> fs::path_rel(here::here(storage))) |>
   dplyr::reframe(n_files = dplyr::n(), size = sum(size), .by = subdir)
 ```
 
@@ -164,7 +164,7 @@ Pick up the blake3 hash from the meta file.
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 meta <- jsonlite::fromJSON(large_meta)
 meta
@@ -178,7 +178,7 @@ Blobs are split into `<first-2>/<rest>`:
 ```{r}
 #| warning: false
 
-large_blob <- fs::path(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
+large_blob <- here::here(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
 large_blob
 fs::file_exists(large_blob)
 ```
@@ -193,7 +193,7 @@ readLines(large_blob, n = 5)
 
 ```{r}
 readLines(
-  n = 5, fs::path(new_project, "data", "large", "large_1.csv")
+  n = 5, here::here(new_project, "data", "large", "large_1.csv")
 )
 ```
 
@@ -205,14 +205,14 @@ Meta files live under `.dvs/` at the same relative paths as the data files they 
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 fs::dir_tree("data", regexp = "\\.git", invert = TRUE)
 ```
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
@@ -220,8 +220,8 @@ fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 # Cleanup
 
 ```{r}
-unlink(new_project, recursive = TRUE)
-unlink(storage, recursive = TRUE)
+unlink(here::here(new_project), recursive = TRUE)
+unlink(here::here(storage),     recursive = TRUE)
 ```
 
 ---

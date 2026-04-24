@@ -41,26 +41,26 @@ source(here::here("R/mkdatasetfiles.R"))
 ```
 
 ```{r}
-shared_storage <- tempfile(fileext = "_storage",   tmpdir = here::here())
-project_a      <- tempfile(fileext = "_project_a", tmpdir = here::here())
-project_b      <- tempfile(fileext = "_project_b", tmpdir = here::here())
-dir.create(shared_storage)
-dir.create(project_a)
-dir.create(project_b)
+shared_storage <- basename(tempfile(fileext = "_storage"))
+project_a      <- basename(tempfile(fileext = "_project_a"))
+project_b      <- basename(tempfile(fileext = "_project_b"))
+dir.create(here::here(shared_storage))
+dir.create(here::here(project_a))
+dir.create(here::here(project_b))
 ```
 
 # User A — add data
 
 ```{r}
 #| warning: false
-setwd(project_a)
+setwd(here::here(project_a))
 mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 ```{r}
 #| warning: false
-setwd(project_a)
-dvs_init(shared_storage)
+setwd(here::here(project_a))
+dvs_init(here::here(shared_storage))
 invisible(dvs_add(paths = fs::dir_ls("data", type = "file"), message = "add small corpus v1"))
 dvs_status()
 ```
@@ -69,12 +69,12 @@ The `.dvs/` tree and `dvs.toml` are what user A would commit to git:
 
 ```{r}
 #| warning: false
-setwd(project_a)
+setwd(here::here(project_a))
 fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 
 ```{r}
-cat(readLines(fs::path(project_a, "dvs.toml")), sep = "\n")
+cat(readLines(here::here(project_a, "dvs.toml")), sep = "\n")
 ```
 
 # Simulate a git clone (User B)
@@ -84,15 +84,15 @@ but `data/` is gitignored so the CSV files are absent:
 
 ```{r}
 #| warning: false
-fs::file_copy(fs::path(project_a, "dvs.toml"), fs::path(project_b, "dvs.toml"))
-fs::dir_copy( fs::path(project_a, ".dvs"),     fs::path(project_b, ".dvs"))
+fs::file_copy(here::here(project_a, "dvs.toml"), here::here(project_b, "dvs.toml"))
+fs::dir_copy( here::here(project_a, ".dvs"),     here::here(project_b, ".dvs"))
 ```
 
 User B's project shows all files as `absent`:
 
 ```{r}
 #| warning: false
-setwd(project_b)
+setwd(here::here(project_b))
 dvs_status()
 ```
 
@@ -100,7 +100,7 @@ dvs_status()
 
 ```{r}
 #| warning: false
-setwd(project_b)
+setwd(here::here(project_b))
 dvs_get(glob = "data/*.csv")
 ```
 
@@ -108,7 +108,7 @@ All files are now `current`:
 
 ```{r}
 #| warning: false
-setwd(project_b)
+setwd(here::here(project_b))
 dvs_status()
 ```
 
@@ -116,8 +116,8 @@ Verify the content is byte-for-byte identical to what user A added:
 
 ```{r}
 #| warning: false
-files_a <- sort(fs::dir_ls(fs::path(project_a, "data"), type = "file"))
-files_b <- sort(fs::dir_ls(fs::path(project_b, "data"), type = "file"))
+files_a <- sort(fs::dir_ls(here::here(project_a, "data"), type = "file"))
+files_b <- sort(fs::dir_ls(here::here(project_b, "data"), type = "file"))
 
 identical(
   lapply(files_a, read.csv),
@@ -145,9 +145,9 @@ rv/library/
 # Cleanup
 
 ```{r}
-unlink(project_a,      recursive = TRUE)
-unlink(project_b,      recursive = TRUE)
-unlink(shared_storage, recursive = TRUE)
+unlink(here::here(project_a),      recursive = TRUE)
+unlink(here::here(project_b),      recursive = TRUE)
+unlink(here::here(shared_storage), recursive = TRUE)
 ```
 
 ---

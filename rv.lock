@@ -146,6 +146,8 @@ source = { path = ".dvs/dvs-rpkg" }
 force_source = true
 dependencies = [
     "cli",
+    "pillar",
+    "tibble",
 ]
 
 [[packages]]

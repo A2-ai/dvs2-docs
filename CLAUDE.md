@@ -38,3 +38,35 @@ Then clear the freeze cache and re-render:
 rm -rf _freeze/vignette/<name>
 just render-one <name>
 ```
+
+## Updating .dvs (the local dvs2 clone)
+
+`.dvs/` is the dvs2 source clone used for local R package builds. It is **not** tracked by git (`.dvs/.gitignore` contains `*`).
+
+To switch it back to main and pull latest:
+
+```bash
+git -C .dvs checkout main
+git -C .dvs pull --rebase
+```
+
+After changing the branch/path in `rproject.toml`, always run `rv sync` before rendering — otherwise the stale compiled package is used.
+
+Install the CLI from the same `.dvs` clone after pulling:
+
+```bash
+just install-cli   # runs: cargo install --profile dev-cli --force --locked --path=.dvs/dvs-cli
+```
+
+The canonical `rproject.toml` entry for the main-branch local clone is:
+
+```toml
+{ name = "dvs", path = ".dvs/dvs-rpkg" }
+```
+
+## Adding a new vignette
+
+1. Write `vignette/<name>.qmd` with `keep-md: true` and `freeze: auto`
+2. Add `quarto render vignette/<name>.qmd` to the `render` recipe in `justfile`
+3. Add an `alx publish` line to the `publish` recipe in `justfile`
+4. Run `just render-one <name>` then `just publish`

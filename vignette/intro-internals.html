@@ -2304,165 +2304,701 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <section id="setup" class="level1">
 <h1>Setup</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width =</span> <span class="dv">1000</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo</code></pre>
+</div>
 </div>
 </section>
 <section id="helpers" class="level1">
 <h1>Helpers</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>storage <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>, <span class="at">tmpdir =</span> here<span class="sc">::</span><span class="fu">here</span>())</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(storage)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(new_project)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>storage     <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>,  <span class="at">size_mb =</span> <span class="dv">25</span>, <span class="at">prefix =</span> <span class="st">&quot;large_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/large&quot;</span>,      <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>,  <span class="at">size_mb =</span> <span class="dv">1</span>,  <span class="at">prefix =</span> <span class="st">&quot;small_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/small&quot;</span>,      <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">50</span>, <span class="at">size_mb =</span> <span class="dv">3</span>,  <span class="at">prefix =</span> <span class="st">&quot;individual_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/individual&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(storage, <span class="at">compression =</span> <span class="st">&quot;none&quot;</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add one large dataset&quot;</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>), <span class="at">message =</span> <span class="st">&quot;add small corpus datasets&quot;</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/individual/individual_*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add individual datasets via glob&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>,  <span class="at">size_mb =</span> <span class="dv">25</span>, <span class="at">prefix =</span> <span class="st">&quot;large_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/large&quot;</span>,      <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>,  <span class="at">size_mb =</span> <span class="dv">1</span>,  <span class="at">prefix =</span> <span class="st">&quot;small_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/small&quot;</span>,      <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">50</span>, <span class="at">size_mb =</span> <span class="dv">3</span>,  <span class="at">prefix =</span> <span class="st">&quot;individual_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/individual&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(here<span class="sc">::</span><span class="fu">here</span>(storage), <span class="at">compression =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DVS Initialized</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add one large dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  path                   outcome hash                                                                size stored_size
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
+1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     25.0 MB</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>), <span class="at">message =</span> <span class="st">&quot;add small corpus datasets&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  path                   outcome hash                                                                  size stored_size
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt;     &lt;bytes&gt;
+1 data/small/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB   1024.0 KB
+2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB   1024.0 KB
+3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB   1024.0 KB</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/individual/individual_*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add individual datasets via glob&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 50 × 5
+   path                              outcome hash                                                                size stored_size
+   &lt;chr&gt;                             &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
+ 1 data/individual/individual_01.csv copied  57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB      3.0 MB
+ 2 data/individual/individual_02.csv copied  85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB      3.0 MB
+ 3 data/individual/individual_03.csv copied  cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB      3.0 MB
+ 4 data/individual/individual_04.csv copied  388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB      3.0 MB
+ 5 data/individual/individual_05.csv copied  0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB      3.0 MB
+ 6 data/individual/individual_06.csv copied  e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB      3.0 MB
+ 7 data/individual/individual_07.csv copied  e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB      3.0 MB
+ 8 data/individual/individual_08.csv copied  93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB      3.0 MB
+ 9 data/individual/individual_09.csv copied  26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB      3.0 MB
+10 data/individual/individual_10.csv copied  804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB      3.0 MB
+# ℹ 40 more rows</code></pre>
+</div>
 </div>
 </section>
 <section id="internals-of-.dvs" class="level1">
 <h1>Internals of <code>.dvs</code></h1>
 <p><code>.dvs</code> is hidden, so <code>fs::</code> helpers need <code>all = TRUE</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>.dvs
+├── .cache
+│   └── dvs.db
+└── data
+    ├── individual
+    │   ├── individual_01.csv.dvs
+    │   ├── individual_02.csv.dvs
+    │   ├── individual_03.csv.dvs
+    │   ├── individual_04.csv.dvs
+    │   ├── individual_05.csv.dvs
+    │   ├── individual_06.csv.dvs
+    │   ├── individual_07.csv.dvs
+    │   ├── individual_08.csv.dvs
+    │   ├── individual_09.csv.dvs
+    │   ├── individual_10.csv.dvs
+    │   ├── individual_11.csv.dvs
+    │   ├── individual_12.csv.dvs
+    │   ├── individual_13.csv.dvs
+    │   ├── individual_14.csv.dvs
+    │   ├── individual_15.csv.dvs
+    │   ├── individual_16.csv.dvs
+    │   ├── individual_17.csv.dvs
+    │   ├── individual_18.csv.dvs
+    │   ├── individual_19.csv.dvs
+    │   ├── individual_20.csv.dvs
+    │   ├── individual_21.csv.dvs
+    │   ├── individual_22.csv.dvs
+    │   ├── individual_23.csv.dvs
+    │   ├── individual_24.csv.dvs
+    │   ├── individual_25.csv.dvs
+    │   ├── individual_26.csv.dvs
+    │   ├── individual_27.csv.dvs
+    │   ├── individual_28.csv.dvs
+    │   ├── individual_29.csv.dvs
+    │   ├── individual_30.csv.dvs
+    │   ├── individual_31.csv.dvs
+    │   ├── individual_32.csv.dvs
+    │   ├── individual_33.csv.dvs
+    │   ├── individual_34.csv.dvs
+    │   ├── individual_35.csv.dvs
+    │   ├── individual_36.csv.dvs
+    │   ├── individual_37.csv.dvs
+    │   ├── individual_38.csv.dvs
+    │   ├── individual_39.csv.dvs
+    │   ├── individual_40.csv.dvs
+    │   ├── individual_41.csv.dvs
+    │   ├── individual_42.csv.dvs
+    │   ├── individual_43.csv.dvs
+    │   ├── individual_44.csv.dvs
+    │   ├── individual_45.csv.dvs
+    │   ├── individual_46.csv.dvs
+    │   ├── individual_47.csv.dvs
+    │   ├── individual_48.csv.dvs
+    │   ├── individual_49.csv.dvs
+    │   └── individual_50.csv.dvs
+    ├── large
+    │   └── large_1.csv.dvs
+    └── small
+        ├── small_1.csv.dvs
+        ├── small_2.csv.dvs
+        └── small_3.csv.dvs</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(size, path, type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(size, path, type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 55 × 3
+          size path                                       type 
+   &lt;fs::bytes&gt; &lt;fs::path&gt;                                 &lt;fct&gt;
+ 1         20K .dvs/.cache/dvs.db                         file 
+ 2         264 .dvs/data/individual/individual_01.csv.dvs file 
+ 3         264 .dvs/data/individual/individual_02.csv.dvs file 
+ 4         264 .dvs/data/individual/individual_03.csv.dvs file 
+ 5         264 .dvs/data/individual/individual_04.csv.dvs file 
+ 6         264 .dvs/data/individual/individual_05.csv.dvs file 
+ 7         264 .dvs/data/individual/individual_06.csv.dvs file 
+ 8         264 .dvs/data/individual/individual_07.csv.dvs file 
+ 9         264 .dvs/data/individual/individual_08.csv.dvs file 
+10         264 .dvs/data/individual/individual_09.csv.dvs file 
+# ℹ 45 more rows</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subdir =</span> path <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_dir</span>() <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_rel</span>(<span class="st">&quot;.dvs&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">n_files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> subdir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subdir =</span> path <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_dir</span>() <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_rel</span>(<span class="st">&quot;.dvs&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">n_files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> subdir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  subdir          n_files        size
+  &lt;fs::path&gt;        &lt;int&gt; &lt;fs::bytes&gt;
+1 .cache                1         20K
+2 data/individual      50       12.9K
+3 data/large            1         254
+4 data/small            3         771</code></pre>
+</div>
 </div>
 </section>
 <section id="meta-files" class="level1">
 <h1>Meta files</h1>
 <p>Each tracked data file has a <code>.dvs</code> meta file under <code>.dvs/</code>, mirroring the data tree.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>meta_files <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">glob =</span> <span class="st">&quot;*.dvs&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>meta_files <span class="ot">&lt;-</span> meta_files[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, meta_files)]</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>meta_files</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>meta_files <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">glob =</span> <span class="st">&quot;*.dvs&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>meta_files <span class="ot">&lt;-</span> meta_files[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, meta_files)]</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>meta_files</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>.dvs/data/individual/individual_01.csv.dvs .dvs/data/individual/individual_02.csv.dvs .dvs/data/individual/individual_03.csv.dvs .dvs/data/individual/individual_04.csv.dvs .dvs/data/individual/individual_05.csv.dvs .dvs/data/individual/individual_06.csv.dvs .dvs/data/individual/individual_07.csv.dvs .dvs/data/individual/individual_08.csv.dvs .dvs/data/individual/individual_09.csv.dvs .dvs/data/individual/individual_10.csv.dvs .dvs/data/individual/individual_11.csv.dvs .dvs/data/individual/individual_12.csv.dvs .dvs/data/individual/individual_13.csv.dvs .dvs/data/individual/individual_14.csv.dvs .dvs/data/individual/individual_15.csv.dvs .dvs/data/individual/individual_16.csv.dvs .dvs/data/individual/individual_17.csv.dvs .dvs/data/individual/individual_18.csv.dvs .dvs/data/individual/individual_19.csv.dvs .dvs/data/individual/individual_20.csv.dvs .dvs/data/individual/individual_21.csv.dvs .dvs/data/individual/individual_22.csv.dvs .dvs/data/individual/individual_23.csv.dvs 
+.dvs/data/individual/individual_24.csv.dvs .dvs/data/individual/individual_25.csv.dvs .dvs/data/individual/individual_26.csv.dvs .dvs/data/individual/individual_27.csv.dvs .dvs/data/individual/individual_28.csv.dvs .dvs/data/individual/individual_29.csv.dvs .dvs/data/individual/individual_30.csv.dvs .dvs/data/individual/individual_31.csv.dvs .dvs/data/individual/individual_32.csv.dvs .dvs/data/individual/individual_33.csv.dvs .dvs/data/individual/individual_34.csv.dvs .dvs/data/individual/individual_35.csv.dvs .dvs/data/individual/individual_36.csv.dvs .dvs/data/individual/individual_37.csv.dvs .dvs/data/individual/individual_38.csv.dvs .dvs/data/individual/individual_39.csv.dvs .dvs/data/individual/individual_40.csv.dvs .dvs/data/individual/individual_41.csv.dvs .dvs/data/individual/individual_42.csv.dvs .dvs/data/individual/individual_43.csv.dvs .dvs/data/individual/individual_44.csv.dvs .dvs/data/individual/individual_45.csv.dvs .dvs/data/individual/individual_46.csv.dvs 
+.dvs/data/individual/individual_47.csv.dvs .dvs/data/individual/individual_48.csv.dvs .dvs/data/individual/individual_49.csv.dvs .dvs/data/individual/individual_50.csv.dvs .dvs/data/large/large_1.csv.dvs            .dvs/data/small/small_1.csv.dvs            .dvs/data/small/small_2.csv.dvs            .dvs/data/small/small_3.csv.dvs            </code></pre>
+</div>
 </div>
 <p>Contents of the meta file for <code>data/large/large_1.csv</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>large_meta <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;large_1&quot;</span>, meta_files, <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>large_meta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>large_meta <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;large_1&quot;</span>, meta_files, <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>large_meta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  .dvs/data/large/large_1.csv.dvs 
+&quot;.dvs/data/large/large_1.csv.dvs&quot; </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(jsonlite<span class="sc">::</span><span class="fu">toJSON</span>(jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(large_meta, <span class="at">simplifyVector =</span> <span class="cn">FALSE</span>), <span class="at">pretty =</span> <span class="cn">TRUE</span>, <span class="at">auto_unbox =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="storage-internals" class="level1">
-<h1>Storage internals</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(storage, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="er">cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta,</span> <span class="er">simplifyVector</span> <span class="er">=</span> <span class="er">FALSE),</span> <span class="er">pretty</span> <span class="er">=</span> <span class="er">TRUE,</span> <span class="er">auto_unbox</span> <span class="er">=</span> <span class="er">TRUE))</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>{ “hashes”: { “blake3”: “3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838” }, “size”: 26214390, “created_by”: “elea”, “add_time”: “2026-04-24T12:59:10.090292Z”, “compression”: “none”, “message”: “add one large dataset” }</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre><code># Storage internals
+
+
+::: {.cell}
+
+```{.r .cell-code}
+fs::dir_tree(here::here(storage), all = TRUE, regexp = &quot;\\.git&quot;, invert = TRUE)</code></pre>
+<div class="cell-output cell-output-stdout">
+<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo/filed65bf314281_storage
+├── 0d
+│   └── bb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92
+├── 15
+│   └── 74af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04
+├── 1d
+│   └── 884347c3d0433a2833ef586c83afebb2bc30cdea12d323e80f25526aacaae4
+├── 1f
+│   └── e13d85d36ee596cf9bc781919808458b2cd00b49bcb342e8c5db5cce915c62
+├── 26
+│   ├── af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f
+│   └── bfcc219ab65cd79ce696d013ae6148055d01c187e2c31570452315e441819f
+├── 2a
+│   └── ecd8dc9adb04d3777e23ac721bbc2828e599be8ad35af4b87400cd41148671
+├── 2f
+│   └── 05406da9b7905880f2f6230ca5883637820d1abecbdd12190696242e4a3077
+├── 31
+│   └── 758fcb8655fd233cf99e0ab466f4a7d997b85a51ecfc804965aad4d3125d18
+├── 34
+│   └── fd92ee0ed3122e814c275ba2d4bcf83e749ea0a4fda462d56afbd0f62fea8a
+├── 38
+│   └── 8c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee
+├── 3c
+│   └── 77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838
+├── 3e
+│   └── 5fb7f5dab7515086635a93328785b2b703922b6b7499cf3de2d6f4e954e98c
+├── 44
+│   └── 3b0aad3af092b510e3624d737d71f60cf771b5bf387c1f7126e0cd712cc8cf
+├── 45
+│   └── 6eaf1e596ccf2e8cc982c9ca3192f996efa0638d9dbd96a03f90fc35a34c51
+├── 48
+│   └── dff588f909e9720dff2a675afef20a44add218cb55e7883736326938917b73
+├── 49
+│   └── d367f13b24c611561d1dae7d9860390b8239689a7a7ffac393b3eaf8907be7
+├── 4b
+│   └── bae46269b915721b8a461f9138afaa04dbe69c2a6be89ccbd3d26abc09f869
+├── 57
+│   ├── 216386358ca115c810f01903cce60423037feee2faf2d3a26032627ed7ca9d
+│   └── 856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53
+├── 5b
+│   └── 8ed16fac2af119cd417960ca8ef817507f2a74352cd10b4809fe77ad0f9759
+├── 62
+│   └── 058b6bf8fb1c380f4fded49604df6fa144c84e49775dd879f084124d6ea8a1
+├── 71
+│   └── f792a1264e4704e7f53e99f741d4baa46f0fa3ef864a83ada590a954da34e9
+├── 77
+│   └── d27c2060525b39adcfd943235b96f0c0158e2c6eda8ef3d007f23b0a9b29b0
+├── 78
+│   └── ffc0ed3e6b077436ef61504935dd65137caa45893173527f53f14dd54073c9
+├── 7c
+│   └── f60960fa5161e67262be59e546dc42cada90c99a6d9c767cc9eda8530a282d
+├── 7d
+│   └── 62b45f3c50dcaf1f3143a9c67d5a1606b58660359405f533483713157d3ce2
+├── 80
+│   └── 4e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470
+├── 81
+│   └── 9f86f6a3bdc6ce6d08f3529690c674e01d89dbfcd6e5491630db4ea2add30a
+├── 85
+│   └── ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c
+├── 88
+│   └── ba43b3a95a505c9605335a03f0a07d89dbb0b0fd1824d2e50f109ec8267468
+├── 8d
+│   └── 0524a0aaca6787bebacce86072df4b16930660998654c202a0235888512d3e
+├── 93
+│   ├── ca349f3eb8b7bae487fc3c871b38b702ca8774e1e47e291dbf4deef768188f
+│   └── cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61
+├── 96
+│   └── 49f8ae18c09b20768f4f017ab983c75b90b3e4e5935d1308e935f2ac4e9b4b
+├── 9d
+│   ├── 97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a
+│   └── ec1c7c19612c726f715faef5d6057b9e4dde7d5c20d70b056cbe6f2bd7c91c
+├── a0
+│   └── 23d54af885922c1f2e65efa78cd32d6cef07a3a31a2edb7cbe67e862964ac7
+├── ad
+│   └── ebf3682c67ecf60ed348fa6eb031c786496275e9b8a47082e4839cf0d02a4d
+├── audit.log.jsonl
+├── b0
+│   └── 5327be23b5f7172df2b5c2a19ba2a214b6d8c01d87f6231563a2b2dd9f464b
+├── bc
+│   └── 2c089b5bfd013e062b7cea8e22907983fb40e7824b8d309ec0dc7c46fdc6e4
+├── bd
+│   └── d2150b27e4b6b90cba72e1a5e9e7fa0fd38e90702c0169393c86e2dc85691a
+├── c2
+│   └── 332280ea27acd678ed478ae719549e643820c193e35a4362ffc57d02a211a8
+├── cd
+│   └── 648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58
+├── d3
+│   └── 25a9ede2e5b2509fd4893dfdb350e4fd653e9a9e4fb6b2605f72ae315659c8
+├── d8
+│   └── 55539255e6bcef2bdb7b3be9c727312db4c8eb6229851bb2ddd71667bde6e3
+├── df
+│   └── 09093a115feea9827440955103488d2c73bcbaf8a56f7ff79842b19348645f
+├── e0
+│   └── fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937
+├── e3
+│   ├── 9164399b7147c57fc78e073fff926a23d1165b4436a5c71f70941d8acb4a58
+│   └── d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852
+├── e4
+│   └── 7dda9fc7f57f5acaf284aed70e127bbc78ed1a67195936cbbcf4e6d1c321b2
+├── e7
+│   └── 55c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61
+├── ec
+│   └── 1caea68524d4fb96a4ec8e9127229bc3c2e23d669be92f5add767c59889ab8
+└── f3
+    └── cd94c8247890360ef1b61bb7cdc49f6463c39c08b7f0e0c62ea9dec575b0fa</code></pre>
+</div>
+<p>:::</p>
 </section>
 <section id="audit-log" class="level1">
 <h1>Audit log</h1>
 <p>The audit log lives in the storage directory as <code>audit.log.jsonl</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>audit <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">path</span>(storage, <span class="st">&quot;audit.log.jsonl&quot;</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>audit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>audit <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="st">&quot;audit.log.jsonl&quot;</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>audit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;/Users/elea/Documents/a2ai_github/dvs2-demo/filed65bf314281_storage/audit.log.jsonl&quot;</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(audit)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (l <span class="cf">in</span> lines) {</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(jsonlite<span class="sc">::</span><span class="fu">toJSON</span>(jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(l, <span class="at">simplifyVector =</span> <span class="cn">FALSE</span>), <span class="at">pretty =</span> <span class="cn">TRUE</span>, <span class="at">auto_unbox =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="storage-directory" class="level1">
-<h1>Storage directory</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(storage, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(audit)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="er">for</span> <span class="er">(l</span> <span class="er">in</span> <span class="er">lines)</span> <span class="fu">{</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="er">cat(jsonlite</span><span class="fu">:</span><span class="er">:toJSON(jsonlite::fromJSON(l</span><span class="fu">,</span> <span class="er">simplifyVector</span> <span class="er">=</span> <span class="er">FALSE),</span> <span class="er">pretty</span> <span class="er">=</span> <span class="er">TRUE,</span> <span class="er">auto_unbox</span> <span class="er">=</span> <span class="er">TRUE))</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="er">cat(</span><span class="dt">&quot;</span><span class="ch">\n</span><span class="dt">&quot;</span><span class="er">)</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>{ “operation_id”: “834d975d-8df4-44b7-9e4f-1ff20b5b49cb”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “init”: { “settings”: { “compression”: “none”, “metadata_folder_name”: {}, “backend”: { “path”: “/Users/elea/Documents/a2ai_github/dvs2-demo/filed65bf314281_storage”, “group”: “staff” } }, “project_path”: “/Users/elea/Documents/a2ai_github/dvs2-demo/filed65b6b052af1_project” } } } { “operation_id”: “665ab06f-2f64-48b9-9702-5c5ea9f3d5f5”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/large/large_1.csv”, “hashes”: { “blake3”: “3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838” } }, “compression”: “none” } } } { “operation_id”: “f6ccdf71-0e3e-45e9-afb2-50102e9d44f3”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/small/small_1.csv”, “hashes”: { “blake3”: “e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937” } }, “compression”: “none” } } } { “operation_id”: “f6ccdf71-0e3e-45e9-afb2-50102e9d44f3”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/small/small_3.csv”, “hashes”: { “blake3”: “9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a” } }, “compression”: “none” } } } { “operation_id”: “f6ccdf71-0e3e-45e9-afb2-50102e9d44f3”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/small/small_2.csv”, “hashes”: { “blake3”: “1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_10.csv”, “hashes”: { “blake3”: “804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_12.csv”, “hashes”: { “blake3”: “e47dda9fc7f57f5acaf284aed70e127bbc78ed1a67195936cbbcf4e6d1c321b2” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_22.csv”, “hashes”: { “blake3”: “9dec1c7c19612c726f715faef5d6057b9e4dde7d5c20d70b056cbe6f2bd7c91c” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_41.csv”, “hashes”: { “blake3”: “93ca349f3eb8b7bae487fc3c871b38b702ca8774e1e47e291dbf4deef768188f” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_15.csv”, “hashes”: { “blake3”: “bc2c089b5bfd013e062b7cea8e22907983fb40e7824b8d309ec0dc7c46fdc6e4” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_40.csv”, “hashes”: { “blake3”: “9649f8ae18c09b20768f4f017ab983c75b90b3e4e5935d1308e935f2ac4e9b4b” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_08.csv”, “hashes”: { “blake3”: “93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_18.csv”, “hashes”: { “blake3”: “71f792a1264e4704e7f53e99f741d4baa46f0fa3ef864a83ada590a954da34e9” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_37.csv”, “hashes”: { “blake3”: “456eaf1e596ccf2e8cc982c9ca3192f996efa0638d9dbd96a03f90fc35a34c51” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_48.csv”, “hashes”: { “blake3”: “7d62b45f3c50dcaf1f3143a9c67d5a1606b58660359405f533483713157d3ce2” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_06.csv”, “hashes”: { “blake3”: “e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_45.csv”, “hashes”: { “blake3”: “4bbae46269b915721b8a461f9138afaa04dbe69c2a6be89ccbd3d26abc09f869” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_27.csv”, “hashes”: { “blake3”: “77d27c2060525b39adcfd943235b96f0c0158e2c6eda8ef3d007f23b0a9b29b0” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_19.csv”, “hashes”: { “blake3”: “443b0aad3af092b510e3624d737d71f60cf771b5bf387c1f7126e0cd712cc8cf” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_24.csv”, “hashes”: { “blake3”: “c2332280ea27acd678ed478ae719549e643820c193e35a4362ffc57d02a211a8” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_38.csv”, “hashes”: { “blake3”: “f3cd94c8247890360ef1b61bb7cdc49f6463c39c08b7f0e0c62ea9dec575b0fa” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_33.csv”, “hashes”: { “blake3”: “d325a9ede2e5b2509fd4893dfdb350e4fd653e9a9e4fb6b2605f72ae315659c8” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_20.csv”, “hashes”: { “blake3”: “df09093a115feea9827440955103488d2c73bcbaf8a56f7ff79842b19348645f” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_29.csv”, “hashes”: { “blake3”: “49d367f13b24c611561d1dae7d9860390b8239689a7a7ffac393b3eaf8907be7” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_28.csv”, “hashes”: { “blake3”: “5b8ed16fac2af119cd417960ca8ef817507f2a74352cd10b4809fe77ad0f9759” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_43.csv”, “hashes”: { “blake3”: “78ffc0ed3e6b077436ef61504935dd65137caa45893173527f53f14dd54073c9” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_05.csv”, “hashes”: { “blake3”: “0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_25.csv”, “hashes”: { “blake3”: “8d0524a0aaca6787bebacce86072df4b16930660998654c202a0235888512d3e” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_04.csv”, “hashes”: { “blake3”: “388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_23.csv”, “hashes”: { “blake3”: “1fe13d85d36ee596cf9bc781919808458b2cd00b49bcb342e8c5db5cce915c62” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_44.csv”, “hashes”: { “blake3”: “1d884347c3d0433a2833ef586c83afebb2bc30cdea12d323e80f25526aacaae4” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_11.csv”, “hashes”: { “blake3”: “bdd2150b27e4b6b90cba72e1a5e9e7fa0fd38e90702c0169393c86e2dc85691a” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_30.csv”, “hashes”: { “blake3”: “62058b6bf8fb1c380f4fded49604df6fa144c84e49775dd879f084124d6ea8a1” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_09.csv”, “hashes”: { “blake3”: “26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_32.csv”, “hashes”: { “blake3”: “ec1caea68524d4fb96a4ec8e9127229bc3c2e23d669be92f5add767c59889ab8” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_07.csv”, “hashes”: { “blake3”: “e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_36.csv”, “hashes”: { “blake3”: “3e5fb7f5dab7515086635a93328785b2b703922b6b7499cf3de2d6f4e954e98c” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_50.csv”, “hashes”: { “blake3”: “b05327be23b5f7172df2b5c2a19ba2a214b6d8c01d87f6231563a2b2dd9f464b” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_34.csv”, “hashes”: { “blake3”: “adebf3682c67ecf60ed348fa6eb031c786496275e9b8a47082e4839cf0d02a4d” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_35.csv”, “hashes”: { “blake3”: “e39164399b7147c57fc78e073fff926a23d1165b4436a5c71f70941d8acb4a58” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_31.csv”, “hashes”: { “blake3”: “7cf60960fa5161e67262be59e546dc42cada90c99a6d9c767cc9eda8530a282d” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_13.csv”, “hashes”: { “blake3”: “2aecd8dc9adb04d3777e23ac721bbc2828e599be8ad35af4b87400cd41148671” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_47.csv”, “hashes”: { “blake3”: “819f86f6a3bdc6ce6d08f3529690c674e01d89dbfcd6e5491630db4ea2add30a” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_02.csv”, “hashes”: { “blake3”: “85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_21.csv”, “hashes”: { “blake3”: “2f05406da9b7905880f2f6230ca5883637820d1abecbdd12190696242e4a3077” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_42.csv”, “hashes”: { “blake3”: “a023d54af885922c1f2e65efa78cd32d6cef07a3a31a2edb7cbe67e862964ac7” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_49.csv”, “hashes”: { “blake3”: “d855539255e6bcef2bdb7b3be9c727312db4c8eb6229851bb2ddd71667bde6e3” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_17.csv”, “hashes”: { “blake3”: “34fd92ee0ed3122e814c275ba2d4bcf83e749ea0a4fda462d56afbd0f62fea8a” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_14.csv”, “hashes”: { “blake3”: “31758fcb8655fd233cf99e0ab466f4a7d997b85a51ecfc804965aad4d3125d18” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_46.csv”, “hashes”: { “blake3”: “26bfcc219ab65cd79ce696d013ae6148055d01c187e2c31570452315e441819f” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_39.csv”, “hashes”: { “blake3”: “88ba43b3a95a505c9605335a03f0a07d89dbb0b0fd1824d2e50f109ec8267468” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_16.csv”, “hashes”: { “blake3”: “57216386358ca115c810f01903cce60423037feee2faf2d3a26032627ed7ca9d” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_03.csv”, “hashes”: { “blake3”: “cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_01.csv”, “hashes”: { “blake3”: “57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53” } }, “compression”: “none” } } } { “operation_id”: “34b3936c-88af-4db7-a176-7c73cf04e0ac”, “timestamp”: 1777035550, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/individual/individual_26.csv”, “hashes”: { “blake3”: “48dff588f909e9720dff2a675afef20a44add218cb55e7883736326938917b73” } }, “compression”: “none” } } }</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre><code>
+# Storage directory
+
+
+::: {.cell}
+
+```{.r .cell-code}
+fs::dir_tree(here::here(storage), all = TRUE, regexp = &quot;\\.git&quot;, invert = TRUE)</code></pre>
+<div class="cell-output cell-output-stdout">
+<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo/filed65bf314281_storage
+├── 0d
+│   └── bb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92
+├── 15
+│   └── 74af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04
+├── 1d
+│   └── 884347c3d0433a2833ef586c83afebb2bc30cdea12d323e80f25526aacaae4
+├── 1f
+│   └── e13d85d36ee596cf9bc781919808458b2cd00b49bcb342e8c5db5cce915c62
+├── 26
+│   ├── af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f
+│   └── bfcc219ab65cd79ce696d013ae6148055d01c187e2c31570452315e441819f
+├── 2a
+│   └── ecd8dc9adb04d3777e23ac721bbc2828e599be8ad35af4b87400cd41148671
+├── 2f
+│   └── 05406da9b7905880f2f6230ca5883637820d1abecbdd12190696242e4a3077
+├── 31
+│   └── 758fcb8655fd233cf99e0ab466f4a7d997b85a51ecfc804965aad4d3125d18
+├── 34
+│   └── fd92ee0ed3122e814c275ba2d4bcf83e749ea0a4fda462d56afbd0f62fea8a
+├── 38
+│   └── 8c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee
+├── 3c
+│   └── 77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838
+├── 3e
+│   └── 5fb7f5dab7515086635a93328785b2b703922b6b7499cf3de2d6f4e954e98c
+├── 44
+│   └── 3b0aad3af092b510e3624d737d71f60cf771b5bf387c1f7126e0cd712cc8cf
+├── 45
+│   └── 6eaf1e596ccf2e8cc982c9ca3192f996efa0638d9dbd96a03f90fc35a34c51
+├── 48
+│   └── dff588f909e9720dff2a675afef20a44add218cb55e7883736326938917b73
+├── 49
+│   └── d367f13b24c611561d1dae7d9860390b8239689a7a7ffac393b3eaf8907be7
+├── 4b
+│   └── bae46269b915721b8a461f9138afaa04dbe69c2a6be89ccbd3d26abc09f869
+├── 57
+│   ├── 216386358ca115c810f01903cce60423037feee2faf2d3a26032627ed7ca9d
+│   └── 856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53
+├── 5b
+│   └── 8ed16fac2af119cd417960ca8ef817507f2a74352cd10b4809fe77ad0f9759
+├── 62
+│   └── 058b6bf8fb1c380f4fded49604df6fa144c84e49775dd879f084124d6ea8a1
+├── 71
+│   └── f792a1264e4704e7f53e99f741d4baa46f0fa3ef864a83ada590a954da34e9
+├── 77
+│   └── d27c2060525b39adcfd943235b96f0c0158e2c6eda8ef3d007f23b0a9b29b0
+├── 78
+│   └── ffc0ed3e6b077436ef61504935dd65137caa45893173527f53f14dd54073c9
+├── 7c
+│   └── f60960fa5161e67262be59e546dc42cada90c99a6d9c767cc9eda8530a282d
+├── 7d
+│   └── 62b45f3c50dcaf1f3143a9c67d5a1606b58660359405f533483713157d3ce2
+├── 80
+│   └── 4e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470
+├── 81
+│   └── 9f86f6a3bdc6ce6d08f3529690c674e01d89dbfcd6e5491630db4ea2add30a
+├── 85
+│   └── ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c
+├── 88
+│   └── ba43b3a95a505c9605335a03f0a07d89dbb0b0fd1824d2e50f109ec8267468
+├── 8d
+│   └── 0524a0aaca6787bebacce86072df4b16930660998654c202a0235888512d3e
+├── 93
+│   ├── ca349f3eb8b7bae487fc3c871b38b702ca8774e1e47e291dbf4deef768188f
+│   └── cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61
+├── 96
+│   └── 49f8ae18c09b20768f4f017ab983c75b90b3e4e5935d1308e935f2ac4e9b4b
+├── 9d
+│   ├── 97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a
+│   └── ec1c7c19612c726f715faef5d6057b9e4dde7d5c20d70b056cbe6f2bd7c91c
+├── a0
+│   └── 23d54af885922c1f2e65efa78cd32d6cef07a3a31a2edb7cbe67e862964ac7
+├── ad
+│   └── ebf3682c67ecf60ed348fa6eb031c786496275e9b8a47082e4839cf0d02a4d
+├── audit.log.jsonl
+├── b0
+│   └── 5327be23b5f7172df2b5c2a19ba2a214b6d8c01d87f6231563a2b2dd9f464b
+├── bc
+│   └── 2c089b5bfd013e062b7cea8e22907983fb40e7824b8d309ec0dc7c46fdc6e4
+├── bd
+│   └── d2150b27e4b6b90cba72e1a5e9e7fa0fd38e90702c0169393c86e2dc85691a
+├── c2
+│   └── 332280ea27acd678ed478ae719549e643820c193e35a4362ffc57d02a211a8
+├── cd
+│   └── 648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58
+├── d3
+│   └── 25a9ede2e5b2509fd4893dfdb350e4fd653e9a9e4fb6b2605f72ae315659c8
+├── d8
+│   └── 55539255e6bcef2bdb7b3be9c727312db4c8eb6229851bb2ddd71667bde6e3
+├── df
+│   └── 09093a115feea9827440955103488d2c73bcbaf8a56f7ff79842b19348645f
+├── e0
+│   └── fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937
+├── e3
+│   ├── 9164399b7147c57fc78e073fff926a23d1165b4436a5c71f70941d8acb4a58
+│   └── d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852
+├── e4
+│   └── 7dda9fc7f57f5acaf284aed70e127bbc78ed1a67195936cbbcf4e6d1c321b2
+├── e7
+│   └── 55c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61
+├── ec
+│   └── 1caea68524d4fb96a4ec8e9127229bc3c2e23d669be92f5add767c59889ab8
+└── f3
+    └── cd94c8247890360ef1b61bb7cdc49f6463c39c08b7f0e0c62ea9dec575b0fa</code></pre>
+</div>
+<p>:::</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(storage, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subdir =</span> path <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_dir</span>() <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_rel</span>(storage)) <span class="sc">|&gt;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">n_files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> subdir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(here<span class="sc">::</span><span class="fu">here</span>(storage), <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subdir =</span> path <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_dir</span>() <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_rel</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))) <span class="sc">|&gt;</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">n_files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> subdir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 50 × 3
+   subdir     n_files        size
+   &lt;fs::path&gt;   &lt;int&gt; &lt;fs::bytes&gt;
+ 1 0d               1          3M
+ 2 15               1       1024K
+ 3 1d               1          3M
+ 4 1f               1          3M
+ 5 26               2          6M
+ 6 2a               1          3M
+ 7 2f               1          3M
+ 8 31               1          3M
+ 9 34               1          3M
+10 38               1          3M
+# ℹ 40 more rows</code></pre>
+</div>
 </div>
 </section>
 <section id="hashed-blob-is-plain-text" class="level1">
 <h1>Hashed blob is plain text</h1>
 <p>Pick up the blake3 hash from the meta file.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(large_meta)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>meta</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>hash <span class="ot">&lt;-</span> meta<span class="sc">$</span>hashes<span class="sc">$</span>blake3</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>hash</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(large_meta)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>meta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$hashes
+$hashes$blake3
+[1] &quot;3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838&quot;
+
+
+$size
+[1] 26214390
+
+$created_by
+[1] &quot;elea&quot;
+
+$add_time
+[1] &quot;2026-04-24T12:59:10.090292Z&quot;
+
+$compression
+[1] &quot;none&quot;
+
+$message
+[1] &quot;add one large dataset&quot;</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>hash <span class="ot">&lt;-</span> meta<span class="sc">$</span>hashes<span class="sc">$</span>blake3</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>hash</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838&quot;</code></pre>
+</div>
 </div>
 <p>Blobs are split into <code>&lt;first-2&gt;/&lt;rest&gt;</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>large_blob <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">path</span>(storage, <span class="fu">substr</span>(hash, <span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">substr</span>(hash, <span class="dv">3</span>, <span class="fu">nchar</span>(hash)))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>large_blob</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_exists</span>(large_blob)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>large_blob <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="fu">substr</span>(hash, <span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">substr</span>(hash, <span class="dv">3</span>, <span class="fu">nchar</span>(hash)))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>large_blob</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;/Users/elea/Documents/a2ai_github/dvs2-demo/filed65bf314281_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838&quot;</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_exists</span>(large_blob)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo/filed65bf314281_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 
+                                                                                                                                 TRUE </code></pre>
+</div>
 </div>
 <p>Initialized with <code>compression = &quot;none&quot;</code>, the stored object is the original CSV, addressable by hash. Readable as-is.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">readLines</span>(large_blob, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">readLines</span>(large_blob, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10&quot; &quot;42,0,1,1,835,744,435,780,819,845,933,348,470,634&quot;                                    &quot;51,2,1,1,678,501,383,179,313,256,607,120,393,638&quot;                                    &quot;59,4,1,1,128,687,923,696,798,190,506,122,254,584&quot;                                    &quot;64,6,1,1,929,315,597,366,830,800,287,457,774,403&quot;                                   </code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">readLines</span>(</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">5</span>, fs<span class="sc">::</span><span class="fu">path</span>(new_project, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;large&quot;</span>, <span class="st">&quot;large_1.csv&quot;</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">readLines</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">5</span>, here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;large&quot;</span>, <span class="st">&quot;large_1.csv&quot;</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10&quot; &quot;42,0,1,1,835,744,435,780,819,845,933,348,470,634&quot;                                    &quot;51,2,1,1,678,501,383,179,313,256,607,120,393,638&quot;                                    &quot;59,4,1,1,128,687,923,696,798,190,506,122,254,584&quot;                                    &quot;64,6,1,1,929,315,597,366,830,800,287,457,774,403&quot;                                   </code></pre>
+</div>
 </div>
 </section>
 <section id="dvs-mirrors-data" class="level1">
 <h1><code>.dvs/</code> mirrors <code>data/</code></h1>
 <p>Meta files live under <code>.dvs/</code> at the same relative paths as the data files they track.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;data&quot;</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;data&quot;</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>data
+├── individual
+│   ├── individual_01.csv
+│   ├── individual_02.csv
+│   ├── individual_03.csv
+│   ├── individual_04.csv
+│   ├── individual_05.csv
+│   ├── individual_06.csv
+│   ├── individual_07.csv
+│   ├── individual_08.csv
+│   ├── individual_09.csv
+│   ├── individual_10.csv
+│   ├── individual_11.csv
+│   ├── individual_12.csv
+│   ├── individual_13.csv
+│   ├── individual_14.csv
+│   ├── individual_15.csv
+│   ├── individual_16.csv
+│   ├── individual_17.csv
+│   ├── individual_18.csv
+│   ├── individual_19.csv
+│   ├── individual_20.csv
+│   ├── individual_21.csv
+│   ├── individual_22.csv
+│   ├── individual_23.csv
+│   ├── individual_24.csv
+│   ├── individual_25.csv
+│   ├── individual_26.csv
+│   ├── individual_27.csv
+│   ├── individual_28.csv
+│   ├── individual_29.csv
+│   ├── individual_30.csv
+│   ├── individual_31.csv
+│   ├── individual_32.csv
+│   ├── individual_33.csv
+│   ├── individual_34.csv
+│   ├── individual_35.csv
+│   ├── individual_36.csv
+│   ├── individual_37.csv
+│   ├── individual_38.csv
+│   ├── individual_39.csv
+│   ├── individual_40.csv
+│   ├── individual_41.csv
+│   ├── individual_42.csv
+│   ├── individual_43.csv
+│   ├── individual_44.csv
+│   ├── individual_45.csv
+│   ├── individual_46.csv
+│   ├── individual_47.csv
+│   ├── individual_48.csv
+│   ├── individual_49.csv
+│   └── individual_50.csv
+├── large
+│   └── large_1.csv
+└── small
+    ├── small_1.csv
+    ├── small_2.csv
+    └── small_3.csv</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(new_project)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>.dvs
+├── .cache
+│   └── dvs.db
+└── data
+    ├── individual
+    │   ├── individual_01.csv.dvs
+    │   ├── individual_02.csv.dvs
+    │   ├── individual_03.csv.dvs
+    │   ├── individual_04.csv.dvs
+    │   ├── individual_05.csv.dvs
+    │   ├── individual_06.csv.dvs
+    │   ├── individual_07.csv.dvs
+    │   ├── individual_08.csv.dvs
+    │   ├── individual_09.csv.dvs
+    │   ├── individual_10.csv.dvs
+    │   ├── individual_11.csv.dvs
+    │   ├── individual_12.csv.dvs
+    │   ├── individual_13.csv.dvs
+    │   ├── individual_14.csv.dvs
+    │   ├── individual_15.csv.dvs
+    │   ├── individual_16.csv.dvs
+    │   ├── individual_17.csv.dvs
+    │   ├── individual_18.csv.dvs
+    │   ├── individual_19.csv.dvs
+    │   ├── individual_20.csv.dvs
+    │   ├── individual_21.csv.dvs
+    │   ├── individual_22.csv.dvs
+    │   ├── individual_23.csv.dvs
+    │   ├── individual_24.csv.dvs
+    │   ├── individual_25.csv.dvs
+    │   ├── individual_26.csv.dvs
+    │   ├── individual_27.csv.dvs
+    │   ├── individual_28.csv.dvs
+    │   ├── individual_29.csv.dvs
+    │   ├── individual_30.csv.dvs
+    │   ├── individual_31.csv.dvs
+    │   ├── individual_32.csv.dvs
+    │   ├── individual_33.csv.dvs
+    │   ├── individual_34.csv.dvs
+    │   ├── individual_35.csv.dvs
+    │   ├── individual_36.csv.dvs
+    │   ├── individual_37.csv.dvs
+    │   ├── individual_38.csv.dvs
+    │   ├── individual_39.csv.dvs
+    │   ├── individual_40.csv.dvs
+    │   ├── individual_41.csv.dvs
+    │   ├── individual_42.csv.dvs
+    │   ├── individual_43.csv.dvs
+    │   ├── individual_44.csv.dvs
+    │   ├── individual_45.csv.dvs
+    │   ├── individual_46.csv.dvs
+    │   ├── individual_47.csv.dvs
+    │   ├── individual_48.csv.dvs
+    │   ├── individual_49.csv.dvs
+    │   └── individual_50.csv.dvs
+    ├── large
+    │   └── large_1.csv.dvs
+    └── small
+        ├── small_1.csv.dvs
+        ├── small_2.csv.dvs
+        └── small_3.csv.dvs</code></pre>
+</div>
 </div>
 </section>
 <section id="cleanup" class="level1">
 <h1>Cleanup</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(new_project, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(storage, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <hr>
 <p><strong>Next up</strong>: <a href="lifecycle.html">Lifecycle</a> — modifying tracked files, <code>unsynced</code> status, <code>dry_run</code> previews, and what happens when a storage blob goes missing.</p>

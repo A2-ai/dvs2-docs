@@ -6,6 +6,8 @@ default:
 # Render all vignettes
 render:
     quarto render vignette/index.qmd
+    quarto render vignette/getting-started.qmd
+    quarto render vignette/getting-started-cli.qmd
     quarto render vignette/intro.qmd
     quarto render vignette/intro-cli.qmd
     quarto render vignette/intro-internals.qmd
@@ -32,18 +34,20 @@ open:
 
 # Publish all rendered vignettes to alx.dev.a2-ai.cloud (dvs2-demo project)
 publish:
-    alx publish vignette/index.html           -S vignette/index.qmd                                   -I vignette/index.html.md           -t index           --overwrite --skip-warnings --no-prompt
-    alx publish vignette/intro.html           -S vignette/intro.qmd           -S R/mkdatasetfiles.R   -I vignette/intro.html.md           -t intro           --overwrite --skip-warnings --no-prompt
-    alx publish vignette/intro-cli.html       -S vignette/intro-cli.qmd       -S R/mkdatasetfiles.R   -I vignette/intro-cli.html.md       -t intro-cli       --overwrite --skip-warnings --no-prompt
-    alx publish vignette/intro-internals.html -S vignette/intro-internals.qmd -S R/mkdatasetfiles.R   -I vignette/intro-internals.html.md -t intro-internals --overwrite --skip-warnings --no-prompt
-    alx publish vignette/lifecycle.html       -S vignette/lifecycle.qmd       -S R/mkdatasetfiles.R   -I vignette/lifecycle.html.md       -t lifecycle       --overwrite --skip-warnings --no-prompt
-    alx publish vignette/collab.html          -S vignette/collab.qmd          -S R/mkdatasetfiles.R   -I vignette/collab.html.md          -t collab          --overwrite --skip-warnings --no-prompt
-    alx publish vignette/config.html          -S vignette/config.qmd          -S R/mkdatasetfiles.R   -I vignette/config.html.md          -t config          --overwrite --skip-warnings --no-prompt
-    alx publish vignette/audit.html           -S vignette/audit.qmd           -S R/mkdatasetfiles.R   -I vignette/audit.html.md           -t audit           --overwrite --skip-warnings --no-prompt
-    alx publish vignette/error.html           -S vignette/error.qmd                                   -I vignette/error.html.md           -t error           --overwrite --skip-warnings --no-prompt
-    alx publish vignette/random_files.html    -S vignette/random_files.qmd    -S R/mkdatasetfiles.R   -I vignette/random_files.html.md    -t random_files    --overwrite --skip-warnings --no-prompt
-    alx publish vignette/setup.html           -S vignette/setup.qmd                                   -I vignette/setup.html.md           -t setup           --overwrite --skip-warnings --no-prompt
-    alx publish vignette/splash.html          -S vignette/splash.qmd          -S vignette/splash.scss                                     -t splash          --overwrite --skip-warnings --no-prompt
+    alx publish vignette/index.html                -S vignette/index.qmd                                   -I vignette/index.html.md                -t index                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/getting-started.html      -S vignette/getting-started.qmd                         -I vignette/getting-started.html.md      -t getting-started      --overwrite --skip-warnings --no-prompt
+    alx publish vignette/getting-started-cli.html  -S vignette/getting-started-cli.qmd                     -I vignette/getting-started-cli.html.md  -t getting-started-cli  --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro.html                -S vignette/intro.qmd           -S R/mkdatasetfiles.R   -I vignette/intro.html.md                -t intro                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro-cli.html            -S vignette/intro-cli.qmd       -S R/mkdatasetfiles.R   -I vignette/intro-cli.html.md            -t intro-cli            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro-internals.html      -S vignette/intro-internals.qmd -S R/mkdatasetfiles.R   -I vignette/intro-internals.html.md      -t intro-internals      --overwrite --skip-warnings --no-prompt
+    alx publish vignette/lifecycle.html            -S vignette/lifecycle.qmd       -S R/mkdatasetfiles.R   -I vignette/lifecycle.html.md            -t lifecycle            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/collab.html               -S vignette/collab.qmd          -S R/mkdatasetfiles.R   -I vignette/collab.html.md               -t collab               --overwrite --skip-warnings --no-prompt
+    alx publish vignette/config.html               -S vignette/config.qmd          -S R/mkdatasetfiles.R   -I vignette/config.html.md               -t config               --overwrite --skip-warnings --no-prompt
+    alx publish vignette/audit.html                -S vignette/audit.qmd           -S R/mkdatasetfiles.R   -I vignette/audit.html.md                -t audit                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/error.html                -S vignette/error.qmd                                   -I vignette/error.html.md                -t error                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/random_files.html         -S vignette/random_files.qmd    -S R/mkdatasetfiles.R   -I vignette/random_files.html.md         -t random_files         --overwrite --skip-warnings --no-prompt
+    alx publish vignette/setup.html                -S vignette/setup.qmd                                   -I vignette/setup.html.md                -t setup                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/splash.html               -S vignette/splash.qmd          -S vignette/splash.scss                                          -t splash               --overwrite --skip-warnings --no-prompt
 
 # === rv / R package management ===
 

@@ -1,0 +1,144 @@
+---
+title: "Getting Started with dvs CLI"
+subtitle: "init, add, status, and get — five minutes end to end"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+## Setup
+
+R creates the sandbox directories and dataset; all dvs operations below run via
+the `dvs` CLI binary.
+
+```{r}
+options(width = 1000)
+library(here)
+```
+
+Create isolated temporary directories for this demo:
+
+```{r}
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
+```
+
+Save the built-in `Theoph` pharmacokinetic dataset as a CSV:
+
+```{r}
+dir.create(here::here(new_project, "data"))
+write.csv(Theoph, here::here(new_project, "data/theoph.csv"), row.names = FALSE)
+```
+
+Expose the paths to the shell:
+
+```{r}
+Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(storage))
+```
+
+## `dvs init`
+
+Initialize a dvs repository pointing at the storage directory:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs init "$DVS_STORAGE"
+cat dvs.toml
+```
+
+## `dvs status` (before any adds)
+
+No files are tracked yet:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status
+```
+
+## `dvs add`
+
+Track the dataset with a message:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add data/theoph.csv -m "add Theoph dataset"
+```
+
+## `dvs status`
+
+The file is now tracked and `current`:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status
+```
+
+## Add a second copy
+
+Write another copy of the dataset and track it:
+
+```{r}
+write.csv(Theoph, here::here(new_project, "data/theoph_v2.csv"), row.names = FALSE)
+```
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add data/theoph_v2.csv -m "add second Theoph copy"
+dvs status
+```
+
+## Modify a file, check status
+
+Append a row to `theoph.csv` to simulate a local edit after it was stored:
+
+```{bash}
+echo "99,70.5,320,0,0.1" >> "$DVS_PROJECT/data/theoph.csv"
+```
+
+`dvs status` detects that the file on disk no longer matches the stored hash:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status
+```
+
+## Delete the original, check status
+
+```{bash}
+cd "$DVS_PROJECT"
+rm data/theoph.csv
+dvs status
+```
+
+`theoph.csv` shows `absent`; `theoph_v2.csv` remains `current`.
+
+## `dvs get`
+
+Restore the deleted file from storage:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs get data/theoph.csv
+```
+
+Both files are `current` again:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status
+```
+
+## Cleanup
+
+```{r}
+unlink(here::here(new_project), recursive = TRUE)
+unlink(here::here(storage),     recursive = TRUE)
+```
+
+---
+
+**Next up**: [Getting Started — R API](getting-started.html) — the same workflow using the `dvs` R package functions directly.

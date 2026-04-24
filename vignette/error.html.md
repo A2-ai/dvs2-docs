@@ -16,7 +16,18 @@ execute:
 ```{.r .cell-code}
 library(dvs)
 library(here)
+```
 
+::: {.cell-output .cell-output-stderr}
+
+```
+here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
+```
+
+
+:::
+
+```{.r .cell-code}
 # Print tibbles wide so all columns appear on one row.
 # options(width = Inf) is rejected by base R (max 10000); 10000 is the ceiling.
 options(width = 10000)
@@ -31,16 +42,15 @@ shell so the bash chunks below can use `$DVS_PROJECT` and `$DVS_STORAGE`.
 ::: {.cell}
 
 ```{.r .cell-code}
-storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
-new_project <- tempfile(fileext = "_project", tmpdir = here::here())
-
-dir.create(storage)
-dir.create(new_project)
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
 
 # Make it a git repo so dvs can find the project root
-system2("git", c("init", new_project), stdout = FALSE, stderr = FALSE)
+system2("git", c("init", here::here(new_project)), stdout = FALSE, stderr = FALSE)
 
-Sys.setenv(DVS_PROJECT = new_project, DVS_STORAGE = storage)
+Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(storage))
 ```
 :::
 
@@ -56,10 +66,20 @@ rejected — dvs refuses to version-control its own blob store.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
-dvs_init(storage_path = file.path(new_project, "inside_storage"),
-         root_dir     = new_project)
+setwd(here::here(new_project))
+dvs_init(storage_path = here::here(new_project, "inside_storage"),
+         root_dir     = here::here(new_project))
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_init_impl()`:
+! The given storage path is within the repository.
+```
+
+
+:::
 :::
 
 
@@ -70,6 +90,16 @@ dvs_init(storage_path = file.path(new_project, "inside_storage"),
 cd "$DVS_PROJECT"
 dvs init "$DVS_PROJECT/inside_storage"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: The given storage path is within the repository.
+```
+
+
+:::
 :::
 
 
@@ -82,12 +112,33 @@ Once `dvs.toml` is present a second `init` call fails immediately.
 
 ```{.r .cell-code}
 # First init succeeds
-setwd(new_project)
-dvs_init(storage_path = storage, root_dir = new_project)
-
-# Second init fails
-dvs_init(storage_path = storage, root_dir = new_project)
+setwd(here::here(new_project))
+dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
+# Second init fails
+dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
+```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_init_impl()`:
+! dvs is already initialized (dvs.toml exists)
+```
+
+
+:::
 :::
 
 
@@ -99,6 +150,16 @@ dvs_init(storage_path = storage, root_dir = new_project)
 cd "$DVS_PROJECT"
 dvs init "$DVS_STORAGE"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: dvs is already initialized (dvs.toml exists)
+```
+
+
+:::
 :::
 
 
@@ -113,20 +174,52 @@ backend.
 
 ```{.r .cell-code}
 # Use fresh temp dirs so we don't disrupt the main demo project
-bse_storage <- tempfile(fileext = "_storage", tmpdir = here::here())
-bse_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(bse_storage); dir.create(bse_project)
-system2("git", c("init", bse_project), stdout = FALSE, stderr = FALSE)
+bse_storage <- basename(tempfile(fileext = "_storage"))
+bse_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(bse_storage)); dir.create(here::here(bse_project))
+system2("git", c("init", here::here(bse_project)), stdout = FALSE, stderr = FALSE)
 
-setwd(bse_project)
-dvs_init(storage_path = bse_storage, root_dir = bse_project)
-
-# Remove dvs.toml but leave the storage intact
-file.remove(file.path(bse_project, "dvs.toml"))
-
-# Second init detects the existing backend
-dvs_init(storage_path = bse_storage, root_dir = bse_project)
+setwd(here::here(bse_project))
+dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_project))
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
+# Remove dvs.toml but leave the storage intact
+file.remove(here::here(bse_project, "dvs.toml"))
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] TRUE
+```
+
+
+:::
+
+```{.r .cell-code}
+# Second init detects the existing backend
+dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_project))
+```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_init_impl()`:
+! dvs is already initialized (backend storage exists)
+```
+
+
+:::
 :::
 
 
@@ -143,6 +236,16 @@ rm dvs.toml
 dvs init "$BSE_STORAGE"
 rm -rf "$BSE_STORAGE" "$BSE_PROJECT"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: dvs is already initialized (backend storage exists)
+```
+
+
+:::
 :::
 
 
@@ -157,12 +260,22 @@ in its ancestor chain fails before touching the filesystem.
 ::: {.cell}
 
 ```{.r .cell-code}
-outside <- tempfile(tmpdir = here::here())
-dir.create(outside)
-setwd(outside)
+outside <- basename(tempfile())
+dir.create(here::here(outside))
+setwd(here::here(outside))
 
 dvs_add(paths = "anything.csv")
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_add_impl()`:
+! Not in a DVS repository
+```
+
+
+:::
 :::
 
 
@@ -175,6 +288,16 @@ cd "$OUTSIDE"
 dvs add anything.csv
 rm -rf "$OUTSIDE"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: Not in a DVS repository
+```
+
+
+:::
 :::
 
 
@@ -187,9 +310,19 @@ A glob pattern that matches no files raises in the R package; the CLI prints
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_add(glob = "data/*.csv")
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_add_impl()`:
+! No files to add
+```
+
+
+:::
 :::
 
 
@@ -200,6 +333,16 @@ dvs_add(glob = "data/*.csv")
 cd "$DVS_PROJECT"
 dvs add --glob "data/*.csv"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: No files to add
+```
+
+
+:::
 :::
 
 
@@ -212,9 +355,19 @@ are processed — neither surface does partial work.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_add(paths = "nonexistent_file.csv")
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_add_impl()`:
+! Path not found: nonexistent_file.csv
+```
+
+
+:::
 :::
 
 
@@ -225,6 +378,16 @@ dvs_add(paths = "nonexistent_file.csv")
 cd "$DVS_PROJECT"
 dvs add nonexistent_file.csv
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: Path not found: nonexistent_file.csv
+```
+
+
+:::
 :::
 
 
@@ -238,10 +401,20 @@ divergence.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
-dir.create(file.path(new_project, "mydir"), showWarnings = FALSE)
+setwd(here::here(new_project))
+dir.create(here::here(new_project, "mydir"), showWarnings = FALSE)
 dvs_add(paths = "mydir")
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_add_impl()`:
+! No files to add
+```
+
+
+:::
 :::
 
 
@@ -253,6 +426,16 @@ cd "$DVS_PROJECT"
 mkdir -p mydir
 dvs add mydir
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: No files to add
+```
+
+
+:::
 :::
 
 
@@ -266,12 +449,24 @@ the failure recorded as a row rather than an R-level condition.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
+setwd(here::here(new_project))
 outside_file <- tempfile(fileext = ".csv")
 writeLines("a,b,c", outside_file)
 res <- dvs_add(paths = outside_file)
 res |> print(width = Inf, n = Inf)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 2
+  path                                                                              error                  
+  <chr>                                                                             <chr>                  
+1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv path is outside project
+```
+
+
+:::
 :::
 
 
@@ -283,9 +478,44 @@ is a plain character string:
 
 ```{.r .cell-code}
 str(res)
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+tibble [1 × 2] (S3: tbl_df/tbl/data.frame)
+ $ path : chr "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv"
+ $ error: chr "path is outside project"
+```
+
+
+:::
+
+```{.r .cell-code}
 res$path
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv"
+```
+
+
+:::
+
+```{.r .cell-code}
 res$error
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] "path is outside project"
+```
+
+
+:::
 :::
 
 
@@ -299,6 +529,17 @@ echo "a,b,c" > "$OUTSIDE_FILE"
 dvs add "$OUTSIDE_FILE"
 rm -f "$OUTSIDE_FILE"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.AMrsbIi84I.csv: path is outside project
+Error: Some files failed to add
+```
+
+
+:::
 :::
 
 
@@ -311,10 +552,20 @@ no partial add.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
-writeLines("x", file.path(new_project, "present.csv"))
+setwd(here::here(new_project))
+writeLines("x", here::here(new_project, "present.csv"))
 dvs_add(paths = c("present.csv", "missing.csv"))
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_add_impl()`:
+! Path not found: missing.csv
+```
+
+
+:::
 :::
 
 
@@ -326,6 +577,16 @@ cd "$DVS_PROJECT"
 echo "x" > present.csv
 dvs add present.csv missing.csv
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: Path not found: missing.csv
+```
+
+
+:::
 :::
 
 
@@ -339,11 +600,21 @@ dvs add present.csv missing.csv
 ::: {.cell}
 
 ```{.r .cell-code}
-outside2 <- tempfile(tmpdir = here::here())
-dir.create(outside2)
-setwd(outside2)
+outside2 <- basename(tempfile())
+dir.create(here::here(outside2))
+setwd(here::here(outside2))
 dvs_status()
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_status_impl()`:
+! Not in a DVS repository
+```
+
+
+:::
 :::
 
 
@@ -356,6 +627,16 @@ cd "$OUTSIDE2"
 dvs status
 rm -rf "$OUTSIDE2"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: Not in a DVS repository
+```
+
+
+:::
 :::
 
 
@@ -369,11 +650,20 @@ get the empty-set response.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
+setwd(here::here(new_project))
 outside_status <- tempfile(fileext = ".csv")
 writeLines("a,b,c", outside_status)
 dvs_status(paths = outside_status) |> print(width = Inf, n = Inf)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 0 × 0
+```
+
+
+:::
 :::
 
 
@@ -387,6 +677,16 @@ echo "a,b,c" > "$OUTSIDE_S"
 dvs status "$OUTSIDE_S"
 rm -f "$OUTSIDE_S"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+No tracked files
+```
+
+
+:::
 :::
 
 
@@ -399,14 +699,40 @@ with only the tracked path and no error or warning about the missing one.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
+setwd(here::here(new_project))
 # Track one real file so we have something to match against
-writeLines("x", file.path(new_project, "present.csv"))
+writeLines("x", here::here(new_project, "present.csv"))
 dvs_add(paths = "present.csv")
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 5
+  path        outcome hash                                                                size stored_size
+  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>
+1 present.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B
+```
+
+
+:::
+
+```{.r .cell-code}
 dvs_status(paths = c("present.csv", "missing.csv")) |>
   print(width = Inf, n = Inf)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 7
+  path        status  hash                                                                size created_by compression add_time           
+  <chr>       <chr>   <chr>                                                            <bytes> <chr>      <chr>       <dttm>             
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-04-24 12:59:45
+```
+
+
+:::
 :::
 
 
@@ -417,6 +743,20 @@ dvs_status(paths = c("present.csv", "missing.csv")) |>
 cd "$DVS_PROJECT"
 dvs status present.csv missing.csv
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
++-------------+---------+------+
+| path        | status  | size |
++-------------+---------+------+
+| present.csv | current |  2 B |
++-------------+---------+------+
+```
+
+
+:::
 :::
 
 
@@ -431,22 +771,62 @@ rest of the tree still resolves.
 
 ```{.r .cell-code}
 # Fresh project so we can corrupt one meta file without affecting the rest
-ump_storage <- tempfile(fileext = "_storage", tmpdir = here::here())
-ump_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(ump_storage); dir.create(ump_project)
-system2("git", c("init", ump_project), stdout = FALSE, stderr = FALSE)
+ump_storage <- basename(tempfile(fileext = "_storage"))
+ump_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(ump_storage)); dir.create(here::here(ump_project))
+system2("git", c("init", here::here(ump_project)), stdout = FALSE, stderr = FALSE)
 
-setwd(ump_project)
-dvs_init(storage_path = ump_storage, root_dir = ump_project)
-writeLines("x", file.path(ump_project, "corrupt.csv"))
+setwd(here::here(ump_project))
+dvs_init(storage_path = here::here(ump_storage), root_dir = here::here(ump_project))
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
+writeLines("x", here::here(ump_project, "corrupt.csv"))
 dvs_add(paths = "corrupt.csv")
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 5
+  path        outcome hash                                                                size stored_size
+  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>
+1 corrupt.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B
+```
+
+
+:::
+
+```{.r .cell-code}
 # Corrupt the meta file
-writeLines("garbage", file.path(ump_project, ".dvs", "corrupt.csv.dvs"))
+writeLines("garbage", here::here(ump_project, ".dvs", "corrupt.csv.dvs"))
 
 dvs_status() |> print(width = Inf, n = Inf)
+```
 
-Sys.setenv(UMP_PROJECT = ump_project)
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 3
+  path        error                             add_time
+  <chr>       <chr>                             <dttm>  
+1 corrupt.csv expected value at line 1 column 1 NA      
+```
+
+
+:::
+
+```{.r .cell-code}
+Sys.setenv(UMP_PROJECT = here::here(ump_project))
 ```
 :::
 
@@ -458,6 +838,20 @@ Sys.setenv(UMP_PROJECT = ump_project)
 cd "$UMP_PROJECT"
 dvs status
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error getting status for corrupt.csv: expected value at line 1 column 1
++------+--------+------+
+| path | status | size |
++------+--------+------+
+Error: Some files failed to get status
+```
+
+
+:::
 :::
 
 
@@ -469,11 +863,21 @@ dvs status
 ::: {.cell}
 
 ```{.r .cell-code}
-outside3 <- tempfile(tmpdir = here::here())
-dir.create(outside3)
-setwd(outside3)
+outside3 <- basename(tempfile())
+dir.create(here::here(outside3))
+setwd(here::here(outside3))
 dvs_get(paths = "something.csv")
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_get_impl()`:
+! Not in a DVS repository
+```
+
+
+:::
 :::
 
 
@@ -486,6 +890,16 @@ cd "$OUTSIDE3"
 dvs get something.csv
 rm -rf "$OUTSIDE3"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: Not in a DVS repository
+```
+
+
+:::
 :::
 
 
@@ -497,9 +911,19 @@ When the glob resolves to zero tracked files, `dvs get` aborts.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_get(glob = "data/nope_*.csv")
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_get_impl()`:
+! No files to get
+```
+
+
+:::
 :::
 
 
@@ -510,6 +934,16 @@ dvs_get(glob = "data/nope_*.csv")
 cd "$DVS_PROJECT"
 dvs get --glob "data/nope_*.csv"
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: No files to get
+```
+
+
+:::
 :::
 
 
@@ -521,10 +955,20 @@ Requesting a file that exists on disk but has never been `dvs add`-ed.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
-writeLines("col1,col2", file.path(new_project, "untracked.csv"))
+setwd(here::here(new_project))
+writeLines("col1,col2", here::here(new_project, "untracked.csv"))
 dvs_get(paths = "untracked.csv")
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_get_impl()`:
+! No files to get
+```
+
+
+:::
 :::
 
 
@@ -536,6 +980,16 @@ cd "$DVS_PROJECT"
 echo "col1,col2" > untracked.csv
 dvs get untracked.csv
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: No files to get
+```
+
+
+:::
 :::
 
 
@@ -547,9 +1001,19 @@ Requesting a path that neither exists on disk nor has metadata.
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_get(paths = "ghost.csv")
 ```
+
+::: {.cell-output .cell-output-error}
+
+```
+Error in `dvs_get_impl()`:
+! No files to get
+```
+
+
+:::
 :::
 
 
@@ -560,6 +1024,16 @@ dvs_get(paths = "ghost.csv")
 cd "$DVS_PROJECT"
 dvs get ghost.csv
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: No files to get
+```
+
+
+:::
 :::
 
 
@@ -574,24 +1048,76 @@ from storage — simulating a corrupted or partially-synced store.
 ```{.r .cell-code}
 # Use a fresh project; the main demo project still has live state we don't
 # want to wreck for downstream chunks.
-bm_storage <- tempfile(fileext = "_storage", tmpdir = here::here())
-bm_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(bm_storage); dir.create(bm_project)
-system2("git", c("init", bm_project), stdout = FALSE, stderr = FALSE)
+bm_storage <- basename(tempfile(fileext = "_storage"))
+bm_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(bm_storage)); dir.create(here::here(bm_project))
+system2("git", c("init", here::here(bm_project)), stdout = FALSE, stderr = FALSE)
 
-setwd(bm_project)
-dvs_init(storage_path = bm_storage, root_dir = bm_project)
-writeLines("x,y,z", file.path(bm_project, "tracked.csv"))
+setwd(here::here(bm_project))
+dvs_init(storage_path = here::here(bm_storage), root_dir = here::here(bm_project))
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
+writeLines("x,y,z", here::here(bm_project, "tracked.csv"))
 dvs_add(paths = "tracked.csv")
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 5
+  path        outcome hash                                                                size stored_size
+  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>
+1 tracked.csv copied  1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a     6 B        15 B
+```
+
+
+:::
+
+```{.r .cell-code}
 # Remove the local copy and delete every blob from storage
-file.remove(file.path(bm_project, "tracked.csv"))
-blob_files <- list.files(bm_storage, recursive = TRUE, full.names = TRUE)
+file.remove(here::here(bm_project, "tracked.csv"))
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] TRUE
+```
+
+
+:::
+
+```{.r .cell-code}
+blob_files <- list.files(here::here(bm_storage), recursive = TRUE, full.names = TRUE)
 invisible(file.remove(blob_files[!grepl("audit", blob_files)]))
 
 dvs_get(paths = "tracked.csv") |> print(width = Inf, n = Inf)
+```
 
-Sys.setenv(BM_PROJECT = bm_project)
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 2
+  path        error                                                                                                         
+  <chr>       <chr>                                                                                                         
+1 tracked.csv Storage file missing for hash: Hashes(blake3=1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a)
+```
+
+
+:::
+
+```{.r .cell-code}
+Sys.setenv(BM_PROJECT = here::here(bm_project))
 ```
 :::
 
@@ -603,6 +1129,17 @@ Sys.setenv(BM_PROJECT = bm_project)
 cd "$BM_PROJECT"
 dvs get tracked.csv
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: tracked.csv - Storage file missing for hash: Hashes(blake3=1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a)
+Error: Some files failed to get
+```
+
+
+:::
 :::
 
 
@@ -617,16 +1154,42 @@ content-level corruption of the blob.
 
 ```{.r .cell-code}
 # Fresh project + storage
-hm_storage <- tempfile(fileext = "_storage", tmpdir = here::here())
-hm_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(hm_storage); dir.create(hm_project)
-system2("git", c("init", hm_project), stdout = FALSE, stderr = FALSE)
+hm_storage <- basename(tempfile(fileext = "_storage"))
+hm_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(hm_storage)); dir.create(here::here(hm_project))
+system2("git", c("init", here::here(hm_project)), stdout = FALSE, stderr = FALSE)
 
-setwd(hm_project)
-dvs_init(storage_path = hm_storage, root_dir = hm_project)
-writeLines("original", file.path(hm_project, "tampered.csv"))
+setwd(here::here(hm_project))
+dvs_init(storage_path = here::here(hm_storage), root_dir = here::here(hm_project))
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
+writeLines("original", here::here(hm_project, "tampered.csv"))
 dvs_add(paths = "tampered.csv")
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 5
+  path         outcome hash                                                                size stored_size
+  <chr>        <chr>   <chr>                                                            <bytes>     <bytes>
+1 tampered.csv copied  4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234     9 B        18 B
+```
+
+
+:::
+
+```{.r .cell-code}
 # Replace the stored blob with zstd-compressed different content under the
 # same filename (so the hash-keyed path resolves, but the decompressed bytes
 # no longer match the recorded hash).
@@ -639,11 +1202,36 @@ system2("bash", c("-c",
                           shQuote(blob))))
 
 # Remove local file so get actually goes to storage
-file.remove(file.path(hm_project, "tampered.csv"))
+file.remove(here::here(hm_project, "tampered.csv"))
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] TRUE
+```
+
+
+:::
+
+```{.r .cell-code}
 dvs_get(paths = "tampered.csv") |> print(width = Inf, n = Inf)
+```
 
-Sys.setenv(HM_PROJECT = hm_project)
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 3
+  path         outcome    size
+  <chr>        <chr>   <bytes>
+1 tampered.csv copied      9 B
+```
+
+
+:::
+
+```{.r .cell-code}
+Sys.setenv(HM_PROJECT = here::here(hm_project))
 ```
 :::
 
@@ -665,11 +1253,12 @@ dvs get tampered.csv
 
 ```{.r .cell-code}
 setwd(here::here())
-unlink(new_project, recursive = TRUE)
-unlink(storage,     recursive = TRUE)
+unlink(here::here(new_project), recursive = TRUE)
+unlink(here::here(storage),     recursive = TRUE)
 for (d in c("bse_project", "bse_storage", "ump_project", "ump_storage",
-            "bm_project", "bm_storage", "hm_project", "hm_storage")) {
-  if (exists(d)) unlink(get(d), recursive = TRUE)
+            "bm_project", "bm_storage", "hm_project", "hm_storage",
+            "outside", "outside2", "outside3")) {
+  if (exists(d)) unlink(here::here(get(d)), recursive = TRUE)
 }
 ```
 :::

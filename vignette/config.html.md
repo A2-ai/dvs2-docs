@@ -14,10 +14,20 @@ execute:
 ::: {.cell}
 
 ```{.r .cell-code}
+options(width = 1000)
 library(dvs)
 library(fs)
 library(here)
 ```
+
+::: {.cell-output .cell-output-stderr}
+
+```
+here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
+```
+
+
+:::
 :::
 
 
@@ -34,10 +44,10 @@ source(here::here("R/mkdatasetfiles.R"))
 ::: {.cell}
 
 ```{.r .cell-code}
-storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
-new_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(storage)
-dir.create(new_project)
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
 ```
 :::
 
@@ -46,10 +56,19 @@ dir.create(new_project)
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(new_project)
+setwd(here::here(new_project))
 mkdatasetfiles(n_files = 5, size_mb = 5, prefix = "file_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(storage)
+dvs_init(here::here(storage))
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
 :::
 
 
@@ -61,8 +80,21 @@ dvs_init(storage)
 ::: {.cell}
 
 ```{.r .cell-code}
-cat(readLines(fs::path(new_project, "dvs.toml")), sep = "\n")
+cat(readLines(here::here(new_project, "dvs.toml")), sep = "\n")
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+compression = "zstd"
+
+[backend]
+path = "/Users/elea/Documents/a2ai_github/dvs2-demo/filed8e74e275450_storage"
+group = "staff"
+```
+
+
+:::
 :::
 
 
@@ -80,11 +112,11 @@ Same data, two different compression settings — compare resulting storage size
 ::: {.cell}
 
 ```{.r .cell-code}
-storage_zstd <- tempfile(fileext = "_zstd_storage", tmpdir = here::here())
-storage_none <- tempfile(fileext = "_none_storage", tmpdir = here::here())
-project_zstd <- tempfile(fileext = "_zstd_project", tmpdir = here::here())
-project_none <- tempfile(fileext = "_none_project", tmpdir = here::here())
-for (d in c(storage_zstd, storage_none, project_zstd, project_none)) dir.create(d)
+storage_zstd <- basename(tempfile(fileext = "_zstd_storage"))
+storage_none <- basename(tempfile(fileext = "_none_storage"))
+project_zstd <- basename(tempfile(fileext = "_zstd_project"))
+project_none <- basename(tempfile(fileext = "_none_project"))
+for (d in c(storage_zstd, storage_none, project_zstd, project_none)) dir.create(here::here(d))
 ```
 :::
 
@@ -93,7 +125,7 @@ for (d in c(storage_zstd, storage_none, project_zstd, project_none)) dir.create(
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(project_zstd)
+setwd(here::here(project_zstd))
 mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 :::
@@ -103,7 +135,7 @@ mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_p
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(project_none)
+setwd(here::here(project_none))
 mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 :::
@@ -113,8 +145,20 @@ mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_p
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(project_zstd)
-dvs_init(storage_zstd, compression = "zstd")
+setwd(here::here(project_zstd))
+dvs_init(here::here(storage_zstd), compression = "zstd")
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
 invisible(dvs_add(glob = "data/*.csv", message = "add with zstd compression"))
 ```
 :::
@@ -124,8 +168,20 @@ invisible(dvs_add(glob = "data/*.csv", message = "add with zstd compression"))
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(project_none)
-dvs_init(storage_none, compression = "none")
+setwd(here::here(project_none))
+dvs_init(here::here(storage_none), compression = "none")
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
 invisible(dvs_add(glob = "data/*.csv", message = "add with no compression"))
 ```
 :::
@@ -149,13 +205,26 @@ storage_summary <- function(path, label) {
 }
 
 comparison <- dplyr::bind_rows(
-  storage_summary(storage_zstd, "zstd"),
-  storage_summary(storage_none, "none")
+  storage_summary(here::here(storage_zstd), "zstd"),
+  storage_summary(here::here(storage_none), "none")
 )
 
 comparison |>
   dplyr::mutate(ratio = round(size_bytes / size_bytes[compression == "none"], 3))
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 2 × 5
+  compression n_blobs size_bytes size_mb ratio
+  <chr>         <int>      <dbl>   <dbl> <dbl>
+1 zstd              5   22042575    22.0  0.42
+2 none              5   52428720    52.4  1   
+```
+
+
+:::
 :::
 
 
@@ -168,10 +237,10 @@ and copying blobs. The default is auto-detect (one thread per logical CPU).
 ::: {.cell}
 
 ```{.r .cell-code}
-storage_t <- tempfile(fileext = "_threads_storage", tmpdir = here::here())
-project_t <- tempfile(fileext = "_threads_project", tmpdir = here::here())
-dir.create(storage_t)
-dir.create(project_t)
+storage_t <- basename(tempfile(fileext = "_threads_storage"))
+project_t <- basename(tempfile(fileext = "_threads_project"))
+dir.create(here::here(storage_t))
+dir.create(here::here(project_t))
 ```
 :::
 
@@ -180,10 +249,19 @@ dir.create(project_t)
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(project_t)
+setwd(here::here(project_t))
 mkdatasetfiles(n_files = 50, size_mb = 3, prefix = "f_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(storage_t)
+dvs_init(here::here(storage_t))
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
 :::
 
 
@@ -195,11 +273,20 @@ Time `dvs_add` with a single thread:
 ```{.r .cell-code}
 set_dvs_threads(1)
 t1 <- system.time({
-  setwd(project_t)
+  setwd(here::here(project_t))
   invisible(dvs_add(glob = "data/*.csv", message = "1 thread"))
 })
 cat("1 thread :", round(t1["elapsed"], 2), "s\n")
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+1 thread : 0.89 s
+```
+
+
+:::
 :::
 
 
@@ -209,7 +296,7 @@ Re-stage files by appending a byte so dvs sees them as unsynced:
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(project_t)
+setwd(here::here(project_t))
 for (f in fs::dir_ls("data", type = "file")) write("", f, append = TRUE)
 ```
 :::
@@ -223,11 +310,20 @@ Time with four threads:
 ```{.r .cell-code}
 set_dvs_threads(4)
 t4 <- system.time({
-  setwd(project_t)
+  setwd(here::here(project_t))
   invisible(dvs_add(glob = "data/*.csv", message = "4 threads"))
 })
 cat("4 threads:", round(t4["elapsed"], 2), "s\n")
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+4 threads: 0.24 s
+```
+
+
+:::
 :::
 
 
@@ -240,10 +336,10 @@ another tool in the project already claims that name.
 ::: {.cell}
 
 ```{.r .cell-code}
-storage_m <- tempfile(fileext = "_meta_storage", tmpdir = here::here())
-project_m <- tempfile(fileext = "_meta_project", tmpdir = here::here())
-dir.create(storage_m)
-dir.create(project_m)
+storage_m <- basename(tempfile(fileext = "_meta_storage"))
+project_m <- basename(tempfile(fileext = "_meta_project"))
+dir.create(here::here(storage_m))
+dir.create(here::here(project_m))
 ```
 :::
 
@@ -252,9 +348,21 @@ dir.create(project_m)
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(project_m)
+setwd(here::here(project_m))
 mkdatasetfiles(n_files = 1, size_mb = 1, prefix = "d_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(storage_m, metadata_folder_name = "datalock")
+dvs_init(here::here(storage_m), metadata_folder_name = "datalock")
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
 invisible(dvs_add(glob = "data/*.csv", message = "custom folder name demo"))
 ```
 :::
@@ -266,9 +374,22 @@ The meta files live under `datalock/` instead of `.dvs/`:
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(project_m)
+setwd(here::here(project_m))
 fs::dir_tree("datalock", all = TRUE)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+datalock
+├── .cache
+│   └── dvs.db
+└── data
+    └── d_1.csv.dvs
+```
+
+
+:::
 :::
 
 
@@ -279,8 +400,22 @@ automatically:
 ::: {.cell}
 
 ```{.r .cell-code}
-cat(readLines(fs::path(project_m, "dvs.toml")), sep = "\n")
+cat(readLines(here::here(project_m, "dvs.toml")), sep = "\n")
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+compression = "zstd"
+metadata_folder_name = "datalock"
+
+[backend]
+path = "/Users/elea/Documents/a2ai_github/dvs2-demo/filed8e74b51bf6b_meta_storage"
+group = "staff"
+```
+
+
+:::
 :::
 
 
@@ -305,7 +440,7 @@ for (d in c(storage, new_project,
             storage_zstd, storage_none, project_zstd, project_none,
             storage_t, project_t,
             storage_m, project_m)) {
-  unlink(d, recursive = TRUE)
+  unlink(here::here(d), recursive = TRUE)
 }
 ```
 :::

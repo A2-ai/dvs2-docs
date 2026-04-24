@@ -23,23 +23,23 @@ source(here::here("R/mkdatasetfiles.R"))
 ```
 
 ```{r}
-storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
-new_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(storage)
-dir.create(new_project)
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
 ```
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 mkdatasetfiles(n_files = 1, size_mb = 25, prefix = "large_", dir = "data/large", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 mkdatasetfiles(n_files = 3, size_mb = 1,  prefix = "small_", dir = "data/small", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 ```{r}
 #| warning: false
-setwd(new_project)
-dvs_init(storage)
+setwd(here::here(new_project))
+dvs_init(here::here(storage))
 invisible(dvs_add("data/large/large_1.csv",
                   message = "initial add of large file"))
 invisible(dvs_add(paths = fs::dir_ls("data/small", type = "file"),
@@ -50,7 +50,7 @@ All files are `current`:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_status()
 ```
 
@@ -60,7 +60,7 @@ Append a row to `large_1.csv` — the file now differs from the hash dvs recorde
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 cat("99,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
 ```
 
@@ -68,7 +68,7 @@ cat("99,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_status(status = "unsynced")
 ```
 
@@ -76,7 +76,7 @@ Re-add with a new message. dvs writes a new blob and overwrites the meta file:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_add("data/large/large_1.csv", message = "add row 99 — corrected dataset")
 ```
 
@@ -84,7 +84,7 @@ Back to `current`:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_status(status = "current")
 ```
 
@@ -96,7 +96,7 @@ Modify the file again:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 cat("100,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
 ```
 
@@ -104,7 +104,7 @@ Preview `dvs_add` without committing:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_add("data/large/large_1.csv", message = "dry run preview", dry_run = TRUE)
 ```
 
@@ -112,7 +112,7 @@ Status is still `unsynced` — nothing was written:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_status(status = "unsynced")
 ```
 
@@ -120,7 +120,7 @@ Delete a file, then preview `dvs_get` without restoring:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 unlink("data/small/small_1.csv")
 dvs_get("data/small/small_1.csv", dry_run = TRUE)
 ```
@@ -129,7 +129,7 @@ Status still shows `absent`:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_status(status = "absent")
 ```
 
@@ -137,7 +137,7 @@ Restore for real:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_get("data/small/small_1.csv")
 dvs_status()
 ```
@@ -151,7 +151,7 @@ Add a file nested one level deeper so the contrast is visible:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dir.create("data/small/nested", recursive = TRUE)
 mkdatasetfiles(n_files = 1, size_mb = 1, prefix = "nested_", dir = "data/small/nested",
                show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
@@ -163,7 +163,7 @@ not the nested one:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_status("data/small")
 ```
 
@@ -171,7 +171,7 @@ dvs_status("data/small")
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_status("data/small", recursive = TRUE)
 ```
 
@@ -179,7 +179,7 @@ Delete all four files so retrieval can be demonstrated:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 unlink("data/small/small_1.csv")
 unlink("data/small/small_2.csv")
 unlink("data/small/small_3.csv")
@@ -192,17 +192,17 @@ file remains absent:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_get("data/small")
 dvs_status("data/small", recursive = TRUE)
 ```
 
-`dvs_get("data/small", recursive = TRUE)` restores the nested file as well:
+Restore the nested file explicitly by path:
 
 ```{r}
 #| warning: false
-setwd(new_project)
-dvs_get("data/small", recursive = TRUE)
+setwd(here::here(new_project))
+dvs_get("data/small/nested/nested_1.csv")
 dvs_status("data/small", recursive = TRUE)
 ```
 
@@ -216,7 +216,7 @@ Locate and delete the blob for `small_2.csv`:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 meta_path <- grep(
   "small_2",
   fs::dir_ls(".dvs", recurse = TRUE, all = TRUE, glob = "*.dvs", type = "file"),
@@ -224,7 +224,7 @@ meta_path <- grep(
 )
 meta  <- jsonlite::fromJSON(meta_path)
 hash  <- meta$hashes$blake3
-blob  <- fs::path(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
+blob  <- here::here(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
 
 cat("blob:", as.character(blob), "\n")
 cat("exists:", fs::file_exists(blob), "\n")
@@ -236,7 +236,7 @@ Remove the local copy so a restore is needed:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 unlink("data/small/small_2.csv")
 dvs_status(status = "absent")
 ```
@@ -246,7 +246,7 @@ gone so the file cannot be restored:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 dvs_get("data/small/small_2.csv")
 ```
 
@@ -265,8 +265,8 @@ After the meta file is gone `dvs_status()` no longer reports on that file.
 # Cleanup
 
 ```{r}
-unlink(new_project, recursive = TRUE)
-unlink(storage,     recursive = TRUE)
+unlink(here::here(new_project), recursive = TRUE)
+unlink(here::here(storage),     recursive = TRUE)
 ```
 
 ---

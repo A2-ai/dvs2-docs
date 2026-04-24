@@ -29,11 +29,10 @@ See `vignette/random_files.qmd` for a demonstration of this function.
 
 
 ```{r}
-storage <- tempfile(fileext = "_storage", tmpdir = here::here())
-new_project <- tempfile(fileext = "_project", tmpdir = here::here())
-
-dir.create(storage)
-dir.create(new_project)
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
 ```
 
 
@@ -41,7 +40,7 @@ Let us add 1x25MB file (large), 3x1MB (small) and 50x3MB files (individual)
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> large_file
 mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> small_files
@@ -51,7 +50,7 @@ mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/i
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 fs::dir_tree(
   "data"
@@ -61,7 +60,7 @@ fs::dir_tree(
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 fs::dir_info(
   "data",recurse = TRUE, type = "directory",
@@ -72,7 +71,7 @@ False sizes unfortunately;
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 fs::dir_info(
   "data",recurse = TRUE, type = "file",
@@ -82,7 +81,7 @@ fs::dir_info(
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 
 fs::dir_info(
@@ -97,14 +96,14 @@ Initialize a dvs repository
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
-dvs_init(storage)
+dvs_init(here::here(storage))
 ```
 
 ```{r}
 cat(
-  readLines(fs::path(new_project, "dvs.toml"))
+  readLines(here::here(new_project, "dvs.toml"))
 )
 ```
 
@@ -113,7 +112,7 @@ Add the new files in the project to the dvs repository
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 # single file
 dvs_add("data/large/large_1.csv", message = "add one large dataset")
@@ -131,7 +130,7 @@ Status
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 dvs_status()
 ```
@@ -140,7 +139,7 @@ dvs_status()
 Let us accidentally delete a few individual files:
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 unlink("data/individual/individual_04.csv")
 unlink("data/individual/individual_08.csv")
@@ -154,7 +153,7 @@ First, what is the status?
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 dvs_status(status = "absent")
 ```
@@ -164,7 +163,7 @@ Or filter manually with `dplyr`:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 dplyr::filter(dvs_status(), status == "absent")
 ```
@@ -175,7 +174,7 @@ Let us restore them:
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 
 dvs_get(glob = "data/individual/individual_*.csv")
 ```
@@ -184,8 +183,8 @@ dvs_get(glob = "data/individual/individual_*.csv")
 ## Cleanup
 
 ```{r}
-unlink(new_project, recursive = TRUE)
-unlink(storage, recursive = TRUE)
+unlink(here::here(new_project), recursive = TRUE)
+unlink(here::here(storage),     recursive = TRUE)
 ```
 
 ---

@@ -15,7 +15,9 @@ tracks them through small, text-based meta files that live alongside your code.
 | Vignette | What it covers |
 |----------|----------------|
 | [Setup](setup.html) | Bootstrap a new project: rv, dvs source build, quarto scaffolding |
-| [Introduction](intro.html) | Core R API: `dvs_init`, `dvs_add`, `dvs_status`, `dvs_get` |
+| [Getting Started](getting-started.html) | `dvs_init`, `dvs_add`, `dvs_status`, `dvs_get` — five minutes, R API |
+| [Getting Started — CLI](getting-started-cli.html) | Same five-minute walkthrough via the `dvs` binary |
+| [Introduction](intro.html) | Core R API with larger datasets: status states, glob adds, partial restore |
 | [CLI](intro-cli.html) | Same operations from the terminal via the `dvs` binary |
 | [Internals](intro-internals.html) | `.dvs/` folder layout, meta files, blob addressing, audit log |
 | [Lifecycle](lifecycle.html) | Modifying tracked files, `unsynced` status, `dry_run`, integrity failures |

@@ -22,17 +22,17 @@ source(here::here("R/mkdatasetfiles.R"))
 ```
 
 ```{r}
-storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
-new_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(storage)
-dir.create(new_project)
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
 ```
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 mkdatasetfiles(n_files = 5, size_mb = 5, prefix = "file_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(storage)
+dvs_init(here::here(storage))
 ```
 
 # `dvs.toml`
@@ -40,7 +40,7 @@ dvs_init(storage)
 `dvs_init()` writes a `dvs.toml` at the project root:
 
 ```{r}
-cat(readLines(fs::path(new_project, "dvs.toml")), sep = "\n")
+cat(readLines(here::here(new_project, "dvs.toml")), sep = "\n")
 ```
 
 | Field | Meaning |
@@ -54,36 +54,36 @@ cat(readLines(fs::path(new_project, "dvs.toml")), sep = "\n")
 Same data, two different compression settings — compare resulting storage size.
 
 ```{r}
-storage_zstd <- tempfile(fileext = "_zstd_storage", tmpdir = here::here())
-storage_none <- tempfile(fileext = "_none_storage", tmpdir = here::here())
-project_zstd <- tempfile(fileext = "_zstd_project", tmpdir = here::here())
-project_none <- tempfile(fileext = "_none_project", tmpdir = here::here())
-for (d in c(storage_zstd, storage_none, project_zstd, project_none)) dir.create(d)
+storage_zstd <- basename(tempfile(fileext = "_zstd_storage"))
+storage_none <- basename(tempfile(fileext = "_none_storage"))
+project_zstd <- basename(tempfile(fileext = "_zstd_project"))
+project_none <- basename(tempfile(fileext = "_none_project"))
+for (d in c(storage_zstd, storage_none, project_zstd, project_none)) dir.create(here::here(d))
 ```
 
 ```{r}
 #| warning: false
-setwd(project_zstd)
+setwd(here::here(project_zstd))
 mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 ```{r}
 #| warning: false
-setwd(project_none)
+setwd(here::here(project_none))
 mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 ```
 
 ```{r}
 #| warning: false
-setwd(project_zstd)
-dvs_init(storage_zstd, compression = "zstd")
+setwd(here::here(project_zstd))
+dvs_init(here::here(storage_zstd), compression = "zstd")
 invisible(dvs_add(glob = "data/*.csv", message = "add with zstd compression"))
 ```
 
 ```{r}
 #| warning: false
-setwd(project_none)
-dvs_init(storage_none, compression = "none")
+setwd(here::here(project_none))
+dvs_init(here::here(storage_none), compression = "none")
 invisible(dvs_add(glob = "data/*.csv", message = "add with no compression"))
 ```
 
@@ -103,8 +103,8 @@ storage_summary <- function(path, label) {
 }
 
 comparison <- dplyr::bind_rows(
-  storage_summary(storage_zstd, "zstd"),
-  storage_summary(storage_none, "none")
+  storage_summary(here::here(storage_zstd), "zstd"),
+  storage_summary(here::here(storage_none), "none")
 )
 
 comparison |>
@@ -117,17 +117,17 @@ comparison |>
 and copying blobs. The default is auto-detect (one thread per logical CPU).
 
 ```{r}
-storage_t <- tempfile(fileext = "_threads_storage", tmpdir = here::here())
-project_t <- tempfile(fileext = "_threads_project", tmpdir = here::here())
-dir.create(storage_t)
-dir.create(project_t)
+storage_t <- basename(tempfile(fileext = "_threads_storage"))
+project_t <- basename(tempfile(fileext = "_threads_project"))
+dir.create(here::here(storage_t))
+dir.create(here::here(project_t))
 ```
 
 ```{r}
 #| warning: false
-setwd(project_t)
+setwd(here::here(project_t))
 mkdatasetfiles(n_files = 50, size_mb = 3, prefix = "f_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(storage_t)
+dvs_init(here::here(storage_t))
 ```
 
 Time `dvs_add` with a single thread:
@@ -136,7 +136,7 @@ Time `dvs_add` with a single thread:
 #| warning: false
 set_dvs_threads(1)
 t1 <- system.time({
-  setwd(project_t)
+  setwd(here::here(project_t))
   invisible(dvs_add(glob = "data/*.csv", message = "1 thread"))
 })
 cat("1 thread :", round(t1["elapsed"], 2), "s\n")
@@ -146,7 +146,7 @@ Re-stage files by appending a byte so dvs sees them as unsynced:
 
 ```{r}
 #| warning: false
-setwd(project_t)
+setwd(here::here(project_t))
 for (f in fs::dir_ls("data", type = "file")) write("", f, append = TRUE)
 ```
 
@@ -156,7 +156,7 @@ Time with four threads:
 #| warning: false
 set_dvs_threads(4)
 t4 <- system.time({
-  setwd(project_t)
+  setwd(here::here(project_t))
   invisible(dvs_add(glob = "data/*.csv", message = "4 threads"))
 })
 cat("4 threads:", round(t4["elapsed"], 2), "s\n")
@@ -168,24 +168,24 @@ cat("4 threads:", round(t4["elapsed"], 2), "s\n")
 another tool in the project already claims that name.
 
 ```{r}
-storage_m <- tempfile(fileext = "_meta_storage", tmpdir = here::here())
-project_m <- tempfile(fileext = "_meta_project", tmpdir = here::here())
-dir.create(storage_m)
-dir.create(project_m)
+storage_m <- basename(tempfile(fileext = "_meta_storage"))
+project_m <- basename(tempfile(fileext = "_meta_project"))
+dir.create(here::here(storage_m))
+dir.create(here::here(project_m))
 ```
 
 ```{r}
 #| warning: false
-setwd(project_m)
+setwd(here::here(project_m))
 mkdatasetfiles(n_files = 1, size_mb = 1, prefix = "d_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(storage_m, metadata_folder_name = "datalock")
+dvs_init(here::here(storage_m), metadata_folder_name = "datalock")
 invisible(dvs_add(glob = "data/*.csv", message = "custom folder name demo"))
 ```
 
 The meta files live under `datalock/` instead of `.dvs/`:
 
 ```{r}
-setwd(project_m)
+setwd(here::here(project_m))
 fs::dir_tree("datalock", all = TRUE)
 ```
 
@@ -193,7 +193,7 @@ The `dvs.toml` records the custom name so all subsequent operations pick it up
 automatically:
 
 ```{r}
-cat(readLines(fs::path(project_m, "dvs.toml")), sep = "\n")
+cat(readLines(here::here(project_m, "dvs.toml")), sep = "\n")
 ```
 
 # `group` (Unix only)
@@ -214,7 +214,7 @@ for (d in c(storage, new_project,
             storage_zstd, storage_none, project_zstd, project_none,
             storage_t, project_t,
             storage_m, project_m)) {
-  unlink(d, recursive = TRUE)
+  unlink(here::here(d), recursive = TRUE)
 }
 ```
 

@@ -25,15 +25,15 @@ source(here::here("R/mkdatasetfiles.R"))
 ```
 
 ```{r}
-storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
-new_project <- tempfile(fileext = "_project", tmpdir = here::here())
-dir.create(storage)
-dir.create(new_project)
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
 ```
 
 ```{r}
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
 mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
@@ -42,7 +42,7 @@ mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/i
 Pass the paths to the shell so bash chunks can use them:
 
 ```{r}
-Sys.setenv(DVS_PROJECT = new_project, DVS_STORAGE = storage)
+Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(storage))
 ```
 
 # `dvs init`
@@ -144,7 +144,7 @@ Every command accepts `--json` for machine-readable output:
 ```{r}
 #| results: asis
 #| warning: false
-setwd(new_project)
+setwd(here::here(new_project))
 out <- system2("dvs", c("status", "--absent", "--json"), stdout = TRUE)
 cat("```json\n")
 cat(jsonlite::toJSON(jsonlite::fromJSON(paste(out, collapse = "\n"),
@@ -183,8 +183,8 @@ dvs status --threads 2
 # Cleanup
 
 ```{r}
-unlink(new_project, recursive = TRUE)
-unlink(storage,     recursive = TRUE)
+unlink(here::here(new_project), recursive = TRUE)
+unlink(here::here(storage),     recursive = TRUE)
 ```
 
 ---
