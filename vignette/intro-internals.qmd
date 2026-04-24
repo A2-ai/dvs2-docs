@@ -14,6 +14,7 @@ Same project as `vignette/intro.qmd`: 1x25MB `large`, 3x1MB `small`, 50x3MB `ind
 # Setup
 
 ```{r}
+options(width = 1000)
 library(dvs)
 library(fs)
 library(here)

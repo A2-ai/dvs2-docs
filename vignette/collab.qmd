@@ -30,6 +30,7 @@ machine pointing at the same storage path.
 # Setup
 
 ```{r}
+options(width = 1000)
 library(dvs)
 library(fs)
 library(here)

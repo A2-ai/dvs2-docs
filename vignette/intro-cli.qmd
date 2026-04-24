@@ -14,6 +14,7 @@ R creates the sandbox directories and data files; all dvs operations below run
 via the `dvs` CLI binary.
 
 ```{r}
+options(width = 1000)
 library(dvs)
 library(fs)
 library(here)
