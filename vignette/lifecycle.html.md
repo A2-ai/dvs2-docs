@@ -18,15 +18,6 @@ library(dvs)
 library(fs)
 library(here)
 ```
-
-::: {.cell-output .cell-output-stderr}
-
-```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2/dvs2-demo
-```
-
-
-:::
 :::
 
 
@@ -69,18 +60,6 @@ mkdatasetfiles(n_files = 3, size_mb = 1,  prefix = "small_", dir = "data/small",
 ```{.r .cell-code}
 setwd(new_project)
 dvs_init(storage)
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-DVS Initialized
-```
-
-
-:::
-
-```{.r .cell-code}
 invisible(dvs_add("data/large/large_1.csv",
                   message = "initial add of large file"))
 invisible(dvs_add(paths = fs::dir_ls("data/small", type = "file"),
@@ -98,22 +77,6 @@ All files are `current`:
 setwd(new_project)
 dvs_status()
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 4 × 8
-  path                   status  hash        size created_by compression message
-  <chr>                  <chr>   <chr>    <bytes> <chr>      <chr>       <chr>  
-1 data/large/large_1.csv current 45c0c…   25.0 MB elea       zstd        initia…
-2 data/small/small_1.csv current e0fb0… 1024.0 KB elea       zstd        initia…
-3 data/small/small_2.csv current 1574a… 1024.0 KB elea       zstd        initia…
-4 data/small/small_3.csv current 9d97b… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -140,18 +103,6 @@ cat("99,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
 setwd(new_project)
 dvs_status(status = "unsynced")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 8
-  path   status hash     size created_by compression message add_time           
-  <chr>  <chr>  <chr> <bytes> <chr>      <chr>       <chr>   <dttm>             
-1 data/… unsyn… 45c0… 25.0 MB elea       zstd        initia… 2026-04-24 08:49:56
-```
-
-
-:::
 :::
 
 
@@ -164,18 +115,6 @@ Re-add with a new message. dvs writes a new blob and overwrites the meta file:
 setwd(new_project)
 dvs_add("data/large/large_1.csv", message = "add row 99 — corrected dataset")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 5
-  path                   outcome hash                           size stored_size
-  <chr>                  <chr>   <chr>                       <bytes>     <bytes>
-1 data/large/large_1.csv copied  3d25427f55c367c3385717f614… 25.0 MB     10.5 MB
-```
-
-
-:::
 :::
 
 
@@ -188,22 +127,6 @@ Back to `current`:
 setwd(new_project)
 dvs_status(status = "current")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 4 × 8
-  path                   status  hash        size created_by compression message
-  <chr>                  <chr>   <chr>    <bytes> <chr>      <chr>       <chr>  
-1 data/large/large_1.csv current 3d254…   25.0 MB elea       zstd        add ro…
-2 data/small/small_1.csv current e0fb0… 1024.0 KB elea       zstd        initia…
-3 data/small/small_2.csv current 1574a… 1024.0 KB elea       zstd        initia…
-4 data/small/small_3.csv current 9d97b… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -232,18 +155,6 @@ Preview `dvs_add` without committing:
 setwd(new_project)
 dvs_add("data/large/large_1.csv", message = "dry run preview", dry_run = TRUE)
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 5
-  path                   outcome hash                           size stored_size
-  <chr>                  <chr>   <chr>                       <bytes>     <bytes>
-1 data/large/large_1.csv copied  38c2d4d8bbc6b017aa6a03b243… 25.0 MB          NA
-```
-
-
-:::
 :::
 
 
@@ -256,18 +167,6 @@ Status is still `unsynced` — nothing was written:
 setwd(new_project)
 dvs_status(status = "unsynced")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 8
-  path   status hash     size created_by compression message add_time           
-  <chr>  <chr>  <chr> <bytes> <chr>      <chr>       <chr>   <dttm>             
-1 data/… unsyn… 3d25… 25.0 MB elea       zstd        add ro… 2026-04-24 08:49:56
-```
-
-
-:::
 :::
 
 
@@ -281,18 +180,6 @@ setwd(new_project)
 unlink("data/small/small_1.csv")
 dvs_get("data/small/small_1.csv", dry_run = TRUE)
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 3
-  path                   outcome      size
-  <chr>                  <chr>     <bytes>
-1 data/small/small_1.csv copied  1024.0 KB
-```
-
-
-:::
 :::
 
 
@@ -305,19 +192,6 @@ Status still shows `absent`:
 setwd(new_project)
 dvs_status(status = "absent")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 8
-  path                   status hash         size created_by compression message
-  <chr>                  <chr>  <chr>     <bytes> <chr>      <chr>       <chr>  
-1 data/small/small_1.csv absent e0fb0b… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -329,39 +203,8 @@ Restore for real:
 ```{.r .cell-code}
 setwd(new_project)
 dvs_get("data/small/small_1.csv")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 3
-  path                   outcome      size
-  <chr>                  <chr>     <bytes>
-1 data/small/small_1.csv copied  1024.0 KB
-```
-
-
-:::
-
-```{.r .cell-code}
 dvs_status()
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 4 × 8
-  path                   status   hash       size created_by compression message
-  <chr>                  <chr>    <chr>   <bytes> <chr>      <chr>       <chr>  
-1 data/large/large_1.csv unsynced 3d25…   25.0 MB elea       zstd        add ro…
-2 data/small/small_1.csv current  e0fb… 1024.0 KB elea       zstd        initia…
-3 data/small/small_2.csv current  1574… 1024.0 KB elea       zstd        initia…
-4 data/small/small_3.csv current  9d97… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -395,21 +238,6 @@ not the nested one:
 setwd(new_project)
 dvs_status("data/small")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 3 × 8
-  path                   status  hash        size created_by compression message
-  <chr>                  <chr>   <chr>    <bytes> <chr>      <chr>       <chr>  
-1 data/small/small_1.csv current e0fb0… 1024.0 KB elea       zstd        initia…
-2 data/small/small_2.csv current 1574a… 1024.0 KB elea       zstd        initia…
-3 data/small/small_3.csv current 9d97b… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -422,22 +250,6 @@ dvs_status("data/small")
 setwd(new_project)
 dvs_status("data/small", recursive = TRUE)
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 4 × 8
-  path                     status hash       size created_by compression message
-  <chr>                    <chr>  <chr>   <bytes> <chr>      <chr>       <chr>  
-1 data/small/nested/neste… curre… e0fb… 1024.0 KB elea       zstd        add ne…
-2 data/small/small_1.csv   curre… e0fb… 1024.0 KB elea       zstd        initia…
-3 data/small/small_2.csv   curre… 1574… 1024.0 KB elea       zstd        initia…
-4 data/small/small_3.csv   curre… 9d97… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -454,22 +266,6 @@ unlink("data/small/small_3.csv")
 unlink("data/small/nested/nested_1.csv")
 dvs_status("data/small", recursive = TRUE)
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 4 × 8
-  path                     status hash       size created_by compression message
-  <chr>                    <chr>  <chr>   <bytes> <chr>      <chr>       <chr>  
-1 data/small/nested/neste… absent e0fb… 1024.0 KB elea       zstd        add ne…
-2 data/small/small_1.csv   absent e0fb… 1024.0 KB elea       zstd        initia…
-3 data/small/small_2.csv   absent 1574… 1024.0 KB elea       zstd        initia…
-4 data/small/small_3.csv   absent 9d97… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -482,41 +278,8 @@ file remains absent:
 ```{.r .cell-code}
 setwd(new_project)
 dvs_get("data/small")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 3 × 3
-  path                   outcome      size
-  <chr>                  <chr>     <bytes>
-1 data/small/small_1.csv copied  1024.0 KB
-2 data/small/small_2.csv copied  1024.0 KB
-3 data/small/small_3.csv copied  1024.0 KB
-```
-
-
-:::
-
-```{.r .cell-code}
 dvs_status("data/small", recursive = TRUE)
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 4 × 8
-  path                     status hash       size created_by compression message
-  <chr>                    <chr>  <chr>   <bytes> <chr>      <chr>       <chr>  
-1 data/small/nested/neste… absent e0fb… 1024.0 KB elea       zstd        add ne…
-2 data/small/small_1.csv   curre… e0fb… 1024.0 KB elea       zstd        initia…
-3 data/small/small_2.csv   curre… 1574… 1024.0 KB elea       zstd        initia…
-4 data/small/small_3.csv   curre… 9d97… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -528,42 +291,8 @@ dvs_status("data/small", recursive = TRUE)
 ```{.r .cell-code}
 setwd(new_project)
 dvs_get("data/small", recursive = TRUE)
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 4 × 3
-  path                           outcome      size
-  <chr>                          <chr>     <bytes>
-1 data/small/nested/nested_1.csv copied  1024.0 KB
-2 data/small/small_1.csv         present 1024.0 KB
-3 data/small/small_2.csv         present 1024.0 KB
-4 data/small/small_3.csv         present 1024.0 KB
-```
-
-
-:::
-
-```{.r .cell-code}
 dvs_status("data/small", recursive = TRUE)
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 4 × 8
-  path                     status hash       size created_by compression message
-  <chr>                    <chr>  <chr>   <bytes> <chr>      <chr>       <chr>  
-1 data/small/nested/neste… curre… e0fb… 1024.0 KB elea       zstd        add ne…
-2 data/small/small_1.csv   curre… e0fb… 1024.0 KB elea       zstd        initia…
-3 data/small/small_2.csv   curre… 1574… 1024.0 KB elea       zstd        initia…
-4 data/small/small_3.csv   curre… 9d97… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -590,43 +319,10 @@ hash  <- meta$hashes$blake3
 blob  <- fs::path(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
 
 cat("blob:", as.character(blob), "\n")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-blob: /Users/elea/Documents/a2ai_github/dvs2/dvs2-demo/file55021c326ac3_storage/15/74af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 
-```
-
-
-:::
-
-```{.r .cell-code}
 cat("exists:", fs::file_exists(blob), "\n")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-exists: TRUE 
-```
-
-
-:::
-
-```{.r .cell-code}
 fs::file_delete(blob)
 cat("exists after delete:", fs::file_exists(blob), "\n")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-exists after delete: FALSE 
-```
-
-
-:::
 :::
 
 
@@ -640,19 +336,6 @@ setwd(new_project)
 unlink("data/small/small_2.csv")
 dvs_status(status = "absent")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 8
-  path                   status hash         size created_by compression message
-  <chr>                  <chr>  <chr>     <bytes> <chr>      <chr>       <chr>  
-1 data/small/small_2.csv absent 1574af… 1024.0 KB elea       zstd        initia…
-# ℹ 1 more variable: add_time <dttm>
-```
-
-
-:::
 :::
 
 
@@ -666,18 +349,6 @@ gone so the file cannot be restored:
 setwd(new_project)
 dvs_get("data/small/small_2.csv")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 2
-  path                   error                                                  
-  <chr>                  <chr>                                                  
-1 data/small/small_2.csv Storage file missing for hash: Hashes(blake3=1574af6b3…
-```
-
-
-:::
 :::
 
 

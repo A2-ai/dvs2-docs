@@ -1,0 +1,316 @@
+---
+title: "Introduction to dvs internals"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+# Data project
+
+Same project as `vignette/intro.qmd`: 1x25MB `large`, 3x1MB `small`, 50x3MB `individual` CSVs under `data/`, with a dvs repository initialized against an external `storage` directory.
+
+# Setup
+
+
+::: {.cell}
+
+```{.r .cell-code}
+library(dvs)
+library(fs)
+library(here)
+```
+:::
+
+
+
+# Helpers
+
+
+::: {.cell}
+
+```{.r .cell-code}
+source(here::here("R/mkdatasetfiles.R"))
+```
+:::
+
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
+dir.create(storage)
+dir.create(new_project)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+dvs_init(storage, compression = "none")
+
+dvs_add("data/large/large_1.csv", message = "add one large dataset")
+dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "add small corpus datasets")
+dvs_add(glob = "data/individual/individual_*.csv", message = "add individual datasets via glob")
+```
+:::
+
+
+# Internals of `.dvs`
+
+`.dvs` is hidden, so `fs::` helpers need `all = TRUE`.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
+  dplyr::filter(!grepl("\\.git", path)) |>
+  dplyr::select(size, path, type)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
+  dplyr::filter(!grepl("\\.git", path)) |>
+  dplyr::mutate(subdir = path |> fs::path_dir() |> fs::path_rel(".dvs")) |>
+  dplyr::reframe(n_files = dplyr::n(), size = sum(size), .by = subdir)
+```
+:::
+
+
+# Meta files
+
+Each tracked data file has a `.dvs` meta file under `.dvs/`, mirroring the data tree.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+meta_files <- fs::dir_ls(".dvs", recurse = TRUE, all = TRUE, glob = "*.dvs", type = "file")
+meta_files <- meta_files[!grepl("\\.git", meta_files)]
+meta_files
+```
+:::
+
+
+Contents of the meta file for `data/large/large_1.csv`:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+large_meta <- grep("large_1", meta_files, value = TRUE)
+large_meta
+```
+:::
+
+
+
+```{.r .cell-code}
+setwd(new_project)
+cat("```json\n")
+cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
+cat("\n```\n")
+```
+# Storage internals
+
+
+::: {.cell}
+
+```{.r .cell-code}
+fs::dir_tree(storage, all = TRUE, regexp = "\\.git", invert = TRUE)
+```
+:::
+
+
+
+# Audit log
+
+The audit log lives in the storage directory as `audit.log.jsonl`.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+audit <- fs::path(storage, "audit.log.jsonl")
+audit
+```
+:::
+
+
+
+```{.r .cell-code}
+lines <- readLines(audit)
+cat("```json\n")
+for (l in lines) {
+  cat(jsonlite::toJSON(jsonlite::fromJSON(l, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
+  cat("\n")
+}
+cat("```\n")
+```
+
+# Storage directory
+
+
+::: {.cell}
+
+```{.r .cell-code}
+fs::dir_tree(storage, all = TRUE, regexp = "\\.git", invert = TRUE)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+fs::dir_info(storage, recurse = TRUE, all = TRUE, type = "file") |>
+  dplyr::filter(!grepl("\\.git", path)) |>
+  dplyr::mutate(subdir = path |> fs::path_dir() |> fs::path_rel(storage)) |>
+  dplyr::reframe(n_files = dplyr::n(), size = sum(size), .by = subdir)
+```
+:::
+
+
+# Hashed blob is plain text
+
+Pick up the blake3 hash from the meta file.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+meta <- jsonlite::fromJSON(large_meta)
+meta
+
+hash <- meta$hashes$blake3
+hash
+```
+:::
+
+
+Blobs are split into `<first-2>/<rest>`:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+large_blob <- fs::path(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
+large_blob
+fs::file_exists(large_blob)
+```
+:::
+
+
+Initialized with `compression = "none"`, the stored object is the original CSV, addressable by hash. Readable as-is.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+readLines(large_blob, n = 5)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+readLines(
+  n = 5, fs::path(new_project, "data", "large", "large_1.csv")
+)
+```
+:::
+
+
+
+
+# `.dvs/` mirrors `data/`
+
+Meta files live under `.dvs/` at the same relative paths as the data files they track.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+fs::dir_tree("data", regexp = "\\.git", invert = TRUE)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
+```
+:::
+
+
+# Cleanup
+
+
+::: {.cell}
+
+```{.r .cell-code}
+unlink(new_project, recursive = TRUE)
+unlink(storage, recursive = TRUE)
+```
+:::
+
+
+---
+
+**Next up**: [Lifecycle](lifecycle.html) — modifying tracked files, `unsynced` status, `dry_run` previews, and what happens when a storage blob goes missing.

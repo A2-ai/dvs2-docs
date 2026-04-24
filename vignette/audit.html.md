@@ -1,0 +1,232 @@
+---
+title: "dvs audit log"
+subtitle: "every dvs operation is appended to audit.log.jsonl in the storage directory"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+# Setup
+
+
+::: {.cell}
+
+```{.r .cell-code}
+library(dvs)
+library(fs)
+library(here)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+source(here::here("R/mkdatasetfiles.R"))
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+storage     <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
+dir.create(storage)
+dir.create(new_project)
+```
+:::
+
+
+Run a sequence of dvs operations to populate the log:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+mkdatasetfiles(n_files = 3, size_mb = 2, prefix = "file_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+dvs_init(storage)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+invisible(dvs_add("data/file_1.csv", message = "initial add of file 1"))
+invisible(dvs_add("data/file_2.csv", message = "initial add of file 2"))
+invisible(dvs_add("data/file_3.csv", message = "initial add of file 3"))
+```
+:::
+
+
+Simulate a restore (get):
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+unlink("data/file_1.csv")
+dvs_get("data/file_1.csv")
+```
+:::
+
+
+Modify `file_2.csv` and re-add:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+cat("99,0,0,0,0,0\n", file = "data/file_2.csv", append = TRUE)
+invisible(dvs_add("data/file_2.csv", message = "updated file 2 — added row 99"))
+```
+:::
+
+
+# Reading the log
+
+The audit log is a newline-delimited JSON file (`audit.log.jsonl`) in the
+storage directory. Each line is one operation:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+audit_path <- fs::path(storage, "audit.log.jsonl")
+```
+:::
+
+
+Raw file — one JSON object per line:
+
+
+```{.r .cell-code}
+lines <- readLines(audit_path)
+cat("```json\n")
+cat(lines, sep = "\n")
+cat("\n```\n")
+```
+
+Same entries, pretty-printed:
+
+
+```{.r .cell-code}
+cat("```json\n")
+for (l in lines) {
+  cat(jsonlite::toJSON(jsonlite::fromJSON(l, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
+  cat("\n")
+}
+cat("```\n")
+```
+
+# Parsing the log
+
+Each entry has the shape:
+
+```json
+{
+  "operation_id": "<uuid>",
+  "timestamp":    <unix-seconds>,
+  "user":         "<username>",
+  "action":       { "<command>": { ... } }
+}
+```
+
+The `action` field is a tagged union — the single key is the command name
+(`"init"`, `"add"`, or `"get"`). Parse it with `purrr` and `jsonlite`:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+parse_entry <- function(line) {
+  entry <- jsonlite::fromJSON(line)
+  cmd   <- names(entry$action)[1]
+  path  <- switch(cmd,
+    add  = entry$action$add$file$path,
+    get  = entry$action$get$file$path,
+    NA_character_
+  )
+  list(
+    operation_id = entry$operation_id,
+    timestamp    = as.POSIXct(entry$timestamp, origin = "1970-01-01"),
+    user         = entry$user,
+    command      = cmd,
+    path         = path
+  )
+}
+
+audit_tbl <- readLines(audit_path) |>
+  purrr::map(parse_entry) |>
+  dplyr::bind_rows()
+
+audit_tbl
+```
+:::
+
+
+# Querying the log
+
+Operations by command type:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+dplyr::count(audit_tbl, command, sort = TRUE)
+```
+:::
+
+
+Files touched per operation (excluding `init`):
+
+
+::: {.cell}
+
+```{.r .cell-code}
+audit_tbl |>
+  dplyr::filter(!is.na(path)) |>
+  dplyr::select(timestamp, command, path) |>
+  dplyr::arrange(timestamp)
+```
+:::
+
+
+How many times was each file touched?
+
+
+::: {.cell}
+
+```{.r .cell-code}
+audit_tbl |>
+  dplyr::filter(!is.na(path)) |>
+  dplyr::count(path, command, sort = TRUE)
+```
+:::
+
+
+# Cleanup
+
+
+::: {.cell}
+
+```{.r .cell-code}
+unlink(new_project, recursive = TRUE)
+unlink(storage,     recursive = TRUE)
+```
+:::
+
+
+---
+
+**Next up**: [Random files](random_files.html) — the `mkdatasetfiles()` helper used to generate test data throughout these vignettes. Or return to the [full index](index.html).

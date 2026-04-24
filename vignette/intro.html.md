@@ -1,0 +1,268 @@
+---
+title: "Introduction to dvs"
+subtitle: "a data version control system"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+# Setup
+
+
+::: {.cell}
+
+```{.r .cell-code}
+library(dvs)
+library(fs)
+library(here)
+```
+:::
+
+
+
+# Helpers
+
+
+::: {.cell}
+
+```{.r .cell-code}
+source(here::here("R/mkdatasetfiles.R"))
+```
+:::
+
+
+
+See `vignette/random_files.qmd` for a demonstration of this function. 
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+storage <- tempfile(fileext = "_storage", tmpdir = here::here())
+new_project <- tempfile(fileext = "_project", tmpdir = here::here())
+
+dir.create(storage)
+dir.create(new_project)
+```
+:::
+
+
+
+Let us add 1x25MB file (large), 3x1MB (small) and 50x3MB files (individual)
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> large_file
+mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> small_files
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> individual_files
+```
+:::
+
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+fs::dir_tree(
+  "data"
+)
+```
+:::
+
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+fs::dir_info(
+  "data",recurse = TRUE, type = "directory",
+)[, c("size", "path", "type")]
+```
+:::
+
+
+False sizes unfortunately;
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+fs::dir_info(
+  "data",recurse = TRUE, type = "file",
+)[, c("size", "path", "type")] 
+```
+:::
+
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+
+fs::dir_info(
+  "data",recurse = TRUE, type = "file",
+) |> 
+  dplyr::mutate(data_dir = path |> fs::path_dir() |> fs::path_rel("data")) |> 
+  dplyr::select(path, type, size, data_dir) |>
+  dplyr::reframe(size = sum(size), .by = c(data_dir))
+```
+:::
+
+
+Initialize a dvs repository
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+dvs_init(storage)
+```
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+cat(
+  readLines(fs::path(new_project, "dvs.toml"))
+)
+```
+:::
+
+
+
+Add the new files in the project to the dvs repository
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+# single file
+dvs_add("data/large/large_1.csv", message = "add one large dataset")
+
+# whole folder
+dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "add small corpus datasets")
+
+# glob
+# dvs_add("data/individual", glob = "individiual_*.csv", message = "add individual datasets via glob")
+dvs_add(glob = "data/individual/individual_*.csv", message = "add individual datasets via glob")
+```
+:::
+
+
+
+Status
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+dvs_status()
+```
+:::
+
+
+
+Let us accidentally delete a few individual files:
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+unlink("data/individual/individual_04.csv")
+unlink("data/individual/individual_08.csv")
+unlink("data/individual/individual_15.csv")
+unlink("data/individual/individual_16.csv")
+unlink("data/individual/individual_23.csv")
+```
+:::
+
+
+
+First, what is the status?
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+dvs_status(status = "absent")
+```
+:::
+
+
+
+Or filter manually with `dplyr`:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+dplyr::filter(dvs_status(), status == "absent")
+```
+:::
+
+
+
+
+Let us restore them:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(new_project)
+
+dvs_get(glob = "data/individual/individual_*.csv")
+```
+:::
+
+
+
+## Cleanup
+
+
+::: {.cell}
+
+```{.r .cell-code}
+unlink(new_project, recursive = TRUE)
+unlink(storage, recursive = TRUE)
+```
+:::
+
+
+---
+
+This was the happy path — init, add, status, get. Everything worked as expected.
+
+**Next up**: [CLI](intro-cli.html) — the same operations driven from the terminal via the `dvs` binary. After that, [Internals](intro-internals.html) digs into the `.dvs/` folder layout, meta files, and content-addressed blob storage.
+
