@@ -1,6 +1,8 @@
 ---
 title: "Setup a dvs demo project"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
   eval: false

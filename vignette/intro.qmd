@@ -1,7 +1,9 @@
 ---
 title: "Introduction to dvs"
 subtitle: "a data version control system"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---

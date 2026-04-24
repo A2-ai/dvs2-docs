@@ -1,7 +1,9 @@
 ---
 title: "dvs collaboration"
 subtitle: "sharing data across projects and users through a common storage directory"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---

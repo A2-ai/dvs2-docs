@@ -1,7 +1,9 @@
 ---
 title: "Introduction to dvs CLI"
 subtitle: "the same operations driven from the terminal via the `dvs` binary"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---

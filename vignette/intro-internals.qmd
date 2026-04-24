@@ -1,6 +1,8 @@
 ---
 title: "Introduction to dvs internals"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---

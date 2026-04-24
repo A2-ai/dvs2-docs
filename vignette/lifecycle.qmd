@@ -1,7 +1,9 @@
 ---
 title: "dvs lifecycle"
 subtitle: "modify, re-add, dry-run, and storage integrity failures"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---

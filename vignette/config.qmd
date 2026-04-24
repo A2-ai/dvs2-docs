@@ -1,7 +1,9 @@
 ---
 title: "dvs configuration"
 subtitle: "dvs.toml fields, compression tradeoffs, threads, and metadata folder name"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---

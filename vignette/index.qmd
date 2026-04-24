@@ -1,7 +1,9 @@
 ---
 title: "dvs demo vignettes"
 subtitle: "a guided tour of dvs — data version control for R projects"
-format: html
+format:
+  html:
+    keep-md: true
 ---
 
 **dvs** is a data version control system for R. It stores large data files in

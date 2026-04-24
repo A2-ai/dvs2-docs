@@ -1,7 +1,9 @@
 ---
 title: "dvs Error Reference"
 subtitle: "every error dvs can raise, shown side-by-side for R and the CLI"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---

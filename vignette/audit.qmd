@@ -1,7 +1,9 @@
 ---
 title: "dvs audit log"
 subtitle: "every dvs operation is appended to audit.log.jsonl in the storage directory"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---

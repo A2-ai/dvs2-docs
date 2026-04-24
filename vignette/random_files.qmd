@@ -1,6 +1,8 @@
 ---
 title: "Random Files"
-format: html
+format:
+  html:
+    keep-md: true
 execute:
   freeze: auto
 ---
