@@ -18,7 +18,8 @@ repositories = [
 dependencies = [
     "quarto",
     # { name = "dvs", git = "https://github.com/a2-ai/dvs2", branch = "main", directory = "dvs-rpkg" },
-    { name = "dvs", path = ".dvs/dvs-rpkg" },
+    # feat/get-recursive worktree — revert to .dvs/dvs-rpkg after PR merges
+    { name = "dvs", path = "/Users/elea/Documents/a2ai_github/dvs2/.claude/worktrees/feat+get-recursive/dvs-rpkg" },
     "usethis",
     "here",
     "stringr",

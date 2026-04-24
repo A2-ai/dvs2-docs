@@ -141,6 +141,70 @@ dvs_get("data/small/small_1.csv")
 dvs_status()
 ```
 
+# Scoped status and retrieval
+
+`dvs_status()` and `dvs_get()` both scope to direct children of a directory by
+default. Pass `recursive = TRUE` to include all descendants.
+
+Add a file nested one level deeper so the contrast is visible:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dir.create("data/small/nested", recursive = TRUE)
+mkdatasetfiles(n_files = 1, size_mb = 1, prefix = "nested_", dir = "data/small/nested",
+               show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
+invisible(dvs_add("data/small/nested/nested_1.csv", message = "add nested file"))
+```
+
+`dvs_status("data/small")` shows only the three files directly in `data/small/`,
+not the nested one:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_status("data/small")
+```
+
+`dvs_status("data/small", recursive = TRUE)` includes all descendants:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_status("data/small", recursive = TRUE)
+```
+
+Delete all four files so retrieval can be demonstrated:
+
+```{r}
+#| warning: false
+setwd(new_project)
+unlink("data/small/small_1.csv")
+unlink("data/small/small_2.csv")
+unlink("data/small/small_3.csv")
+unlink("data/small/nested/nested_1.csv")
+dvs_status("data/small", recursive = TRUE)
+```
+
+`dvs_get("data/small")` restores only the three direct children — the nested
+file remains absent:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_get("data/small")
+dvs_status("data/small", recursive = TRUE)
+```
+
+`dvs_get("data/small", recursive = TRUE)` restores the nested file as well:
+
+```{r}
+#| warning: false
+setwd(new_project)
+dvs_get("data/small", recursive = TRUE)
+dvs_status("data/small", recursive = TRUE)
+```
+
 # Integrity failure: missing storage blob
 
 dvs blobs are content-addressed — the hash in the meta file is the key. If a
