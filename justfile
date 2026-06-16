@@ -37,7 +37,7 @@ site-build:
 
     # name->path JSON map so the converter can rewrite <name>.html cross-links
     # to the new section paths (index is special-cased to the site root).
-    MAPFILE=$(mktemp -t dvs-zola-map)
+    MAPFILE=$(mktemp /tmp/dvs-zola-map-XXXXXX)
     trap 'rm -f "$MAPFILE"' EXIT
     {
       echo "{"
