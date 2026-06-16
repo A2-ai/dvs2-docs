@@ -1,6 +1,6 @@
 base_url = "https://a2-ai.github.io/dvs2-demo"
 title = "dvs"
-description = "Data version control for R projects — version large files under Git without tracking their contents"
+description = "Independent data version control for large or sensitive datasets, with or without Git."
 compile_sass = true
 build_search_index = true
 generate_feeds = false
