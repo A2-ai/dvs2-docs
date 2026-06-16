@@ -1,0 +1,53 @@
+---
+title: "Report the sync status of DVS-managed files"
+description: "Reports the sync status of DVS-managed files. By default all statuses are shown; pass a character vector of status names (e. g. `c(\"current\", \"absent\")`) to res"
+sidebar:
+  label: "dvs_status"
+pagefind: true
+---
+
+## Description
+
+Reports the sync status of DVS-managed files. By default all statuses are shown; pass a character vector of status names (e.g. `c("current", "absent")`) to restrict output.
+
+
+
+
+
+
+## Usage
+
+```r
+dvs_status(
+  paths = character(0),
+  recursive = NULL,
+  status = c("current", "absent", "unsynced")
+)
+```
+
+## Arguments
+
+<div class="arg-table">
+<table>
+<thead>
+<tr><th>Argument</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><code>paths</code></td>
+<td>Character vector of file or directory paths to check status for.</td>
+</tr>
+<tr>
+<td><code>recursive</code></td>
+<td>If `TRUE`, recursively include files in subdirectories.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>Character vector of statuses to include. Valid values are `"current"`, `"absent"`, and `"unsynced"`. When empty (default), all statuses are shown.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+

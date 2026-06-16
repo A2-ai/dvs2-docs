@@ -1,0 +1,63 @@
+---
+title: "Initialize a DVS repository in the given directory"
+description: "Creates the `. dvs` metadata folder and configures storage for versioned files."
+sidebar:
+  label: "dvs_init"
+pagefind: true
+---
+
+## Description
+
+Creates the `.dvs` metadata folder and configures storage for versioned files.
+
+
+
+
+
+
+## Usage
+
+```r
+dvs_init(
+  storage_path,
+  root_dir = NULL,
+  group = NULL,
+  metadata_folder_name = NULL,
+  compression = c("zstd", "none")
+)
+```
+
+## Arguments
+
+<div class="arg-table">
+<table>
+<thead>
+<tr><th>Argument</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage_path</code></td>
+<td>Path to the storage directory where file contents are kept.</td>
+</tr>
+<tr>
+<td><code>root_dir</code></td>
+<td>Repository root directory. Defaults to the current working directory.</td>
+</tr>
+<tr>
+<td><code>group</code></td>
+<td>Unix group name to set on stored files for shared access.</td>
+</tr>
+<tr>
+<td><code>metadata_folder_name</code></td>
+<td>Name of the metadata folder. Defaults to `.dvs`.</td>
+</tr>
+<tr>
+<td><code>compression</code></td>
+<td>Compression method for stored files. One of `"zstd"` (default) or `"none"`.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
