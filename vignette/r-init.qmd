@@ -1,0 +1,153 @@
+---
+title: "dvs_init()"
+subtitle: "Initialize a project and configure storage"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+`dvs_init()` creates a `dvs.toml` project file and a metadata folder (`.dvs` by
+default), recording where file contents are stored and how they are compressed.
+
+```r
+dvs_init(
+  storage_path,
+  root_dir = NULL,
+  group = NULL,
+  metadata_folder_name = NULL,
+  compression = c("zstd", "none")
+)
+```
+
+## Parameters
+
+| Name | Type | Default | Behavior |
+|---|---|---|---|
+| `storage_path` | character(1) | required | Directory where file contents are stored. |
+| `root_dir` | character(1) | `NULL` (current directory) | Where `dvs.toml` and the metadata folder are created. |
+| `group` | character(1) | `NULL` | Unix group set on the storage directory and stored files. |
+| `metadata_folder_name` | character(1) | `NULL` (`.dvs`) | Name of the metadata folder. |
+| `compression` | character(1) | `"zstd"` | Compression for stored files. One of `"zstd"` or `"none"`. |
+
+## Setup
+
+Each example initializes its own project directory, because `dvs_init()` errors
+if a `dvs.toml` already exists in the target root.
+
+```{r}
+options(width = 1000)
+library(dvs)
+base <- tempfile("dvs_init_")
+dir.create(base)
+```
+
+## `storage_path` and `root_dir`
+
+`storage_path` is the only required argument. `root_dir` controls where the
+project file lands; it defaults to the current working directory.
+
+```{r}
+proj  <- file.path(base, "basic")
+store <- file.path(base, "basic-store")
+dir.create(proj)
+dir.create(store)
+dvs_init(store, root_dir = proj)
+```
+
+`dvs.toml` is written in `root_dir` and records the storage path:
+
+```{r}
+cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
+```
+
+## `group`
+
+`group` sets a Unix group on the storage directory and stored files for shared
+access. The group must exist and you must be a member. This example is not
+executed; it depends on a specific group on the host.
+
+```{r}
+#| eval: false
+proj  <- file.path(base, "grouped")
+store <- file.path(base, "grouped-store")
+dir.create(proj)
+dir.create(store)
+dvs_init(store, root_dir = proj, group = "rstudio")
+```
+
+```r
+$status
+[1] "initialized"
+```
+
+The chosen group is written to `dvs.toml` under `[backend]`.
+
+## `metadata_folder_name`
+
+Use a metadata folder name other than `.dvs`. The name is recorded in
+`dvs.toml`.
+
+```{r}
+proj  <- file.path(base, "meta")
+store <- file.path(base, "meta-store")
+dir.create(proj)
+dir.create(store)
+dvs_init(store, root_dir = proj, metadata_folder_name = ".meta")
+list.files(proj, all.files = TRUE, no.. = TRUE)
+```
+
+## `compression`
+
+`compression` is an enum: `"zstd"` (default) or `"none"`. With `"none"` the
+stored blob is the same size as the input. Here the same file is added under
+both settings and the `stored_size` column differs.
+
+```{r}
+mk <- function(name, comp) {
+  proj  <- file.path(base, name)
+  store <- file.path(base, paste0(name, "-store"))
+  dir.create(proj)
+  dir.create(store)
+  dvs_init(store, root_dir = proj, compression = comp)
+  write.csv(mtcars, file.path(proj, "cars.csv"))
+  old <- setwd(proj)
+  on.exit(setwd(old))
+  dvs_add("cars.csv")
+}
+mk("zstd-proj", "zstd")
+mk("none-proj", "none")
+```
+
+::: {.callout-note}
+There is no `no_compression` argument. The CLI flag `--no-compression` maps to
+`compression = "none"`. See [dvs init](cli-init.html).
+:::
+
+## Return value
+
+`dvs_init()` returns a list with a single `status` element and prints a
+confirmation line. It is called for its side effect of creating the project.
+
+```{r}
+proj  <- file.path(base, "ret")
+store <- file.path(base, "ret-store")
+dir.create(proj)
+dir.create(store)
+res <- dvs_init(store, root_dir = proj)
+str(res)
+```
+
+## Differences from the CLI
+
+The CLI command is [dvs init](cli-init.html). It uses a `--no-compression`
+boolean instead of the `compression` enum, and adds `--threads` and `--json`,
+which the R surface does not have. Threads are set process-wide with
+[set_dvs_threads()](r-threads.html).
+
+## See also
+
+- [dvs_add()](r-add.html), [dvs_status()](r-status.html), [dvs_get()](r-get.html)
+- [The dvs.toml project file](config.html)
+- [Storage and meta files](intro-internals.html)

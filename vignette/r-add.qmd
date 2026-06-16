@@ -1,0 +1,141 @@
+---
+title: "dvs_add()"
+subtitle: "Track files in dvs storage"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+`dvs_add()` hashes files, copies their contents into storage, writes a `.dvs`
+meta file next to each one, and returns a tibble of results. Pass paths, a glob,
+or both.
+
+```r
+dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
+```
+
+## Parameters
+
+| Name | Type | Default | Behavior |
+|---|---|---|---|
+| `paths` | character | `character(0)` | Files to add. |
+| `message` | character(1) | `NULL` | Message recorded in each meta file. |
+| `glob` | character(1) | `NULL` | Library-expanded glob. Uses a literal path separator (use `**` to recurse). |
+| `dry_run` | logical(1) | `NULL` (treated as `FALSE`) | Report what would be added; write nothing. |
+
+A progress bar is shown automatically while files are processed (the wrapper
+creates an internal `progress_callback` handle); it is not a parameter. No bar
+is shown for a dry run.
+
+## Setup
+
+```{r}
+options(width = 1000)
+library(dvs)
+proj  <- tempfile("project_")
+store <- tempfile("storage_")
+dir.create(proj)
+dir.create(store)
+dir.create(file.path(proj, "data", "sub"), recursive = TRUE)
+write.csv(mtcars[1:8, ],  file.path(proj, "data", "f1.csv"))
+write.csv(mtcars[9:16, ], file.path(proj, "data", "f2.csv"))
+write.csv(iris[1:10, ],   file.path(proj, "data", "g1.csv"), row.names = FALSE)
+write.csv(iris[11:20, ],  file.path(proj, "data", "g2.csv"), row.names = FALSE)
+write.csv(iris[21:30, ],  file.path(proj, "data", "sub", "g3.csv"), row.names = FALSE)
+setwd(proj)
+dvs_init(store)
+```
+
+## `paths`
+
+Add a single file. The result has one row per file: the on-disk `size`, the
+stored (compressed) `stored_size`, the content `hash`, and `outcome`.
+
+```{r}
+setwd(proj)
+dvs_add("data/f1.csv")
+```
+
+Add several files in one call:
+
+```{r}
+setwd(proj)
+dvs_add(c("data/f2.csv"))
+```
+
+## `message`
+
+Record a message in the meta files. It surfaces later as the `message` column
+of [dvs_status()](r-status.html).
+
+```{r}
+setwd(proj)
+dvs_add("data/g1.csv", message = "iris head sample")
+```
+
+## `glob`
+
+A library-expanded glob uses a literal path separator: `data/*.csv` matches
+files in `data/` only, not in subdirectories.
+
+```{r}
+setwd(proj)
+dvs_add(glob = "data/*.csv")
+```
+
+::: {.callout-tip}
+Use `**` to cross directory boundaries. `data/**/*.csv` matches the nested file
+that `data/*.csv` skipped.
+:::
+
+```{r}
+setwd(proj)
+dvs_add(glob = "data/**/*.csv")
+```
+
+## `dry_run`
+
+With `dry_run = TRUE` the result reports what would be added, but no blob or meta
+file is written.
+
+```{r}
+setwd(proj)
+write.csv(iris[31:40, ], "data/preview.csv", row.names = FALSE)
+dvs_add("data/preview.csv", dry_run = TRUE)
+```
+
+The file is not tracked afterward:
+
+```{r}
+setwd(proj)
+dvs_status("data/preview.csv")
+```
+
+## Return value
+
+A tibble with one row per file:
+
+| Column | Type | Description |
+|---|---|---|
+| `path` | character | File path. |
+| `outcome` | character | `copied` (new content stored) or `present` (already stored). |
+| `hash` | character | blake3 content hash. |
+| `size` | `dvs_bytes` | On-disk size. |
+| `stored_size` | `dvs_bytes` | Stored (compressed) size. |
+
+Rows that fail carry an `error` column instead. The `size` and `stored_size`
+columns are [dvs_bytes](r-bytes.html) values that print as human-readable sizes.
+
+## Differences from the CLI
+
+The CLI command is [dvs add](cli-add.html). It prints lines and exits non-zero
+on partial failure, and adds `--threads` and `--json`, which the R surface does
+not have. Threads are set process-wide with [set_dvs_threads()](r-threads.html).
+
+## See also
+
+- [dvs_init()](r-init.html), [dvs_status()](r-status.html), [dvs_get()](r-get.html)
+- [Storage and meta files](intro-internals.html)
+- [The audit log](audit.html)

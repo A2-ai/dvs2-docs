@@ -1,0 +1,172 @@
+---
+title: "dvs status"
+subtitle: "Report the sync status of tracked files"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+`dvs status` reports each tracked file as `current` (on disk and matching the
+stored hash), `absent` (tracked but missing on disk), or `unsynced` (on disk but
+not matching the stored hash). By default it prints a compact table.
+
+```text
+Usage: dvs status [OPTIONS] [PATHS]...
+
+Arguments:
+  [PATHS]...  Paths (files or directories) to check status for
+
+Options:
+      --json               Output results as JSON
+  -r, --recursive          Recurse into subdirectories of given directories
+      --current            Include current files
+      --absent             Include absent files
+      --unsynced           Include unsynced files
+      --with-metadata      Show all metadata columns
+      --threads <THREADS>  Threads (0 = auto-detect)
+  -h, --help               Print help
+```
+
+## Options
+
+| Flag | Argument | Default | Behavior |
+|---|---|---|---|
+| `[PATHS]...` | paths | whole project | Files or directories to report. |
+| `-r`, `--recursive` | flag | off | Include files in subdirectories of given directories. |
+| `--current` | flag | off | Include `current` files. |
+| `--absent` | flag | off | Include `absent` files. |
+| `--unsynced` | flag | off | Include `unsynced` files. |
+| `--with-metadata` | flag | off | Add hash, created_by, add_time, compression, message columns. |
+| `--threads` | integer | `0` (auto) | Thread pool size for this command. |
+| `--json` | flag | off | Emit results as JSON. |
+
+The three status flags are independent booleans and combine. With none set, all
+statuses are shown.
+
+## Setup
+
+Add three files, then delete one and edit another so all three states appear.
+
+```{r}
+options(width = 1000)
+library(here)
+proj    <- here::here(basename(tempfile(fileext = "_project")))
+storage <- here::here(basename(tempfile(fileext = "_storage")))
+dir.create(proj)
+dir.create(storage)
+dir.create(file.path(proj, "data", "sub"), recursive = TRUE)
+write.csv(mtcars[1:8, ],   file.path(proj, "data", "f1.csv"))
+write.csv(mtcars[9:16, ],  file.path(proj, "data", "f2.csv"))
+write.csv(iris[1:10, ],    file.path(proj, "data", "sub", "f3.csv"), row.names = FALSE)
+Sys.setenv(DVS_PROJECT = proj, DVS_STORAGE = storage)
+```
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs init "$DVS_STORAGE" >/dev/null
+dvs add data/f1.csv data/f2.csv data/sub/f3.csv >/dev/null
+rm data/f2.csv                      # -> absent
+echo "extra,row" >> data/f1.csv     # -> unsynced
+```
+
+## All files
+
+With no arguments and no filters, every tracked file is reported.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status
+```
+
+## Paths
+
+Scope the report to specific files or directories.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status data/sub/f3.csv
+```
+
+## `-r`, `--recursive`
+
+Without `-r`, a directory argument reports only files directly in it. With `-r`,
+files in subdirectories are included too.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status data
+```
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status data -r
+```
+
+## Status filters
+
+Each filter alone:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --current
+```
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --absent
+```
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --unsynced
+```
+
+Filters combine:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --absent --unsynced
+```
+
+## `--with-metadata`
+
+By default the table shows `path`, `status`, and `size`. `--with-metadata` adds
+the hash, creator, add time, compression, and message columns.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --with-metadata
+```
+
+## `--threads`
+
+Override the auto-detected thread count for this command.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --threads 2
+```
+
+## `--json`
+
+JSON output always includes the full metadata, regardless of `--with-metadata`.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --json
+```
+
+## Differences from R
+
+The R function is [dvs_status()](r-status.html). It always returns the metadata
+columns as a data frame, so there is no `--with-metadata` toggle; select columns
+instead. Its filters are a single `status` character vector
+(`c("current", "absent", "unsynced")`) rather than independent flags, and it has
+no `--threads` or `--json`.
+
+## See also
+
+- [dvs init](cli-init.html), [dvs add](cli-add.html), [dvs get](cli-get.html)
+- [Storage and meta files](intro-internals.html)

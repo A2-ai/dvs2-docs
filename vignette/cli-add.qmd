@@ -1,0 +1,163 @@
+---
+title: "dvs add"
+subtitle: "Track files in dvs storage"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+`dvs add` hashes files, copies their contents into storage, and writes a `.dvs`
+meta file next to each one. Pass paths, a glob, or both. At least one path or
+`--glob` is required.
+
+```text
+Usage: dvs add [OPTIONS] [PATHS]...
+
+Arguments:
+  [PATHS]...
+
+Options:
+      --glob <GLOB>        Select files by glob pattern
+      --json               Output results as JSON
+  -m, --message <MESSAGE>  An optional message to record
+      --threads <THREADS>  Threads (0 = auto-detect)
+      --dry-run            Show what would be added without changing anything
+  -h, --help               Print help
+```
+
+## Options
+
+| Flag | Argument | Default | Behavior |
+|---|---|---|---|
+| `[PATHS]...` | paths | none | Files to add. Shell expands any globs before dvs sees them. |
+| `--glob` | pattern | none | Library-expanded glob. Uses a literal path separator (see below). |
+| `-m`, `--message` | text | none | Message recorded in each meta file. |
+| `--dry-run` | flag | off | Report what would be added; write nothing. |
+| `--threads` | integer | `0` (auto) | Thread pool size for this command. |
+| `--json` | flag | off | Emit results as JSON. |
+
+## Setup
+
+```{r}
+options(width = 1000)
+library(here)
+proj    <- here::here(basename(tempfile(fileext = "_project")))
+storage <- here::here(basename(tempfile(fileext = "_storage")))
+dir.create(proj)
+dir.create(storage)
+dir.create(file.path(proj, "data"))
+dir.create(file.path(proj, "glob", "nested"), recursive = TRUE)
+write.csv(Theoph, file.path(proj, "data", "theoph.csv"), row.names = FALSE)
+write.csv(mtcars[1:8, ],   file.path(proj, "data", "cars_a.csv"))
+write.csv(mtcars[9:16, ],  file.path(proj, "data", "cars_b.csv"))
+write.csv(iris[1:10, ],    file.path(proj, "glob", "g1.csv"), row.names = FALSE)
+write.csv(iris[11:20, ],   file.path(proj, "glob", "g2.csv"), row.names = FALSE)
+write.csv(iris[21:30, ],   file.path(proj, "glob", "nested", "g3.csv"), row.names = FALSE)
+Sys.setenv(DVS_PROJECT = proj, DVS_STORAGE = storage)
+```
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs init "$DVS_STORAGE"
+```
+
+## Paths
+
+Add a single file. The output reports the on-disk size, the stored (compressed)
+size, and the content hash.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add data/theoph.csv
+```
+
+Add several files in one call.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add data/cars_a.csv data/cars_b.csv
+```
+
+## `-m`, `--message`
+
+Record a message in the meta files.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add glob/g1.csv -m "iris head sample"
+```
+
+## `--glob`
+
+A library-expanded glob uses a literal path separator: `*.csv` matches files in
+the target directory only, not in subdirectories. Here `glob/*.csv` skips the
+nested file.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add --glob "glob/*.csv"
+```
+
+::: {.callout-tip}
+Use `**` to cross directory boundaries. `glob/**/*.csv` matches the nested file
+that `glob/*.csv` skipped.
+:::
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add --glob "glob/**/*.csv"
+```
+
+## `--dry-run`
+
+Report what would be added without writing blobs or meta files.
+
+```{bash}
+cd "$DVS_PROJECT"
+printf "a,b\n1,2\n" > data/preview.csv
+dvs add data/preview.csv --dry-run
+```
+
+## `--threads`
+
+Override the auto-detected thread count for this command.
+
+```{bash}
+cd "$DVS_PROJECT"
+printf "c,d\n3,4\n" > data/threaded.csv
+dvs add data/threaded.csv --threads 2
+```
+
+## `--json`
+
+Each result row carries `path`, `outcome` (`copied` or `present`), `hash`,
+`size`, and `stored_size`.
+
+```{bash}
+cd "$DVS_PROJECT"
+printf "e,f\n5,6\n" > data/as_json.csv
+dvs add data/as_json.csv --json
+```
+
+## Partial failure
+
+If any path fails, `add` reports the error per file and exits with code 1.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add data/missing.csv; echo "exit code: $?"
+```
+
+## Differences from R
+
+The R function is [dvs_add()](r-add.html). It returns a data frame rather than
+printed lines, has no `--threads` or `--json`, and exposes the progress bar as
+an internal `progress_callback` handle rather than always printing one.
+
+## See also
+
+- [dvs init](cli-init.html), [dvs status](cli-status.html), [dvs get](cli-get.html)
+- [Storage and meta files](intro-internals.html)
+- [The audit log](audit.html)

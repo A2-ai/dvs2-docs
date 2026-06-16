@@ -1,0 +1,120 @@
+---
+title: "dvs_get()"
+subtitle: "Restore files from storage"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+`dvs_get()` reads the meta files, finds the matching blobs in storage, and
+writes the contents back to their original paths. It is the inverse of
+[dvs_add()](r-add.html): the call to run after re-cloning a project whose data
+is not on disk.
+
+```r
+dvs_get(paths = character(0), glob = NULL, dry_run = NULL)
+```
+
+## Parameters
+
+| Name | Type | Default | Behavior |
+|---|---|---|---|
+| `paths` | character | `character(0)` | Files to retrieve. |
+| `glob` | character(1) | `NULL` | Library-expanded glob. Uses a literal path separator (use `**` to recurse). |
+| `dry_run` | logical(1) | `NULL` (treated as `FALSE`) | Report what would be retrieved; write nothing. |
+
+A progress bar is shown automatically while files are processed (the wrapper
+creates an internal `progress_callback` handle); it is not a parameter. No bar
+is shown for a dry run.
+
+## Setup
+
+Add three files, then delete them so `dvs_get()` has something to restore.
+
+```{r}
+options(width = 1000)
+library(dvs)
+proj  <- tempfile("project_")
+store <- tempfile("storage_")
+dir.create(proj)
+dir.create(store)
+dir.create(file.path(proj, "data", "sub"), recursive = TRUE)
+write.csv(mtcars[1:8, ],  file.path(proj, "data", "f1.csv"))
+write.csv(mtcars[9:16, ], file.path(proj, "data", "f2.csv"))
+write.csv(iris[1:10, ],   file.path(proj, "data", "sub", "f3.csv"), row.names = FALSE)
+setwd(proj)
+dvs_init(store)
+dvs_add(c("data/f1.csv", "data/f2.csv", "data/sub/f3.csv"))
+file.remove("data/f1.csv", "data/f2.csv", "data/sub/f3.csv")
+dvs_status(status = "absent")[, c("path", "status")]
+```
+
+## `paths`
+
+Restore a single file. The result reports `path`, `outcome`, and `size`.
+
+```{r}
+setwd(proj)
+dvs_get("data/f1.csv")
+```
+
+The file is `current` again:
+
+```{r}
+setwd(proj)
+dvs_status("data/f1.csv")[, c("path", "status")]
+```
+
+## `glob`
+
+Restore by glob. Use `**` to cross directory boundaries.
+
+```{r}
+setwd(proj)
+dvs_get(glob = "data/**/*.csv")
+```
+
+## `dry_run`
+
+With `dry_run = TRUE` the result reports what would be retrieved, but no file is
+written.
+
+```{r}
+setwd(proj)
+file.remove("data/f2.csv")
+dvs_get("data/f2.csv", dry_run = TRUE)
+```
+
+The file is still absent after a dry run:
+
+```{r}
+setwd(proj)
+dvs_status("data/f2.csv")[, c("path", "status")]
+```
+
+## Return value
+
+A tibble with one row per file:
+
+| Column | Type | Description |
+|---|---|---|
+| `path` | character | File path. |
+| `outcome` | character | `copied` (written from storage) or `present` (already on disk). |
+| `size` | `dvs_bytes` | Retrieved size. |
+
+Rows that fail carry an `error` column. The `size` column is a
+[dvs_bytes](r-bytes.html) value.
+
+## Differences from the CLI
+
+The CLI command is [dvs get](cli-get.html). It prints lines rather than
+returning a data frame, and adds `--threads` and `--json`, which the R surface
+does not have. Threads are set process-wide with
+[set_dvs_threads()](r-threads.html).
+
+## See also
+
+- [dvs_init()](r-init.html), [dvs_add()](r-add.html), [dvs_status()](r-status.html)
+- [Storage and meta files](intro-internals.html)

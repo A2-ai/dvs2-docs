@@ -142,7 +142,7 @@ dependencies = [
 [[packages]]
 name = "dvs"
 version = "0.3.0.9000"
-source = { path = ".dvs/dvs-rpkg" }
+source = { path = ".dvs2/dvs-rpkg" }
 force_source = true
 dependencies = [
     "cli",

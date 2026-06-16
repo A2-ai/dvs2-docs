@@ -1,0 +1,171 @@
+---
+title: "dvs init"
+subtitle: "Start a project and configure storage"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+`dvs init` creates a `dvs.toml` project file in the root directory and a
+metadata folder (`.dvs` by default). It records where file contents are stored
+and how they are compressed.
+
+```text
+Usage: dvs init [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  Where the data will be stored
+
+Options:
+      --json                                          Output results as JSON
+      --root-dir <ROOT_DIR>                           Project root (default: cwd)
+      --metadata-folder-name <METADATA_FOLDER_NAME>   Metadata folder (default: .dvs)
+      --threads <THREADS>                             Threads (0 = auto-detect)
+      --group <GROUP>                                 Unix group for storage and files
+      --no-compression                                Disable compression (default: zstd)
+  -h, --help                                          Print help
+```
+
+## Options
+
+| Flag | Argument | Default | Behavior |
+|---|---|---|---|
+| `<PATH>` | path | required | Storage directory for file contents. |
+| `--root-dir` | path | current directory | Where `dvs.toml` and the metadata folder are created. |
+| `--metadata-folder-name` | name | `.dvs` | Name of the metadata folder. |
+| `--group` | group name | current group | Unix group set on the storage directory and stored files. |
+| `--no-compression` | flag | off (zstd) | Store blobs uncompressed. |
+| `--threads` | integer | `0` (auto) | Thread pool size for this command. |
+| `--json` | flag | off | Emit the result as JSON. |
+
+## Setup
+
+Each `init` example runs in its own directory, because `init` fails if a
+`dvs.toml` already exists in the target root.
+
+```{r}
+options(width = 1000)
+base <- tempfile("dvs_init_")
+dir.create(base)
+Sys.setenv(DVS_BASE = base)
+```
+
+## Storage path
+
+The positional argument is the storage directory. `init` writes `dvs.toml`
+in the project root and records the storage path under `[backend]`.
+
+```{bash}
+cd "$DVS_BASE"
+mkdir -p basic/proj basic/store
+cd basic/proj
+dvs init ../store
+cat dvs.toml
+```
+
+## `--root-dir`
+
+Initialize a project rooted at a path other than the current directory.
+`dvs.toml` is created in the root, not in the working directory.
+
+```{bash}
+cd "$DVS_BASE"
+mkdir -p rootdir/proj rootdir/store
+dvs init rootdir/store --root-dir rootdir/proj
+ls rootdir/proj/dvs.toml
+```
+
+## `--metadata-folder-name`
+
+Use a metadata folder name other than `.dvs`. The name is recorded in
+`dvs.toml` so later commands find it.
+
+```{bash}
+cd "$DVS_BASE"
+mkdir -p meta/proj meta/store
+cd meta/proj
+dvs init ../store --metadata-folder-name .meta
+ls -a
+```
+
+## `--group`
+
+Set a Unix group on the storage directory and stored files for shared access.
+The group must exist and you must be a member. This example is not executed; it
+requires a specific group on the host.
+
+```{bash}
+#| eval: false
+cd "$DVS_BASE"
+mkdir -p group/proj group/store
+cd group/proj
+dvs init ../store --group rstudio
+```
+
+```text
+DVS Initialized at "/path/to/group/proj"
+```
+
+The chosen group is written to `dvs.toml` under `[backend]`.
+
+## `--no-compression`
+
+Disable zstd compression. The setting is recorded in `dvs.toml` and applied to
+files added under this project.
+
+```{bash}
+cd "$DVS_BASE"
+mkdir -p nocomp/proj nocomp/store
+cd nocomp/proj
+dvs init ../store --no-compression
+cat dvs.toml
+```
+
+::: {.callout-note}
+The R function uses an enum instead of a boolean: `--no-compression` maps to
+`dvs_init(compression = "none")`. See [dvs_init()](r-init.html).
+:::
+
+## `--threads`
+
+Override the auto-detected thread count for this command.
+
+```{bash}
+cd "$DVS_BASE"
+mkdir -p threads/proj threads/store
+cd threads/proj
+dvs init ../store --threads 2
+```
+
+## `--json`
+
+Emit the result as JSON instead of a status line.
+
+```{bash}
+cd "$DVS_BASE"
+mkdir -p jsonex/proj jsonex/store
+cd jsonex/proj
+dvs init ../store --json
+```
+
+## Notes
+
+`init` errors if a `dvs.toml` already exists in the target root. A `dvs.toml`
+in a parent directory does not block a nested project; you can have multiple
+projects in one Git repository. See
+[The dvs.toml project file](config.html).
+
+## Differences from R
+
+The R function is [dvs_init()](r-init.html). It takes `compression = c("zstd",
+"none")` rather than the `--no-compression` flag, and has no `--threads` or
+`--json`; threads are set process-wide with
+[set_dvs_threads()](r-threads.html).
+
+## See also
+
+- [dvs add](cli-add.html), [dvs status](cli-status.html), [dvs get](cli-get.html)
+- [The dvs.toml project file](config.html)
+- [Storage and meta files](intro-internals.html)

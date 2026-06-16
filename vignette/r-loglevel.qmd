@@ -1,0 +1,69 @@
+---
+title: "set_dvs_log_level()"
+subtitle: "Route core log output to the R console"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+`set_dvs_log_level()` controls which log messages from the dvs core are routed
+to R's console. `error` and `warn` go to stderr; `info`, `debug`, and `trace`
+go to stdout. The default at package load is `off`.
+
+```r
+set_dvs_log_level(level = c("off", "error", "warn", "info", "debug", "trace"))
+```
+
+## Parameters
+
+| Name | Type | Default | Behavior |
+|---|---|---|---|
+| `level` | character(1) | `"off"` | One of `off`, `error`, `warn`, `info`, `debug`, `trace`. Validated with `match.arg()`. |
+
+Called for its side effect; returns `NULL` invisibly.
+
+## Setup
+
+```{r}
+options(width = 1000)
+library(dvs)
+proj  <- tempfile("project_")
+store <- tempfile("storage_")
+dir.create(proj)
+dir.create(store)
+write.csv(mtcars, file.path(proj, "cars.csv"))
+setwd(proj)
+dvs_init(store)
+```
+
+## Enable logging around an operation
+
+Set the level to `"info"` before an add, then reset to `"off"`.
+
+```{r}
+setwd(proj)
+set_dvs_log_level("info")
+dvs_add("cars.csv")
+set_dvs_log_level("off")
+```
+
+## Restore the default
+
+`"off"` is the load-time default and silences core log output.
+
+```{r}
+set_dvs_log_level("off")
+```
+
+::: {.callout-note}
+The R package does not consult the `RUST_LOG` environment variable;
+`set_dvs_log_level()` is the only way to change the level. `RUST_LOG` applies to
+the CLI binary only.
+:::
+
+## See also
+
+- [set_dvs_threads()](r-threads.html), [dvs_version()](r-version.html)
+- [Error reference](error.html)
