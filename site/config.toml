@@ -1,4 +1,4 @@
-base_url = "https://a2-ai.github.io/dvs2-demo"
+base_url = "https://a2-ai.github.io/dvs2-docs"
 title = "dvs"
 description = "Independent data version control for large or sensitive datasets, with or without Git."
 compile_sass = true

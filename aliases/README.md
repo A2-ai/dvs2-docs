@@ -6,18 +6,18 @@ Add the relevant source line to your shell rc:
 
 ```sh
 # ~/.zshrc
-source /path/to/dvs2-demo/aliases/tree.zsh
+source /path/to/dvs2-docs/aliases/tree.zsh
 
 # ~/.bashrc
-source /path/to/dvs2-demo/aliases/tree.bash
+source /path/to/dvs2-docs/aliases/tree.bash
 
 # ~/.config/fish/config.fish
-source /path/to/dvs2-demo/aliases/tree.fish
+source /path/to/dvs2-docs/aliases/tree.fish
 ```
 
 ```powershell
 # $PROFILE
-. /path/to/dvs2-demo/aliases/tree.ps1
+. /path/to/dvs2-docs/aliases/tree.ps1
 ```
 
 Start a new shell (or `source` your rc) and `tree` will auto-detect `.treeignore`.

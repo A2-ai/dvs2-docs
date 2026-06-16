@@ -84,6 +84,20 @@ Each `dvs.toml` configures the files beneath it independently.
 (`dvs is already initialized`). It does not overwrite an existing project.
 :::
 
+## Shared storage
+
+The storage path can be a shared network mount, so several people version data
+against one store. Content is addressed by hash, so identical files added by
+different users share a single blob. `[backend] group` sets the Unix group on
+the storage directory and stored files, giving collaborators read and write
+access.
+
+Each user commits their `.dvs` meta files (and `dvs.toml`) to Git; the data
+itself stays out of Git. After cloning, a collaborator runs
+[dvs_get()](r-get.html) / [dvs get](cli-get.html) to retrieve the files the meta
+files point to. This is the same loop as the
+[R walkthrough](getting-started.html), shared across a team.
+
 ## See also
 
 - [dvs_init()](r-init.html) / [dvs init](cli-init.html): setting these fields.

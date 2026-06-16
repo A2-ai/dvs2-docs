@@ -262,10 +262,10 @@ fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
    <fs::bytes> <fs::path>                                 <fct>
  1         20K .dvs/.cache/dvs.db                         file 
  2         264 .dvs/data/individual/individual_01.csv.dvs file 
- 3         263 .dvs/data/individual/individual_02.csv.dvs file 
- 4         264 .dvs/data/individual/individual_03.csv.dvs file 
+ 3         264 .dvs/data/individual/individual_02.csv.dvs file 
+ 4         263 .dvs/data/individual/individual_03.csv.dvs file 
  5         264 .dvs/data/individual/individual_04.csv.dvs file 
- 6         264 .dvs/data/individual/individual_05.csv.dvs file 
+ 6         263 .dvs/data/individual/individual_05.csv.dvs file 
  7         264 .dvs/data/individual/individual_06.csv.dvs file 
  8         264 .dvs/data/individual/individual_07.csv.dvs file 
  9         264 .dvs/data/individual/individual_08.csv.dvs file 
@@ -298,7 +298,7 @@ fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
   <fs::path>        <int> <fs::bytes>
 1 .cache                1         20K
 2 data/individual      50       12.9K
-3 data/large            1         254
+3 data/large            1         253
 4 data/small            3         771
 ```
 
@@ -377,7 +377,7 @@ cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta, simplifyVector = FALSE), pre
   },
   "size": 26214390,
   "created_by": "elea",
-  "add_time": "2026-06-16T16:49:51.156354Z",
+  "add_time": "2026-06-16T17:06:53.00164Z",
   "compression": "none",
   "message": "add one large dataset"
 }
@@ -399,7 +399,7 @@ fs::dir_tree(here::here(storage), all = TRUE, regexp = "\\.git", invert = TRUE)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file469b15e12878_storage
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file891962380109_storage
 ├── 0d
 │   └── bb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92
 ├── 15
@@ -574,7 +574,7 @@ $created_by
 [1] "elea"
 
 $add_time
-[1] "2026-06-16T16:49:51.156354Z"
+[1] "2026-06-16T17:06:53.00164Z"
 
 $compression
 [1] "none"
@@ -615,7 +615,7 @@ large_blob
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file469b15e12878_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838"
+[1] "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file891962380109_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838"
 ```
 
 
@@ -628,7 +628,7 @@ fs::file_exists(large_blob)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file469b15e12878_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file891962380109_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 
                                                                                                                                        TRUE 
 ```
 
@@ -833,6 +833,81 @@ fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
         ├── small_1.csv.dvs
         ├── small_2.csv.dvs
         └── small_3.csv.dvs
+```
+
+
+:::
+:::
+
+
+# Git integration
+
+When the project is inside a Git repository, `dvs_add()` appends each added file
+to a `.gitignore` in that file's parent directory, as `/<filename>`. The file
+contents stay out of Git; what you commit is the `.dvs` meta file, which travels
+with your code and records the hash needed to retrieve the data.
+
+```text
+# .gitignore entry written for data/large/large_1.csv
+/large_1.csv
+```
+
+If there is no `.git`, this step is skipped. A failure to write `.gitignore` is
+a warning, not an error.
+
+# Untracking a file
+
+dvs tracks a file through its meta file. Remove the meta file and dvs no longer
+tracks the file. The stored blob is left in place, so other meta files that
+reference the same content still resolve.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(here::here(new_project))
+dvs_status("data/large/large_1.csv")[, c("path", "status")]
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 2
+  path                   status 
+  <chr>                  <chr>  
+1 data/large/large_1.csv current
+```
+
+
+:::
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(here::here(new_project))
+file.remove(large_meta)
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] TRUE
+```
+
+
+:::
+
+```{.r .cell-code}
+dvs_status("data/large/large_1.csv")
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 0 × 0
 ```
 
 

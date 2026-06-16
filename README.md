@@ -1,6 +1,11 @@
-# dvs2-demo
+# dvs2-docs
 
-Documentation and demonstration repository for [dvs2](https://github.com/A2-ai/dvs2), an independent data version control system by A2-AI. Vignettes are authored in Quarto, rendered to HTML and Markdown, and published two ways: to a [Zola static site on GitHub Pages](https://a2-ai.github.io/dvs2-demo/) and to A2-AI's internal Alexandria (alx) instance. The live site is internal to the A2-AI organization and only accessible to authenticated members.
+Documentation and demonstration repository for [dvs2](https://github.com/A2-ai/dvs2), an independent data version control system by A2-AI. Vignettes are authored in Quarto and rendered to HTML and Markdown.
+
+This repository serves two things:
+
+- **The documentation site.** The reference chapters (one page per R function and CLI command, plus helpers and internals) build into a [Zola static site on GitHub Pages](https://a2-ai.github.io/dvs2-docs/), which is public. These same chapters are also published to A2-AI's Alexandria (alx) instance.
+- **The demo.** The original demonstration vignettes (`intro`, `intro-cli`, `lifecycle`, `collab`, `random_files`) remain in `vignette/` for reference. They are not on the docs site; their content is covered by the reference chapters. They are not published.
 
 ## dvs2
 
@@ -14,7 +19,7 @@ R/              Helper scripts used by vignettes
 site/           Zola static site (config.toml, templates, sass, content/)
 tools/          htmlmd_to_zola.py, converts vignette .html.md to Zola pages
 .alx/           Alexandria config (project ID 22c331d9-0bd0-4e36-b5fd-df81a841a628)
-rproject.toml   rv-managed R environment; dvs installed from .dvs/dvs-rpkg
+rproject.toml   rv-managed R environment; dvs installed from .dvs2/dvs-rpkg
 justfile        All build recipes
 ```
 
@@ -87,4 +92,4 @@ Always run `rv sync` after changing the path in `rproject.toml` before rendering
 ## Links
 
 - dvs2 source: https://github.com/A2-ai/dvs2
-- Live docs site (A2-AI internal): https://a2-ai.github.io/dvs2-demo/
+- Live docs site (public): https://a2-ai.github.io/dvs2-docs/

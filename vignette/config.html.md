@@ -64,7 +64,7 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpO6qi3L/dvs_config_480d7204516d/default-store"
+path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp2njh1C/dvs_config_8a6ed47685c/default-store"
 group = "staff"
 ```
 
@@ -116,7 +116,7 @@ compression = "none"
 metadata_folder_name = ".datalock"
 
 [backend]
-path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpO6qi3L/dvs_config_480d7204516d/custom-store"
+path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp2njh1C/dvs_config_8a6ed47685c/custom-store"
 group = "staff"
 ```
 
@@ -187,6 +187,20 @@ Each `dvs.toml` configures the files beneath it independently.
 `dvs_init()` errors if a `dvs.toml` already exists in the target root
 (`dvs is already initialized`). It does not overwrite an existing project.
 :::
+
+## Shared storage
+
+The storage path can be a shared network mount, so several people version data
+against one store. Content is addressed by hash, so identical files added by
+different users share a single blob. `[backend] group` sets the Unix group on
+the storage directory and stored files, giving collaborators read and write
+access.
+
+Each user commits their `.dvs` meta files (and `dvs.toml`) to Git; the data
+itself stays out of Git. After cloning, a collaborator runs
+[dvs_get()](r-get.html) / [dvs get](cli-get.html) to retrieve the files the meta
+files point to. This is the same loop as the
+[R walkthrough](getting-started.html), shared across a team.
 
 ## See also
 

@@ -195,6 +195,40 @@ setwd(here::here(new_project))
 fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 
+# Git integration
+
+When the project is inside a Git repository, `dvs_add()` appends each added file
+to a `.gitignore` in that file's parent directory, as `/<filename>`. The file
+contents stay out of Git; what you commit is the `.dvs` meta file, which travels
+with your code and records the hash needed to retrieve the data.
+
+```text
+# .gitignore entry written for data/large/large_1.csv
+/large_1.csv
+```
+
+If there is no `.git`, this step is skipped. A failure to write `.gitignore` is
+a warning, not an error.
+
+# Untracking a file
+
+dvs tracks a file through its meta file. Remove the meta file and dvs no longer
+tracks the file. The stored blob is left in place, so other meta files that
+reference the same content still resolve.
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+dvs_status("data/large/large_1.csv")[, c("path", "status")]
+```
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+file.remove(large_meta)
+dvs_status("data/large/large_1.csv")
+```
+
 # Cleanup
 
 ```{r}

@@ -2337,7 +2337,7 @@ Note
 <pre><code>compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpO6qi3L/dvs_config_480d7204516d/default-store&quot;
+path = &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp2njh1C/dvs_config_8a6ed47685c/default-store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2390,7 +2390,7 @@ group = &quot;staff&quot;</code></pre>
 metadata_folder_name = &quot;.datalock&quot;
 
 [backend]
-path = &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpO6qi3L/dvs_config_480d7204516d/custom-store&quot;
+path = &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp2njh1C/dvs_config_8a6ed47685c/custom-store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2431,6 +2431,11 @@ Warning
 <p><code>dvs_init()</code> errors if a <code>dvs.toml</code> already exists in the target root (<code>dvs is already initialized</code>). It does not overwrite an existing project.</p>
 </div>
 </div>
+</section>
+<section id="shared-storage" class="level2">
+<h2 class="anchored" data-anchor-id="shared-storage">Shared storage</h2>
+<p>The storage path can be a shared network mount, so several people version data against one store. Content is addressed by hash, so identical files added by different users share a single blob. <code>[backend] group</code> sets the Unix group on the storage directory and stored files, giving collaborators read and write access.</p>
+<p>Each user commits their <code>.dvs</code> meta files (and <code>dvs.toml</code>) to Git; the data itself stays out of Git. After cloning, a collaborator runs <a href="r-get.html">dvs_get()</a> / <a href="cli-get.html">dvs get</a> to retrieve the files the meta files point to. This is the same loop as the <a href="getting-started.html">R walkthrough</a>, shared across a team.</p>
 </section>
 <section id="see-also" class="level2">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>

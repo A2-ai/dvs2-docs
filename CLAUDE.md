@@ -1,6 +1,15 @@
-# dvs2-demo
+# dvs2-docs
 
-Vignette repo for [dvs2](https://github.com/A2-ai/dvs2). Demonstrates the dvs R package and CLI side-by-side.
+Documentation and demo repo for [dvs2](https://github.com/A2-ai/dvs2). Two roles:
+
+- **Docs site** — the reference chapters (`r-*`, `cli-*`, the helper and internals
+  vignettes) build into a Zola site on GitHub Pages
+  (https://a2-ai.github.io/dvs2-docs/, public) via `just site-build`, and are
+  also published to alx via `just publish`. One page per R function / CLI command.
+- **Demo** — the original demonstration vignettes (`intro`, `intro-cli`,
+  `lifecycle`, `collab`, `random_files`) stay in `vignette/` for reference. They
+  are NOT on the docs site, NOT in the `site-build` MAP, and NOT published; their
+  content is folded into the reference chapters.
 
 ## Layout
 
