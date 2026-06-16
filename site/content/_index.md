@@ -18,11 +18,13 @@ your commits. It also works without Git, on its own. Either way the four verbs
 are the same: `init`, `add`, `status`, `get`.
 
 You can drive it from the **R package** (`library(dvs)`) or the **CLI** (the
-`dvs` binary). These vignettes cover both, side by side.
+`dvs` binary). This guide covers both, side by side.
 
 ## Where to start
 
-New here? Read [Getting Started](@/getting-started/_index.md), then pick a track:
-the [R Package](@/r-package/_index.md) or the [CLI](@/cli/_index.md). The
-[Reference](@/reference/_index.md) section goes deeper on storage internals,
+[Getting Started](@/getting-started/_index.md) has the install steps and a short
+walkthrough of the core workflow on a small dataset, for both the CLI and R.
+From there the [R Package](@/r-package/_index.md) and [CLI](@/cli/_index.md)
+sections cover bulk operations, the file lifecycle, and shared storage, and
+[Reference](@/reference/_index.md) goes deeper on storage internals,
 configuration, the audit log, and the full error surface.

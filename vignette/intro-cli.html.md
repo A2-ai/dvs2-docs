@@ -1,6 +1,6 @@
 ---
-title: "Introduction to dvs CLI"
-subtitle: "the same operations driven from the terminal via the `dvs` binary"
+title: "The CLI in depth"
+subtitle: "globs, dry runs, JSON output, metadata, and thread control"
 format:
   html:
     keep-md: true

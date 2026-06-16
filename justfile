@@ -18,19 +18,21 @@ site-build:
     set -euo pipefail
 
     # "<vignette> <section/file> <in-section weight>"
+    # Getting Started holds install (in its _index.md) + the two light Theoph
+    # walkthroughs. The R Package / CLI / Reference sections hold the in-depth
+    # chapters. The `setup` bootstrap doc and `index`/`splash` are excluded.
     MAP=(
-      "setup               getting-started/setup        1"
-      "getting-started     r-package/getting-started     1"
-      "intro               r-package/intro               2"
-      "lifecycle           r-package/lifecycle           3"
-      "collab              r-package/collab              4"
-      "random_files        r-package/random-files        5"
-      "getting-started-cli cli/getting-started           1"
-      "intro-cli           cli/intro                     2"
-      "intro-internals     reference/internals           1"
-      "config              reference/config              2"
-      "audit               reference/audit               3"
-      "error               reference/error               4"
+      "getting-started-cli getting-started/cli          1"
+      "getting-started     getting-started/r            2"
+      "intro               r-package/intro              1"
+      "lifecycle           r-package/lifecycle          2"
+      "collab              r-package/collab             3"
+      "random_files        r-package/random-files       4"
+      "intro-cli           cli/intro                    1"
+      "intro-internals     reference/internals          1"
+      "config              reference/config             2"
+      "audit               reference/audit              3"
+      "error               reference/error              4"
     )
 
     # name->path JSON map so the converter can rewrite <name>.html cross-links

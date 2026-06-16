@@ -1,6 +1,6 @@
 ---
-title: "Introduction to dvs"
-subtitle: "a data version control system"
+title: "Working with many files"
+subtitle: "add single files, whole folders, and globs, including large datasets"
 format:
   html:
     keep-md: true
