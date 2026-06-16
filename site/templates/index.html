@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.title }} &middot; data version control for R{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>{{ config.title }}</h1>
+  <p class="hero-subtitle">{{ config.description }}</p>
+  <p class="hero-summary">
+    <code>dvs</code> versions large or sensitive datasets — the kind routine in
+    pharma and other data-intensive work — without committing their contents to
+    your source tree. It works alongside Git or entirely on its own. Add,
+    restore, and check the status of versioned data from R or the command line.
+  </p>
+  <div class="hero-actions">
+    <a class="btn" href="{{ get_url(path='@/getting-started/_index.md') }}">Get started</a>
+    <a class="btn btn-outline" href="{{ get_url(path='@/cli/_index.md') }}">Use the CLI</a>
+    <a class="btn btn-ghost" href="{{ config.extra.repo_url }}" rel="noopener">GitHub</a>
+  </div>
+</section>
+
+<section class="home-content">
+  {{ section.content | safe }}
+</section>
+
+<section class="home-section">
+  <h2>Sections</h2>
+  <div class="doc-grid">
+    {% for sp in section.subsections %}
+    {% set s = get_section(path=sp) %}
+    <a class="doc-card" href="{{ s.permalink }}">
+      <span class="doc-kind">Section</span>
+      <h3>{{ s.title }}</h3>
+      {% if s.description %}<p>{{ s.description }}</p>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

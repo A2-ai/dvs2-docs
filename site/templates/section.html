@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} | {{ config.title }}{% endblock %}
+{% block main_class %} wide{% endblock %}
+
+{% block content %}
+<div class="doc-layout">
+  <aside class="doc-sidebar" aria-label="{{ section.title }} pages">
+    <p class="eyebrow">{{ section.title }}</p>
+    <ul>
+      {% for p in section.pages %}
+      <li><a href="{{ p.permalink }}">{{ p.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <article class="doc-main section-page">
+    <header class="page-header">
+      <div class="breadcrumb">
+        <a href="{{ get_url(path='/') }}">Home</a>
+        <span class="sep">/</span>
+        <span>{{ section.title }}</span>
+      </div>
+      <h1>{{ section.title }}</h1>
+      {% if section.description %}<p class="page-description">{{ section.description }}</p>{% endif %}
+    </header>
+
+    <div class="page-body">
+      {{ section.content | safe }}
+    </div>
+
+    {% if section.pages | length > 0 %}
+    <h2>Pages</h2>
+    <div class="doc-grid">
+      {% for page in section.pages %}
+      <a class="doc-card" href="{{ page.permalink }}">
+        <span class="doc-kind">Guide</span>
+        <h3>{{ page.title }}</h3>
+        {% if page.description %}<p>{{ page.description }}</p>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </article>
+</div>
+{% endblock %}

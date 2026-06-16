@@ -1,5 +1,6 @@
 .Rproj.user
 .dvs/
+.dvs2/
 tmp_random_files/
 vignette/*_files/
 *_storage/
@@ -12,3 +13,11 @@ rv/library/
 
 /.quarto/
 **/*.quarto_ipynb
+
+# Zola site: build output + content generated from vignette/*.html.md by
+# `just site-build`. Authored pages (_index.md section landings, about.md) are
+# kept; the generated vignette pages in section subdirs are not.
+site/public/
+site/content/**/*.md
+!site/content/**/_index.md
+!site/content/about.md

@@ -1,6 +1,79 @@
 default:
     @just --list
 
+# === Website (zola) ===
+# A dedicated static site built from the rendered vignettes, separate from the
+# alx publish. Content is generated from vignette/*.html.md by
+# tools/build-site.sh; theming lives in site/ (lifted from miniextendr/site).
+
+# Regenerate site/content from the rendered vignettes and build to site/public.
+# Content comes from the committed vignette/<name>.html.md (Quarto keep-md, i.e.
+# the executed markdown); tools/htmlmd_to_zola.py converts each to a Zola page.
+# The vignettes are grouped into sections (Getting Started, R Package, CLI,
+# Reference) via the name->"section/file" map below. Section landing pages
+# (_index.md) and about.md are authored and committed, never generated here.
+# `splash` is a reveal.js deck and is intentionally excluded.
+site-build:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # "<vignette> <section/file> <in-section weight>"
+    MAP=(
+      "setup               getting-started/setup        1"
+      "getting-started     r-package/getting-started     1"
+      "intro               r-package/intro               2"
+      "lifecycle           r-package/lifecycle           3"
+      "collab              r-package/collab              4"
+      "random_files        r-package/random-files        5"
+      "getting-started-cli cli/getting-started           1"
+      "intro-cli           cli/intro                     2"
+      "intro-internals     reference/internals           1"
+      "config              reference/config              2"
+      "audit               reference/audit               3"
+      "error               reference/error               4"
+    )
+
+    # name->path JSON map so the converter can rewrite <name>.html cross-links
+    # to the new section paths (index is special-cased to the site root).
+    MAPFILE=$(mktemp -t dvs-zola-map)
+    trap 'rm -f "$MAPFILE"' EXIT
+    {
+      echo "{"
+      first=1
+      for row in "${MAP[@]}"; do
+        set -- $row
+        [ $first -eq 1 ] && first=0 || echo ","
+        printf '  "%s": "%s"' "$1" "$2"
+      done
+      echo
+      echo "}"
+    } > "$MAPFILE"
+
+    echo "==> Cleaning previously generated content (keeping authored _index.md / about.md)"
+    find site/content -name '*.md' ! -name '_index.md' ! -name 'about.md' -delete
+
+    echo "==> Generating site/content from vignette/*.html.md"
+    for row in "${MAP[@]}"; do
+      set -- $row
+      name="$1"; path="$2"; weight="$3"
+      src="vignette/$name.html.md"
+      dest="site/content/$path.md"
+      if [ ! -f "$src" ]; then
+        echo "    !! missing $src (render it first); skipping" >&2
+        continue
+      fi
+      mkdir -p "$(dirname "$dest")"
+      python3 tools/htmlmd_to_zola.py "$name" "$weight" "$src" "$dest" "$MAPFILE"
+      echo "    $name -> $path (weight $weight)"
+    done
+
+    echo "==> zola build"
+    cd site && zola build
+
+# Build (via site-build), then live-preview the site in a browser
+site-serve: site-build
+    cd site && zola serve --open
+
 # === Vignettes ===
 
 # Render all vignettes

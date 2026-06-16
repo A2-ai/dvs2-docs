@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
+{% block main_class %} wide{% endblock %}
+
+{% block content %}
+{% set doc_section = get_section(path=page.ancestors | last) %}
+
+<div class="doc-layout">
+  <aside class="doc-sidebar" aria-label="{{ doc_section.title }} pages">
+    <p class="eyebrow">{{ doc_section.title }}</p>
+    <ul>
+      {% for p in doc_section.pages %}
+      <li class="{% if current_path == p.path %}active{% endif %}">
+        <a href="{{ p.permalink }}">{{ p.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <article class="doc-main">
+    <header class="page-header">
+      <div class="breadcrumb">
+        <a href="{{ get_url(path='/') }}">Home</a>
+        <span class="sep">/</span>
+        <a href="{{ doc_section.permalink }}">{{ doc_section.title }}</a>
+        <span class="sep">/</span>
+        <span>{{ page.title }}</span>
+      </div>
+      <h1>{{ page.title }}</h1>
+      {% if page.description %}<p class="page-description">{{ page.description }}</p>{% endif %}
+      <div class="page-meta">
+        <span>{{ page.reading_time }} min read</span>
+        <span>{{ page.word_count }} words</span>
+      </div>
+    </header>
+
+    <div class="page-body">
+      {{ page.content | safe }}
+    </div>
+
+    <div class="doc-footer">
+      <a class="btn btn-outline" href="{{ doc_section.permalink }}">Back to {{ doc_section.title }}</a>
+    </div>
+  </article>
+
+  {% if page.toc | length > 0 %}
+  <aside class="doc-toc" aria-label="On this page">
+    <p class="eyebrow">On this page</p>
+    <ul>
+      {% for h1 in page.toc %}
+      <li>
+        <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
+        {% if h1.children | length > 0 %}
+        <ul>
+          {% for h2 in h1.children %}
+          <li><a href="{{ h2.permalink | safe }}">{{ h2.title }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
+  {% endif %}
+</div>
+{% endblock %}

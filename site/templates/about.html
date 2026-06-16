@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
+
+{% block content %}
+<article class="about-page">
+  <a class="about-logo" href="https://a2-ai.com" rel="noopener">
+    <img class="logo-light" src="{{ get_url(path='images/a2ai-logo-color.png') }}" alt="A2-AI" width="1237" height="394">
+    <img class="logo-dark" src="{{ get_url(path='images/a2ai-logo-black.png') }}" alt="A2-AI" width="1241" height="382">
+  </a>
+  <h1>{{ page.title }}</h1>
+  <div class="page-body">
+    {{ page.content | safe }}
+  </div>
+</article>
+{% endblock %}
