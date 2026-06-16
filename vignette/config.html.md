@@ -100,13 +100,13 @@ group = "staff"
 
 | Field | Meaning |
 |-------|---------|
-| `storage_path` | Where dvs copies blobs. Any directory reachable from this machine — local path or network mount. |
+| `storage_path` | Where dvs copies blobs. Any directory reachable from this machine: local path or network mount. |
 | `metadata_folder_name` | Defaults to `.dvs`. The folder that mirrors your data tree and holds meta files. Change if `.dvs` collides with another tool. |
 | `compression` | `"zstd"` (default) or `"none"`. zstd typically halves storage footprint for tabular data. |
 
 # Compression: `zstd` vs `none`
 
-Same data, two different compression settings — compare resulting storage size.
+Same data, two different compression settings. Compare resulting storage size.
 
 
 ::: {.cell}
@@ -448,4 +448,4 @@ for (d in c(storage, new_project,
 
 ---
 
-**Next up**: [Audit log](audit.html) — parsing and querying `audit.log.jsonl` with purrr and dplyr.
+**Next up**: [Audit log](audit.html): parsing and querying `audit.log.jsonl` with purrr and dplyr.

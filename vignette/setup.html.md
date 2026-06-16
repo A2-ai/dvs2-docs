@@ -55,7 +55,7 @@ repositories = [
 
 ## dvs source and build tool
 
-Clone the dvs source and install the cargo build helper — this must happen before `rv sync` so the local clone is available when dvs builds from source:
+Clone the dvs source and install the cargo build helper. This must happen before `rv sync` so the local clone is available when dvs builds from source:
 
 
 ::: {.cell}
@@ -127,7 +127,7 @@ git -C .dvs pull --rebase
 
 ---
 
-**Next up**: [Introduction](intro.html) — the core dvs R API: `dvs_init`, `dvs_add`, `dvs_status`, `dvs_get`.
+**Next up**: [Introduction](intro.html), the core dvs R API: `dvs_init`, `dvs_add`, `dvs_status`, `dvs_get`.
 <!-- 
 ## `.gitignore` essentials
 
@@ -135,8 +135,8 @@ After bootstrapping, add these entries to `.gitignore` so package caches and
 generated data are never accidentally committed:
 
 ```text
-rv/library/    # cached R packages — rebuilt by `rv sync` from rproject.toml
-data/          # actual data files — tracked by dvs, not git
+rv/library/    # cached R packages, rebuilt by `rv sync` from rproject.toml
+data/          # actual data files, tracked by dvs, not git
 _freeze/       # quarto render cache
 .quarto/
 ``` -->

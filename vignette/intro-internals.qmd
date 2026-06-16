@@ -226,4 +226,4 @@ unlink(here::here(storage),     recursive = TRUE)
 
 ---
 
-**Next up**: [Lifecycle](lifecycle.html) — modifying tracked files, `unsynced` status, `dry_run` previews, and what happens when a storage blob goes missing.
+**Next up**: [Lifecycle](lifecycle.html): modifying tracked files, `unsynced` status, `dry_run` previews, and what happens when a storage blob goes missing.

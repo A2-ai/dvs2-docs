@@ -274,7 +274,7 @@ cat .dvs/data/large/large_1.csv.dvs
 
 # `dvs status`
 
-Default — show all tracked files:
+Default, show all tracked files:
 
 
 ::: {.cell}
@@ -671,7 +671,7 @@ dvs status --with-metadata
 
 
 In the R package these metadata columns (`hash`, `created_by`, `add_time`,
-`compression`, `message`) are returned by default — they're already computed
+`compression`, `message`) are returned by default. They are already computed
 when resolving status, so `dvs_status()` surfaces them without an extra flag.
 
 Delete a few files to produce `absent` entries:
@@ -1003,4 +1003,4 @@ unlink(here::here(storage),     recursive = TRUE)
 
 ---
 
-**Next up**: [Internals](intro-internals.html) — see how dvs organises meta files and blob storage under the hood.
+**Next up**: [Internals](intro-internals.html): how dvs organises meta files and blob storage.

@@ -1,6 +1,6 @@
 ---
 title: "Getting Started with dvs CLI"
-subtitle: "init, add, status, and get — five minutes end to end"
+subtitle: "init, add, status, and get: five minutes end to end"
 format:
   html:
     keep-md: true
@@ -141,4 +141,4 @@ unlink(here::here(storage),     recursive = TRUE)
 
 ---
 
-**Next up**: [Getting Started — R API](getting-started.html) — the same workflow using the `dvs` R package functions directly.
+**Next up**: [Getting Started, R API](getting-started.html): the same workflow using the `dvs` R package functions directly.

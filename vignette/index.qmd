@@ -1,6 +1,6 @@
 ---
 title: "dvs demo vignettes"
-subtitle: "a guided tour of dvs — data version control for R projects"
+subtitle: "a guided tour of dvs, data version control for R projects"
 format:
   html:
     keep-md: true
@@ -15,8 +15,8 @@ tracks them through small, text-based meta files that live alongside your code.
 | Vignette | What it covers |
 |----------|----------------|
 | [Setup](setup.html) | Bootstrap a new project: rv, dvs source build, quarto scaffolding |
-| [Getting Started](getting-started.html) | `dvs_init`, `dvs_add`, `dvs_status`, `dvs_get` — five minutes, R API |
-| [Getting Started — CLI](getting-started-cli.html) | Same five-minute walkthrough via the `dvs` binary |
+| [Getting Started](getting-started.html) | `dvs_init`, `dvs_add`, `dvs_status`, `dvs_get`: five minutes, R API |
+| [Getting Started, CLI](getting-started-cli.html) | Same five-minute walkthrough via the `dvs` binary |
 | [Introduction](intro.html) | Core R API with larger datasets: status states, glob adds, partial restore |
 | [CLI](intro-cli.html) | Same operations from the terminal via the `dvs` binary |
 | [Internals](intro-internals.html) | `.dvs/` folder layout, meta files, blob addressing, audit log |
@@ -31,9 +31,9 @@ tracks them through small, text-based meta files that live alongside your code.
 
 | Feature | Status |
 |---------|--------|
-| `dvs_remove` / untrack a file | **Not implemented** — delete the `.dvs` meta file manually |
-| Remote / cloud storage backends | **Not implemented** — storage must be a locally-mounted path |
-| File history / snapshots | **Not implemented** — dvs is content-addressed; re-adding rewrites the meta | -->
+| `dvs_remove` / untrack a file | **Not implemented**: delete the `.dvs` meta file manually |
+| Remote / cloud storage backends | **Not implemented**: storage must be a locally-mounted path |
+| File history / snapshots | **Not implemented**: dvs is content-addressed; re-adding rewrites the meta | -->
 
 ## Quick reference
 

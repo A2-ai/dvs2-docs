@@ -1,6 +1,6 @@
 ---
 title: "Getting Started with dvs"
-subtitle: "init, add, status, and get — five minutes end to end"
+subtitle: "init, add, status, and get: five minutes end to end"
 format:
   html:
     keep-md: true
@@ -350,4 +350,4 @@ unlink(here::here(storage),     recursive = TRUE)
 
 ---
 
-**Next up**: [Getting Started — CLI](getting-started-cli.html) — the same workflow driven from the terminal via the `dvs` binary.
+**Next up**: [Getting Started, CLI](getting-started-cli.html): the same workflow driven from the terminal via the `dvs` binary.

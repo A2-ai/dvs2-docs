@@ -17,7 +17,7 @@ intended team workflow is:
    meta files under `.dvs/`
 2. **User A** commits `dvs.toml` and the entire `.dvs/` tree to git (the meta
    files are small and text-based)
-3. **User B** clones the repo — they get `dvs.toml` and `.dvs/` but *not* the
+3. **User B** clones the repo. They get `dvs.toml` and `.dvs/` but *not* the
    data files (those are gitignored)
 4. **User B** runs `dvs_get()` → dvs reads the meta files, locates blobs in
    shared storage, and writes the data files locally
@@ -49,7 +49,7 @@ dir.create(here::here(project_a))
 dir.create(here::here(project_b))
 ```
 
-# User A — add data
+# User A: add data
 
 ```{r}
 #| warning: false
@@ -96,7 +96,7 @@ setwd(here::here(project_b))
 dvs_status()
 ```
 
-# User B — get data
+# User B: get data
 
 ```{r}
 #| warning: false
@@ -130,7 +130,7 @@ identical(
 | Path | Commit? | Notes |
 |------|:-------:|-------|
 | `dvs.toml` | ✅ | points to shared storage |
-| `.dvs/**/*.dvs` | ✅ | meta files — the version ledger |
+| `.dvs/**/*.dvs` | ✅ | meta files, the version ledger |
 | `data/` | ❌ gitignore | large files live in dvs storage |
 | `rv/library/` | ❌ gitignore | cached R packages rebuild from `rproject.toml` |
 | `rv/scripts/` | ✅ | rv bootstrap helpers belong in the repo |
@@ -152,4 +152,4 @@ unlink(here::here(shared_storage), recursive = TRUE)
 
 ---
 
-**Next up**: [Configuration](config.html) — `dvs.toml` fields, compression tradeoffs, threads, and custom metadata folder names.
+**Next up**: [Configuration](config.html): `dvs.toml` fields, compression tradeoffs, threads, and custom metadata folder names.

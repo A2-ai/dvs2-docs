@@ -138,7 +138,7 @@ audit_path <- here::here(storage, "audit.log.jsonl")
 :::
 
 
-Raw file — one JSON object per line:
+Raw file, one JSON object per line:
 
 
 ```{.r .cell-code}
@@ -282,7 +282,7 @@ Each entry has the shape:
 }
 ```
 
-The `action` field is a tagged union — the single key is the command name
+The `action` field is a tagged union. The single key is the command name
 (`"init"`, `"add"`, or `"get"`). Parse it with `purrr` and `jsonlite`:
 
 
@@ -427,4 +427,4 @@ unlink(here::here(storage),     recursive = TRUE)
 
 ---
 
-**Next up**: [Random files](random_files.html) — the `mkdatasetfiles()` helper used to generate test data throughout these vignettes. Or return to the [full index](index.html).
+**Next up**: [Random files](random_files.html): the `mkdatasetfiles()` helper used to generate test data throughout these vignettes. Or return to the [full index](index.html).

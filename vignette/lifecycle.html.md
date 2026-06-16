@@ -119,7 +119,7 @@ dvs_status()
 
 # Modify a tracked file
 
-Append a row to `large_1.csv` — the file now differs from the hash dvs recorded:
+Append a row to `large_1.csv`. The file now differs from the hash dvs recorded:
 
 
 ::: {.cell}
@@ -246,7 +246,7 @@ dvs_add("data/large/large_1.csv", message = "dry run preview", dry_run = TRUE)
 :::
 
 
-Status is still `unsynced` — nothing was written:
+Status is still `unsynced`. Nothing was written:
 
 
 ::: {.cell}
@@ -467,7 +467,7 @@ dvs_status("data/small", recursive = TRUE)
 :::
 
 
-`dvs_get("data/small")` restores only the three direct children — the nested
+`dvs_get("data/small")` restores only the three direct children. The nested
 file remains absent:
 
 
@@ -559,7 +559,7 @@ dvs_status("data/small", recursive = TRUE)
 
 # Integrity failure: missing storage blob
 
-dvs blobs are content-addressed — the hash in the meta file is the key. If a
+dvs blobs are content-addressed: the hash in the meta file is the key. If a
 blob is missing from storage (e.g. accidental deletion), `dvs_get` returns an
 `error` column describing the failure rather than restoring the file.
 
@@ -645,7 +645,7 @@ dvs_status(status = "absent")
 :::
 
 
-`dvs_get` returns normally but with a non-empty `error` column — the blob is
+`dvs_get` returns normally but with a non-empty `error` column. The blob is
 gone so the file cannot be restored:
 
 
@@ -696,4 +696,4 @@ unlink(here::here(storage),     recursive = TRUE)
 
 ---
 
-**Next up**: [Collaboration](collab.html) — two projects sharing one storage directory; what to commit to git and what to gitignore.
+**Next up**: [Collaboration](collab.html): two projects sharing one storage directory; what to commit to git and what to gitignore.

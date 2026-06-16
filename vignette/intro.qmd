@@ -189,7 +189,7 @@ unlink(here::here(storage),     recursive = TRUE)
 
 ---
 
-This was the happy path — init, add, status, get. Everything worked as expected.
+This was the happy path: init, add, status, get. Everything worked as expected.
 
-**Next up**: [CLI](intro-cli.html) — the same operations driven from the terminal via the `dvs` binary. After that, [Internals](intro-internals.html) digs into the `.dvs/` folder layout, meta files, and content-addressed blob storage.
+**Next up**: [CLI](intro-cli.html): the same operations driven from the terminal via the `dvs` binary. After that, [Internals](intro-internals.html) digs into the `.dvs/` folder layout, meta files, and content-addressed blob storage.
 

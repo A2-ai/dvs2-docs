@@ -60,7 +60,7 @@ Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(stora
 ## Storage path is inside the repository
 
 Passing a storage path that resolves to a subdirectory of the project root is
-rejected — dvs refuses to version-control its own blob store.
+rejected. dvs refuses to version-control its own blob store.
 
 
 ::: {.cell}
@@ -103,7 +103,7 @@ Error: The given storage path is within the repository.
 :::
 
 
-## Project already initialised — `dvs.toml` exists
+## Project already initialised: `dvs.toml` exists
 
 Once `dvs.toml` is present a second `init` call fails immediately.
 
@@ -301,7 +301,7 @@ Error: Not in a DVS repository
 :::
 
 
-## No files to add — empty glob
+## No files to add: empty glob
 
 A glob pattern that matches no files raises in the R package; the CLI prints
 `No files to add` and exits 0.
@@ -349,7 +349,7 @@ Error: No files to add
 ## Path not found
 
 Passing an explicit path that doesn't exist on disk aborts before any files
-are processed — neither surface does partial work.
+are processed. Neither surface does partial work.
 
 
 ::: {.cell}
@@ -394,7 +394,7 @@ Error: Path not found: nonexistent_file.csv
 ## Path resolves to a directory (no glob)
 
 Passing a bare directory name with no glob matches no files. The R package
-raises, the CLI prints `No files to add` and exits 0 — mild surface
+raises, the CLI prints `No files to add` and exits 0: mild surface
 divergence.
 
 
@@ -442,7 +442,7 @@ Error: No files to add
 ## Path is outside the project root
 
 You're inside the project but ask dvs to track a file that lives elsewhere on
-disk, by absolute path. R returns a 2-column tibble — `path` + `error` — with
+disk, by absolute path. R returns a 2-column tibble (`path` plus `error`) with
 the failure recorded as a row rather than an R-level condition.
 
 
@@ -470,7 +470,7 @@ res |> print(width = Inf, n = Inf)
 :::
 
 
-Inspect the result columns directly — `path` is the offending path, `error`
+Inspect the result columns directly. `path` is the offending path, `error`
 is a plain character string:
 
 
@@ -545,8 +545,8 @@ Error: Some files failed to add
 
 ## Mixed paths: one exists, one does not
 
-When only some paths exist, both surfaces abort at the first missing path —
-no partial add.
+When only some paths exist, both surfaces abort at the first missing path.
+No partial add.
 
 
 ::: {.cell}
@@ -643,7 +643,7 @@ Error: Not in a DVS repository
 ## Path outside the project root
 
 Unlike `add`, an absolute path outside the project does **not** produce an
-error for `status` — the path just doesn't match anything tracked and you
+error for `status`. The path just doesn't match anything tracked and you
 get the empty-set response.
 
 
@@ -692,7 +692,7 @@ No tracked files
 
 ## Mixed paths: one tracked, one does not exist
 
-Unlike `add`, `status` quietly drops paths it can't match — you get a tibble
+Unlike `add`, `status` quietly drops paths it can't match. You get a tibble
 with only the tracked path and no error or warning about the missing one.
 
 
@@ -763,7 +763,7 @@ dvs status present.csv missing.csv
 ## Unparseable meta file
 
 If a `.dvs` metadata file is corrupted (non-JSON content), the parse error
-surfaces as a per-file row in the result rather than a top-level abort — the
+surfaces as a per-file row in the result rather than a top-level abort. The
 rest of the tree still resolves.
 
 
@@ -903,7 +903,7 @@ Error: Not in a DVS repository
 :::
 
 
-## No files to get — empty glob
+## No files to get: empty glob
 
 When the glob resolves to zero tracked files, `dvs get` aborts.
 
@@ -1040,7 +1040,7 @@ Error: No files to get
 ## Storage blob missing for tracked file
 
 The metadata `.dvs` file exists but the corresponding blob has been deleted
-from storage — simulating a corrupted or partially-synced store.
+from storage, simulating a corrupted or partially-synced store.
 
 
 ::: {.cell}

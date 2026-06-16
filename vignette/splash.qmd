@@ -36,7 +36,7 @@ Sr. Scientific Software Engineer
 
 **dvs** is a data version control system for R projects.
 
-It stores large data files in a content-addressed **storage directory** — separate from your git repo — and tracks them through small, text-based **meta files** that live alongside your code.
+It stores large data files in a content-addressed **storage directory** (separate from your git repo) and tracks them through small, text-based **meta files** that live alongside your code.
 
 ::: {.fragment}
 git tracks code · dvs tracks data
@@ -46,9 +46,9 @@ git tracks code · dvs tracks data
 
 | | git | dvs |
 |---|---|---|
-| Source code | ✅ | — |
-| Config files | ✅ | — |
-| Data files (MBs–GBs) | ❌ slow / bloats history | ✅ |
+| Source code | ✅ | n/a |
+| Config files | ✅ | n/a |
+| Data files (MBs to GBs) | ❌ slow / bloats history | ✅ |
 | Reproducible restores | partial | ✅ content-addressed |
 | Team sharing | via remote | via shared mount |
 
@@ -56,17 +56,17 @@ git tracks code · dvs tracks data
 
 | | Vignette |
 |---|---|
-| 1 | **intro** — R API: init, add, status, get |
-| 2 | **intro-cli** — same operations from the terminal |
-| 3 | **intro-internals** — `.dvs/` layout, blobs, audit log |
-| 4 | **lifecycle** — modify, unsynced, dry-run, integrity failures |
-| 5 | **collab** — sharing data across projects |
-| 6 | **config** — dvs.toml, compression, threads |
-| 7 | **audit** — querying the audit log |
+| 1 | **intro**: R API: init, add, status, get |
+| 2 | **intro-cli**: same operations from the terminal |
+| 3 | **intro-internals**: `.dvs/` layout, blobs, audit log |
+| 4 | **lifecycle**: modify, unsynced, dry-run, integrity failures |
+| 5 | **collab**: sharing data across projects |
+| 6 | **config**: dvs.toml, compression, threads |
+| 7 | **audit**: querying the audit log |
 
 ## How to read these
 
-**R API** (`dvs_*` functions) and **CLI** (`dvs` binary) are equivalent — choose whichever fits your workflow.
+**R API** (`dvs_*` functions) and **CLI** (`dvs` binary) are equivalent. Choose whichever fits your workflow.
 
 ```r
 dvs_add("data/file.csv", message = "v1")
