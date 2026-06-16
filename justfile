@@ -80,7 +80,6 @@ site-serve: site-build
 
 # Render all vignettes
 render:
-    quarto render vignette/index.qmd
     quarto render vignette/getting-started.qmd
     quarto render vignette/getting-started-cli.qmd
     quarto render vignette/intro.qmd
@@ -92,7 +91,6 @@ render:
     quarto render vignette/audit.qmd
     quarto render vignette/error.qmd
     quarto render vignette/random_files.qmd
-    quarto render vignette/setup.qmd
     quarto render vignette/splash.qmd
 
 # Render a single vignette (e.g. `just render-one intro`)
@@ -105,11 +103,10 @@ preview NAME:
 
 # Open all rendered HTMLs
 open:
-    open vignette/index.html vignette/intro.html vignette/intro-cli.html vignette/intro-internals.html vignette/lifecycle.html vignette/collab.html vignette/config.html vignette/audit.html vignette/error.html vignette/random_files.html vignette/setup.html vignette/splash.html
+    open vignette/intro.html vignette/intro-cli.html vignette/intro-internals.html vignette/lifecycle.html vignette/collab.html vignette/config.html vignette/audit.html vignette/error.html vignette/random_files.html vignette/splash.html
 
 # Publish all rendered vignettes to alx.dev.a2-ai.cloud (dvs2-demo project)
 publish:
-    alx publish vignette/index.html                -S vignette/index.qmd                                   -I vignette/index.html.md                -t index                --overwrite --skip-warnings --no-prompt
     alx publish vignette/getting-started.html      -S vignette/getting-started.qmd                         -I vignette/getting-started.html.md      -t getting-started      --overwrite --skip-warnings --no-prompt
     alx publish vignette/getting-started-cli.html  -S vignette/getting-started-cli.qmd                     -I vignette/getting-started-cli.html.md  -t getting-started-cli  --overwrite --skip-warnings --no-prompt
     alx publish vignette/intro.html                -S vignette/intro.qmd           -S R/mkdatasetfiles.R   -I vignette/intro.html.md                -t intro                --overwrite --skip-warnings --no-prompt
@@ -121,7 +118,6 @@ publish:
     alx publish vignette/audit.html                -S vignette/audit.qmd           -S R/mkdatasetfiles.R   -I vignette/audit.html.md                -t audit                --overwrite --skip-warnings --no-prompt
     alx publish vignette/error.html                -S vignette/error.qmd                                   -I vignette/error.html.md                -t error                --overwrite --skip-warnings --no-prompt
     alx publish vignette/random_files.html         -S vignette/random_files.qmd    -S R/mkdatasetfiles.R   -I vignette/random_files.html.md         -t random_files         --overwrite --skip-warnings --no-prompt
-    alx publish vignette/setup.html                -S vignette/setup.qmd                                   -I vignette/setup.html.md                -t setup                --overwrite --skip-warnings --no-prompt
     alx publish vignette/splash.html               -S vignette/splash.qmd          -S vignette/splash.scss                                          -t splash               --overwrite --skip-warnings --no-prompt
 
 # === rv / R package management ===
