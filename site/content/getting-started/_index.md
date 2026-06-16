@@ -35,6 +35,7 @@ check status, delete it, then get it back.
 - [CLI walkthrough](@/getting-started/cli.md): the workflow from the terminal.
 - [R walkthrough](@/getting-started/r.md): the same workflow with `library(dvs)`.
 
-Once the basics are clear, the [R Package](@/r-package/_index.md),
-[CLI](@/cli/_index.md), and [Reference](@/reference/_index.md) sections go
-deeper.
+Once the basics are clear, the [R Package](@/r-package/_index.md) and
+[CLI](@/cli/_index.md) sections document every function and command, the
+[Helpers](@/helpers/_index.md) section covers the R-only utilities, and
+[Internals](@/internals/_index.md) goes deeper on storage and configuration.

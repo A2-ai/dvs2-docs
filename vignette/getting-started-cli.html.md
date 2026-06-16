@@ -1,6 +1,6 @@
 ---
-title: "Getting Started with dvs CLI"
-subtitle: "init, add, status, and get: five minutes end to end"
+title: "CLI walkthrough"
+subtitle: "The core loop with the dvs binary"
 format:
   html:
     keep-md: true
@@ -8,10 +8,15 @@ execute:
   freeze: auto
 ---
 
+This walkthrough runs the everyday loop from the terminal: initialize a project,
+add a file, check its status, delete it, then get it back. It is the "I
+re-cloned a project and need its data" sequence. The
+[R walkthrough](getting-started.html) covers the same steps from R.
+
 ## Setup
 
-R creates the sandbox directories and dataset; all dvs operations below run via
-the `dvs` CLI binary.
+R creates the sandbox directories and the dataset; all dvs operations run via
+the `dvs` binary.
 
 
 ::: {.cell}
@@ -24,54 +29,28 @@ library(here)
 ::: {.cell-output .cell-output-stderr}
 
 ```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
+here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
 ```
 
 
 :::
-:::
-
-
-Create isolated temporary directories for this demo:
-
-
-::: {.cell}
 
 ```{.r .cell-code}
 storage     <- basename(tempfile(fileext = "_storage"))
 new_project <- basename(tempfile(fileext = "_project"))
 dir.create(here::here(storage))
 dir.create(here::here(new_project))
-```
-:::
-
-
-Save the built-in `Theoph` pharmacokinetic dataset as a CSV:
-
-
-::: {.cell}
-
-```{.r .cell-code}
 dir.create(here::here(new_project, "data"))
 write.csv(Theoph, here::here(new_project, "data/theoph.csv"), row.names = FALSE)
-```
-:::
-
-
-Expose the paths to the shell:
-
-
-::: {.cell}
-
-```{.r .cell-code}
 Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(storage))
 ```
 :::
 
 
-## `dvs init`
+## 1. Initialize
 
-Initialize a dvs repository pointing at the storage directory:
+Point storage at the sibling directory. See [dvs init](cli-init.html) for every
+flag.
 
 
 ::: {.cell}
@@ -79,19 +58,13 @@ Initialize a dvs repository pointing at the storage directory:
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
 dvs init "$DVS_STORAGE"
-cat dvs.toml
 ```
 
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo/filed33b3b2c4b20_project"
-compression = "zstd"
-
-[backend]
-path = "/Users/elea/Documents/a2ai_github/dvs2-demo/filed33b2e93187b_storage"
-group = "staff"
+DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file3854571482a1_project"
 ```
 
 
@@ -99,40 +72,16 @@ group = "staff"
 :::
 
 
-## `dvs status` (before any adds)
+## 2. Add
 
-No files are tracked yet:
+Track the CSV with a message. See [dvs add](cli-add.html).
 
 
 ::: {.cell}
 
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
-dvs status
-```
-
-
-::: {.cell-output .cell-output-stdout}
-
-```
-No tracked files
-```
-
-
-:::
-:::
-
-
-## `dvs add`
-
-Track the dataset with a message:
-
-
-::: {.cell}
-
-```{.bash .cell-code}
-cd "$DVS_PROJECT"
-dvs add data/theoph.csv -m "add Theoph dataset"
+dvs add data/theoph.csv -m "initial Theoph data"
 ```
 
 
@@ -147,9 +96,9 @@ Added: data/theoph.csv [2.9 KB] --> saved [842 B] as cdd978e51298006701f7b285aaf
 :::
 
 
-## `dvs status`
+## 3. Status
 
-The file is now tracked and `current`:
+The file is tracked and `current`. See [dvs status](cli-status.html).
 
 
 ::: {.cell}
@@ -175,89 +124,10 @@ dvs status
 :::
 
 
-## Add a second copy
+## 4. Remove the file
 
-Write another copy of the dataset and track it:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-write.csv(Theoph, here::here(new_project, "data/theoph_v2.csv"), row.names = FALSE)
-```
-:::
-
-
-
-::: {.cell}
-
-```{.bash .cell-code}
-cd "$DVS_PROJECT"
-dvs add data/theoph_v2.csv -m "add second Theoph copy"
-dvs status
-```
-
-
-::: {.cell-output .cell-output-stdout}
-
-```
-Added: data/theoph_v2.csv [2.9 KB] as cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06
-+--------------------+---------+--------+
-| path               | status  | size   |
-+--------------------+---------+--------+
-| data/theoph.csv    | current | 2.9 KB |
-+--------------------+---------+--------+
-| data/theoph_v2.csv | current | 2.9 KB |
-+--------------------+---------+--------+
-```
-
-
-:::
-:::
-
-
-## Modify a file, check status
-
-Append a row to `theoph.csv` to simulate a local edit after it was stored:
-
-
-::: {.cell}
-
-```{.bash .cell-code}
-echo "99,70.5,320,0,0.1" >> "$DVS_PROJECT/data/theoph.csv"
-```
-:::
-
-
-`dvs status` detects that the file on disk no longer matches the stored hash:
-
-
-::: {.cell}
-
-```{.bash .cell-code}
-cd "$DVS_PROJECT"
-dvs status
-```
-
-
-::: {.cell-output .cell-output-stdout}
-
-```
-+--------------------+----------+--------+
-| path               | status   | size   |
-+--------------------+----------+--------+
-| data/theoph.csv    | unsynced | 2.9 KB |
-+--------------------+----------+--------+
-| data/theoph_v2.csv | current  | 2.9 KB |
-+--------------------+----------+--------+
-```
-
-
-:::
-:::
-
-
-## Delete the original, check status
+Delete the local copy, the moment after a fresh clone where the data is not on
+disk yet.
 
 
 ::: {.cell}
@@ -265,6 +135,19 @@ dvs status
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
 rm data/theoph.csv
+```
+:::
+
+
+## 5. Status again
+
+The file is now `absent`: tracked, but missing locally.
+
+
+::: {.cell}
+
+```{.bash .cell-code}
+cd "$DVS_PROJECT"
 dvs status
 ```
 
@@ -272,13 +155,11 @@ dvs status
 ::: {.cell-output .cell-output-stdout}
 
 ```
-+--------------------+---------+--------+
-| path               | status  | size   |
-+--------------------+---------+--------+
-| data/theoph.csv    | absent  | 2.9 KB |
-+--------------------+---------+--------+
-| data/theoph_v2.csv | current | 2.9 KB |
-+--------------------+---------+--------+
++-----------------+--------+--------+
+| path            | status | size   |
++-----------------+--------+--------+
+| data/theoph.csv | absent | 2.9 KB |
++-----------------+--------+--------+
 ```
 
 
@@ -286,11 +167,14 @@ dvs status
 :::
 
 
-`theoph.csv` shows `absent`; `theoph_v2.csv` remains `current`.
+::: {.callout-note}
+dvs reports three states: `current`, `absent`, and `unsynced` (on disk but not
+matching the stored hash). See [Storage and meta files](intro-internals.html).
+:::
 
-## `dvs get`
+## 6. Get
 
-Restore the deleted file from storage:
+Restore the file from storage. See [dvs get](cli-get.html).
 
 
 ::: {.cell}
@@ -313,7 +197,9 @@ Total: 1 files, 2.9 KB
 :::
 
 
-Both files are `current` again:
+## 7. Status again
+
+The file is `current` again. The loop is complete.
 
 
 ::: {.cell}
@@ -327,13 +213,11 @@ dvs status
 ::: {.cell-output .cell-output-stdout}
 
 ```
-+--------------------+---------+--------+
-| path               | status  | size   |
-+--------------------+---------+--------+
-| data/theoph.csv    | current | 2.9 KB |
-+--------------------+---------+--------+
-| data/theoph_v2.csv | current | 2.9 KB |
-+--------------------+---------+--------+
++-----------------+---------+--------+
+| path            | status  | size   |
++-----------------+---------+--------+
+| data/theoph.csv | current | 2.9 KB |
++-----------------+---------+--------+
 ```
 
 
@@ -353,6 +237,10 @@ unlink(here::here(storage),     recursive = TRUE)
 :::
 
 
----
+## Next steps
 
-**Next up**: [Getting Started, R API](getting-started.html): the same workflow using the `dvs` R package functions directly.
+- The [CLI](cli-init.html) reference covers every flag of
+  [dvs init](cli-init.html), [dvs add](cli-add.html),
+  [dvs status](cli-status.html), and [dvs get](cli-get.html).
+- The same loop from R: [R walkthrough](getting-started.html).
+- How dvs stores data: [Storage and meta files](intro-internals.html).

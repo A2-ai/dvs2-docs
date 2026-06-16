@@ -18,21 +18,30 @@ site-build:
     set -euo pipefail
 
     # "<vignette> <section/file> <in-section weight>"
-    # Getting Started holds install (in its _index.md) + the two light Theoph
-    # walkthroughs. The R Package / CLI / Reference sections hold the in-depth
-    # chapters. The `setup` bootstrap doc and `index`/`splash` are excluded.
+    # Five sections: Getting Started (install + two walkthroughs), R Package
+    # (one page per function), CLI (one page per command), Helpers (R-only
+    # utilities), Internals (last). The harvested vignettes (intro, intro-cli,
+    # lifecycle, collab, random_files) and the splash deck are excluded.
     MAP=(
       "getting-started-cli getting-started/cli          1"
       "getting-started     getting-started/r            2"
-      "intro               r-package/intro              1"
-      "lifecycle           r-package/lifecycle          2"
-      "collab              r-package/collab             3"
-      "random_files        r-package/random-files       4"
-      "intro-cli           cli/intro                    1"
-      "intro-internals     reference/internals          1"
-      "config              reference/config             2"
-      "audit               reference/audit              3"
-      "error               reference/error              4"
+      "r-init              r-package/init               1"
+      "r-add               r-package/add                2"
+      "r-status            r-package/status             3"
+      "r-get               r-package/get                4"
+      "cli-init            cli/init                     1"
+      "cli-add             cli/add                      2"
+      "cli-status          cli/status                   3"
+      "cli-get             cli/get                      4"
+      "r-threads           helpers/threads              1"
+      "r-loglevel          helpers/log-level            2"
+      "r-version           helpers/version              3"
+      "r-format-bytes      helpers/format-bytes         4"
+      "r-bytes             helpers/bytes                5"
+      "intro-internals     internals/storage            1"
+      "config              internals/config             2"
+      "audit               internals/audit              3"
+      "error               internals/errors             4"
     )
 
     # name->path JSON map so the converter can rewrite <name>.html cross-links
@@ -78,19 +87,27 @@ site-serve: site-build
 
 # === Vignettes ===
 
-# Render all vignettes
+# Render all vignettes that feed the site (one per MAP entry), plus the deck
 render:
     quarto render vignette/getting-started.qmd
     quarto render vignette/getting-started-cli.qmd
-    quarto render vignette/intro.qmd
-    quarto render vignette/intro-cli.qmd
+    quarto render vignette/r-init.qmd
+    quarto render vignette/r-add.qmd
+    quarto render vignette/r-status.qmd
+    quarto render vignette/r-get.qmd
+    quarto render vignette/cli-init.qmd
+    quarto render vignette/cli-add.qmd
+    quarto render vignette/cli-status.qmd
+    quarto render vignette/cli-get.qmd
+    quarto render vignette/r-threads.qmd
+    quarto render vignette/r-loglevel.qmd
+    quarto render vignette/r-version.qmd
+    quarto render vignette/r-format-bytes.qmd
+    quarto render vignette/r-bytes.qmd
     quarto render vignette/intro-internals.qmd
-    quarto render vignette/lifecycle.qmd
-    quarto render vignette/collab.qmd
     quarto render vignette/config.qmd
     quarto render vignette/audit.qmd
     quarto render vignette/error.qmd
-    quarto render vignette/random_files.qmd
     quarto render vignette/splash.qmd
 
 # Render a single vignette (e.g. `just render-one intro`)
@@ -109,15 +126,23 @@ open:
 publish:
     alx publish vignette/getting-started.html      -S vignette/getting-started.qmd                         -I vignette/getting-started.html.md      -t getting-started      --overwrite --skip-warnings --no-prompt
     alx publish vignette/getting-started-cli.html  -S vignette/getting-started-cli.qmd                     -I vignette/getting-started-cli.html.md  -t getting-started-cli  --overwrite --skip-warnings --no-prompt
-    alx publish vignette/intro.html                -S vignette/intro.qmd           -S R/mkdatasetfiles.R   -I vignette/intro.html.md                -t intro                --overwrite --skip-warnings --no-prompt
-    alx publish vignette/intro-cli.html            -S vignette/intro-cli.qmd       -S R/mkdatasetfiles.R   -I vignette/intro-cli.html.md            -t intro-cli            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-init.html               -S vignette/r-init.qmd                                  -I vignette/r-init.html.md               -t r-init               --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-add.html                -S vignette/r-add.qmd                                   -I vignette/r-add.html.md                -t r-add                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-status.html             -S vignette/r-status.qmd                                -I vignette/r-status.html.md             -t r-status             --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-get.html                -S vignette/r-get.qmd                                   -I vignette/r-get.html.md                -t r-get                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/cli-init.html             -S vignette/cli-init.qmd                                -I vignette/cli-init.html.md             -t cli-init             --overwrite --skip-warnings --no-prompt
+    alx publish vignette/cli-add.html              -S vignette/cli-add.qmd                                 -I vignette/cli-add.html.md              -t cli-add              --overwrite --skip-warnings --no-prompt
+    alx publish vignette/cli-status.html           -S vignette/cli-status.qmd                              -I vignette/cli-status.html.md           -t cli-status           --overwrite --skip-warnings --no-prompt
+    alx publish vignette/cli-get.html              -S vignette/cli-get.qmd                                 -I vignette/cli-get.html.md              -t cli-get              --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-threads.html            -S vignette/r-threads.qmd                               -I vignette/r-threads.html.md            -t r-threads            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-loglevel.html           -S vignette/r-loglevel.qmd                              -I vignette/r-loglevel.html.md           -t r-loglevel           --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-version.html            -S vignette/r-version.qmd                               -I vignette/r-version.html.md            -t r-version            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-format-bytes.html       -S vignette/r-format-bytes.qmd                          -I vignette/r-format-bytes.html.md       -t r-format-bytes       --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-bytes.html              -S vignette/r-bytes.qmd                                 -I vignette/r-bytes.html.md              -t r-bytes              --overwrite --skip-warnings --no-prompt
     alx publish vignette/intro-internals.html      -S vignette/intro-internals.qmd -S R/mkdatasetfiles.R   -I vignette/intro-internals.html.md      -t intro-internals      --overwrite --skip-warnings --no-prompt
-    alx publish vignette/lifecycle.html            -S vignette/lifecycle.qmd       -S R/mkdatasetfiles.R   -I vignette/lifecycle.html.md            -t lifecycle            --overwrite --skip-warnings --no-prompt
-    alx publish vignette/collab.html               -S vignette/collab.qmd          -S R/mkdatasetfiles.R   -I vignette/collab.html.md               -t collab               --overwrite --skip-warnings --no-prompt
-    alx publish vignette/config.html               -S vignette/config.qmd          -S R/mkdatasetfiles.R   -I vignette/config.html.md               -t config               --overwrite --skip-warnings --no-prompt
+    alx publish vignette/config.html               -S vignette/config.qmd                                  -I vignette/config.html.md               -t config               --overwrite --skip-warnings --no-prompt
     alx publish vignette/audit.html                -S vignette/audit.qmd           -S R/mkdatasetfiles.R   -I vignette/audit.html.md                -t audit                --overwrite --skip-warnings --no-prompt
     alx publish vignette/error.html                -S vignette/error.qmd                                   -I vignette/error.html.md                -t error                --overwrite --skip-warnings --no-prompt
-    alx publish vignette/random_files.html         -S vignette/random_files.qmd    -S R/mkdatasetfiles.R   -I vignette/random_files.html.md         -t random_files         --overwrite --skip-warnings --no-prompt
     alx publish vignette/splash.html               -S vignette/splash.qmd          -S vignette/splash.scss                                          -t splash               --overwrite --skip-warnings --no-prompt
 
 # === rv / R package management ===

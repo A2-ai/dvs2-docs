@@ -25,6 +25,6 @@ You can drive it from the **R package** (`library(dvs)`) or the **CLI** (the
 [Getting Started](@/getting-started/_index.md) has the install steps and a short
 walkthrough of the core workflow on a small dataset, for both the CLI and R.
 From there the [R Package](@/r-package/_index.md) and [CLI](@/cli/_index.md)
-sections cover bulk operations, the file lifecycle, and shared storage, and
-[Reference](@/reference/_index.md) goes deeper on storage internals,
-configuration, the audit log, and the full error surface.
+sections document every function and command, the [Helpers](@/helpers/_index.md)
+section covers the R-only utilities, and [Internals](@/internals/_index.md) goes
+deeper on storage, configuration, the audit log, and the error surface.

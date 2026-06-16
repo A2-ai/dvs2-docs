@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.36">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>dvs Error Reference</title>
+<title>Error reference</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2280,8 +2280,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">dvs Error Reference</h1>
-<p class="subtitle lead">every error dvs can raise, shown side-by-side for R and the CLI</p>
+<h1 class="title">Error reference</h1>
+<p class="subtitle lead">errors dvs can raise, shown side by side for R and the CLI</p>
 </div>
 
 
@@ -2298,13 +2298,26 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This page is implementation detail, beyond what normal use requires.</p>
+</div>
+</div>
 <section id="setup" class="level1">
 <h1>Setup</h1>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo</code></pre>
+<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print tibbles wide so all columns appear on one row.</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># options(width = Inf) is rejected by base R (max 10000); 10000 is the ceiling.</span></span>
@@ -2327,7 +2340,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <h1><code>init</code> errors</h1>
 <section id="storage-path-is-inside-the-repository" class="level2">
 <h2 class="anchored" data-anchor-id="storage-path-is-inside-the-repository">Storage path is inside the repository</h2>
-<p>Passing a storage path that resolves to a subdirectory of the project root is rejected — dvs refuses to version-control its own blob store.</p>
+<p>Passing a storage path that resolves to a subdirectory of the project root is rejected. dvs refuses to version-control its own blob store.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="at">storage_path =</span> here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;inside_storage&quot;</span>),</span>
@@ -2346,7 +2359,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </div>
 </section>
 <section id="project-already-initialised-dvs.toml-exists" class="level2">
-<h2 class="anchored" data-anchor-id="project-already-initialised-dvs.toml-exists">Project already initialised — <code>dvs.toml</code> exists</h2>
+<h2 class="anchored" data-anchor-id="project-already-initialised-dvs.toml-exists">Project already initialised: <code>dvs.toml</code> exists</h2>
 <p>Once <code>dvs.toml</code> is present a second <code>init</code> call fails immediately.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First init succeeds</span></span>
@@ -2440,7 +2453,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </div>
 </section>
 <section id="no-files-to-add-empty-glob" class="level2">
-<h2 class="anchored" data-anchor-id="no-files-to-add-empty-glob">No files to add — empty glob</h2>
+<h2 class="anchored" data-anchor-id="no-files-to-add-empty-glob">No files to add: empty glob</h2>
 <p>A glob pattern that matches no files raises in the R package; the CLI prints <code>No files to add</code> and exits 0.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
@@ -2460,7 +2473,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </section>
 <section id="path-not-found" class="level2">
 <h2 class="anchored" data-anchor-id="path-not-found">Path not found</h2>
-<p>Passing an explicit path that doesn’t exist on disk aborts before any files are processed — neither surface does partial work.</p>
+<p>Passing an explicit path that doesn’t exist on disk aborts before any files are processed. Neither surface does partial work.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> <span class="st">&quot;nonexistent_file.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2479,7 +2492,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </section>
 <section id="path-resolves-to-a-directory-no-glob" class="level2">
 <h2 class="anchored" data-anchor-id="path-resolves-to-a-directory-no-glob">Path resolves to a directory (no glob)</h2>
-<p>Passing a bare directory name with no glob matches no files. The R package raises, the CLI prints <code>No files to add</code> and exits 0 — mild surface divergence.</p>
+<p>Passing a bare directory name with no glob matches no files. The R package raises, the CLI prints <code>No files to add</code> and exits 0: mild surface divergence.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;mydir&quot;</span>), <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
@@ -2500,7 +2513,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </section>
 <section id="path-is-outside-the-project-root" class="level2">
 <h2 class="anchored" data-anchor-id="path-is-outside-the-project-root">Path is outside the project root</h2>
-<p>You’re inside the project but ask dvs to track a file that lives elsewhere on disk, by absolute path. R returns a 2-column tibble — <code>path</code> + <code>error</code> — with the failure recorded as a row rather than an R-level condition.</p>
+<p>You’re inside the project but ask dvs to track a file that lives elsewhere on disk, by absolute path. R returns a 2-column tibble (<code>path</code> plus <code>error</code>) with the failure recorded as a row rather than an R-level condition.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>outside_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>)</span>
@@ -2511,20 +2524,20 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 1 × 2
   path                                                                              error                  
   &lt;chr&gt;                                                                             &lt;chr&gt;                  
-1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv path is outside project</code></pre>
+1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv path is outside project</code></pre>
 </div>
 </div>
-<p>Inspect the result columns directly — <code>path</code> is the offending path, <code>error</code> is a plain character string:</p>
+<p>Inspect the result columns directly. <code>path</code> is the offending path, <code>error</code> is a plain character string:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(res)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>tibble [1 × 2] (S3: tbl_df/tbl/data.frame)
- $ path : chr &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv&quot;
+ $ path : chr &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv&quot;
  $ error: chr &quot;path is outside project&quot;</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>path</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv&quot;</code></pre>
+<pre><code>[1] &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv&quot;</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>error</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2538,14 +2551,14 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span>
 <span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.AMrsbIi84I.csv: path is outside project
+<pre><code>Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.FVdtIn7aaM.csv: path is outside project
 Error: Some files failed to add</code></pre>
 </div>
 </div>
 </section>
 <section id="mixed-paths-one-exists-one-does-not" class="level2">
 <h2 class="anchored" data-anchor-id="mixed-paths-one-exists-one-does-not">Mixed paths: one exists, one does not</h2>
-<p>When only some paths exist, both surfaces abort at the first missing path — no partial add.</p>
+<p>When only some paths exist, both surfaces abort at the first missing path. No partial add.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;x&quot;</span>, here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;present.csv&quot;</span>))</span>
@@ -2592,7 +2605,7 @@ Error: Some files failed to add</code></pre>
 </section>
 <section id="path-outside-the-project-root" class="level2">
 <h2 class="anchored" data-anchor-id="path-outside-the-project-root">Path outside the project root</h2>
-<p>Unlike <code>add</code>, an absolute path outside the project does <strong>not</strong> produce an error for <code>status</code> — the path just doesn’t match anything tracked and you get the empty-set response.</p>
+<p>Unlike <code>add</code>, an absolute path outside the project does <strong>not</strong> produce an error for <code>status</code>. The path just doesn’t match anything tracked and you get the empty-set response.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>outside_status <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>)</span>
@@ -2615,7 +2628,7 @@ Error: Some files failed to add</code></pre>
 </section>
 <section id="mixed-paths-one-tracked-one-does-not-exist" class="level2">
 <h2 class="anchored" data-anchor-id="mixed-paths-one-tracked-one-does-not-exist">Mixed paths: one tracked, one does not exist</h2>
-<p>Unlike <code>add</code>, <code>status</code> quietly drops paths it can’t match — you get a tibble with only the tracked path and no error or warning about the missing one.</p>
+<p>Unlike <code>add</code>, <code>status</code> quietly drops paths it can’t match. You get a tibble with only the tracked path and no error or warning about the missing one.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Track one real file so we have something to match against</span></span>
@@ -2633,7 +2646,7 @@ Error: Some files failed to add</code></pre>
 <pre><code># A tibble: 1 × 7
   path        status  hash                                                                size created_by compression add_time           
   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;dttm&gt;             
-1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-04-24 12:59:45</code></pre>
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-06-16 16:50:04</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2650,7 +2663,7 @@ Error: Some files failed to add</code></pre>
 </section>
 <section id="unparseable-meta-file" class="level2">
 <h2 class="anchored" data-anchor-id="unparseable-meta-file">Unparseable meta file</h2>
-<p>If a <code>.dvs</code> metadata file is corrupted (non-JSON content), the parse error surfaces as a per-file row in the result rather than a top-level abort — the rest of the tree still resolves.</p>
+<p>If a <code>.dvs</code> metadata file is corrupted (non-JSON content), the parse error surfaces as a per-file row in the result rather than a top-level abort. The rest of the tree still resolves.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fresh project so we can corrupt one meta file without affecting the rest</span></span>
 <span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>ump_storage <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>))</span>
@@ -2721,7 +2734,7 @@ Error: Some files failed to get status</code></pre>
 </div>
 </section>
 <section id="no-files-to-get-empty-glob" class="level2">
-<h2 class="anchored" data-anchor-id="no-files-to-get-empty-glob">No files to get — empty glob</h2>
+<h2 class="anchored" data-anchor-id="no-files-to-get-empty-glob">No files to get: empty glob</h2>
 <p>When the glob resolves to zero tracked files, <code>dvs get</code> aborts.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
@@ -2781,7 +2794,7 @@ Error: Some files failed to get status</code></pre>
 </section>
 <section id="storage-blob-missing-for-tracked-file" class="level2">
 <h2 class="anchored" data-anchor-id="storage-blob-missing-for-tracked-file">Storage blob missing for tracked file</h2>
-<p>The metadata <code>.dvs</code> file exists but the corresponding blob has been deleted from storage — simulating a corrupted or partially-synced store.</p>
+<p>The metadata <code>.dvs</code> file exists but the corresponding blob has been deleted from storage, simulating a corrupted or partially-synced store.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use a fresh project; the main demo project still has live state we don&#39;t</span></span>
 <span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a><span class="co"># want to wreck for downstream chunks.</span></span>

@@ -1,12 +1,19 @@
 ---
-title: "dvs audit log"
-subtitle: "every dvs operation is appended to audit.log.jsonl in the storage directory"
+title: "The audit log"
+subtitle: "audit.log.jsonl format and querying"
 format:
   html:
     keep-md: true
 execute:
   freeze: auto
 ---
+
+::: {.callout-note}
+This page is implementation detail, beyond what normal use requires.
+:::
+
+Every add is appended to `audit.log.jsonl` in the storage directory. The log is
+append-only and newline-delimited JSON, with one operation per line.
 
 # Setup
 
@@ -45,7 +52,8 @@ invisible(dvs_add("data/file_2.csv", message = "initial add of file 2"))
 invisible(dvs_add("data/file_3.csv", message = "initial add of file 3"))
 ```
 
-Simulate a restore (get):
+Restore a file with `get`. Note that `get` does not append to the audit log;
+only `init` and `add` are recorded.
 
 ```{r}
 #| warning: false
@@ -107,8 +115,9 @@ Each entry has the shape:
 }
 ```
 
-The `action` field is a tagged union. The single key is the command name
-(`"init"`, `"add"`, or `"get"`). Parse it with `purrr` and `jsonlite`:
+The `action` field is a tagged union. The single key is the command name,
+either `"init"` or `"add"` (`get` is not logged). Parse it with `purrr` and
+`jsonlite`:
 
 ```{r}
 #| warning: false
@@ -170,6 +179,8 @@ unlink(here::here(new_project), recursive = TRUE)
 unlink(here::here(storage),     recursive = TRUE)
 ```
 
----
+## See also
 
-**Next up**: [Random files](random_files.html): the `mkdatasetfiles()` helper used to generate test data throughout these vignettes. Or return to the [full index](index.html).
+- [Storage and meta files](intro-internals.html): the blob and meta layout.
+- [The dvs.toml project file](config.html): the project configuration.
+- The command references: [dvs_add()](r-add.html) / [dvs add](cli-add.html).

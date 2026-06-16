@@ -1,6 +1,6 @@
 +++
 title = "About"
-weight = 5
+weight = 6
 template = "about.html"
 description = "dvs is built by A2-AI."
 +++

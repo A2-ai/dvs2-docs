@@ -1,6 +1,6 @@
 ---
-title: "dvs configuration"
-subtitle: "dvs.toml fields, compression tradeoffs, threads, and metadata folder name"
+title: "The dvs.toml project file"
+subtitle: "configuration fields and project discovery"
 format:
   html:
     keep-md: true
@@ -8,7 +8,17 @@ execute:
   freeze: auto
 ---
 
-# Setup
+::: {.callout-note}
+This page is implementation detail, beyond what normal use requires. The
+[dvs_init()](r-init.html) / [dvs init](cli-init.html) pages cover setting these
+values; this page describes the file they write.
+:::
+
+`dvs_init()` writes a `dvs.toml` at the project root. It records where blobs are
+stored and how the project is configured. Every later command finds the project
+by walking up from the working directory to the nearest `dvs.toml`.
+
+## Setup
 
 
 ::: {.cell}
@@ -16,49 +26,23 @@ execute:
 ```{.r .cell-code}
 options(width = 1000)
 library(dvs)
-library(fs)
-library(here)
+base <- tempfile("dvs_config_")
+dir.create(base)
 ```
-
-::: {.cell-output .cell-output-stderr}
-
-```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
-```
-
-
-:::
 :::
 
+
+## A default project
 
 
 ::: {.cell}
 
 ```{.r .cell-code}
-source(here::here("R/mkdatasetfiles.R"))
-```
-:::
-
-
-
-::: {.cell}
-
-```{.r .cell-code}
-storage     <- basename(tempfile(fileext = "_storage"))
-new_project <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(storage))
-dir.create(here::here(new_project))
-```
-:::
-
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(new_project))
-mkdatasetfiles(n_files = 5, size_mb = 5, prefix = "file_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(here::here(storage))
+proj  <- file.path(base, "default")
+store <- file.path(base, "default-store")
+dir.create(proj)
+dir.create(store)
+dvs_init(store, root_dir = proj)
 ```
 
 ::: {.cell-output .cell-output-stdout}
@@ -69,18 +53,9 @@ DVS Initialized
 
 
 :::
-:::
-
-
-# `dvs.toml`
-
-`dvs_init()` writes a `dvs.toml` at the project root:
-
-
-::: {.cell}
 
 ```{.r .cell-code}
-cat(readLines(here::here(new_project, "dvs.toml")), sep = "\n")
+cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 ```
 
 ::: {.cell-output .cell-output-stdout}
@@ -89,7 +64,7 @@ cat(readLines(here::here(new_project, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/Users/elea/Documents/a2ai_github/dvs2-demo/filed8e74e275450_storage"
+path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpO6qi3L/dvs_config_480d7204516d/default-store"
 group = "staff"
 ```
 
@@ -99,54 +74,26 @@ group = "staff"
 
 
 | Field | Meaning |
-|-------|---------|
-| `storage_path` | Where dvs copies blobs. Any directory reachable from this machine: local path or network mount. |
-| `metadata_folder_name` | Defaults to `.dvs`. The folder that mirrors your data tree and holds meta files. Change if `.dvs` collides with another tool. |
-| `compression` | `"zstd"` (default) or `"none"`. zstd typically halves storage footprint for tabular data. |
+|---|---|
+| `compression` | `"zstd"` (default) or `"none"`. Recorded per file in the meta files, so changing this later does not break old retrievals. |
+| `[backend] path` | Storage directory for blobs. Any path reachable from this machine: a local path or a network mount. |
+| `[backend] group` | Unix group set on the storage directory and stored files. Defaults to the creating user's group. |
+| `metadata_folder_name` | Name of the metadata folder (default `.dvs`). Only written when set to a non-default value. |
 
-# Compression: `zstd` vs `none`
+## Non-default fields
 
-Same data, two different compression settings. Compare resulting storage size.
-
-
-::: {.cell}
-
-```{.r .cell-code}
-storage_zstd <- basename(tempfile(fileext = "_zstd_storage"))
-storage_none <- basename(tempfile(fileext = "_none_storage"))
-project_zstd <- basename(tempfile(fileext = "_zstd_project"))
-project_none <- basename(tempfile(fileext = "_none_project"))
-for (d in c(storage_zstd, storage_none, project_zstd, project_none)) dir.create(here::here(d))
-```
-:::
-
+Fields set to non-default values are written explicitly. Here the metadata
+folder is renamed and compression is disabled.
 
 
 ::: {.cell}
 
 ```{.r .cell-code}
-setwd(here::here(project_zstd))
-mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-```
-:::
-
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(project_none))
-mkdatasetfiles(n_files = 5, size_mb = 10, prefix = "data_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-```
-:::
-
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(project_zstd))
-dvs_init(here::here(storage_zstd), compression = "zstd")
+proj  <- file.path(base, "custom")
+store <- file.path(base, "custom-store")
+dir.create(proj)
+dir.create(store)
+dvs_init(store, root_dir = proj, metadata_folder_name = ".datalock", compression = "none")
 ```
 
 ::: {.cell-output .cell-output-stdout}
@@ -159,258 +106,17 @@ DVS Initialized
 :::
 
 ```{.r .cell-code}
-invisible(dvs_add(glob = "data/*.csv", message = "add with zstd compression"))
-```
-:::
-
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(project_none))
-dvs_init(here::here(storage_none), compression = "none")
+cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 ```
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
-```
-
-
-:::
-
-```{.r .cell-code}
-invisible(dvs_add(glob = "data/*.csv", message = "add with no compression"))
-```
-:::
-
-
-Compare storage sizes:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-storage_summary <- function(path, label) {
-  info <- fs::dir_info(path, recurse = TRUE, type = "file") |>
-    dplyr::filter(!grepl("\\.git|audit\\.log", path))
-  dplyr::tibble(
-    compression  = label,
-    n_blobs      = nrow(info),
-    size_bytes   = sum(as.numeric(info$size)),
-    size_mb      = round(sum(as.numeric(info$size)) / 1e6, 2)
-  )
-}
-
-comparison <- dplyr::bind_rows(
-  storage_summary(here::here(storage_zstd), "zstd"),
-  storage_summary(here::here(storage_none), "none")
-)
-
-comparison |>
-  dplyr::mutate(ratio = round(size_bytes / size_bytes[compression == "none"], 3))
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 2 × 5
-  compression n_blobs size_bytes size_mb ratio
-  <chr>         <int>      <dbl>   <dbl> <dbl>
-1 zstd              5   22042575    22.0  0.42
-2 none              5   52428720    52.4  1   
-```
-
-
-:::
-:::
-
-
-# Threads
-
-`set_dvs_threads()` controls how many parallel threads dvs uses for hashing
-and copying blobs. The default is auto-detect (one thread per logical CPU).
-
-
-::: {.cell}
-
-```{.r .cell-code}
-storage_t <- basename(tempfile(fileext = "_threads_storage"))
-project_t <- basename(tempfile(fileext = "_threads_project"))
-dir.create(here::here(storage_t))
-dir.create(here::here(project_t))
-```
-:::
-
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(project_t))
-mkdatasetfiles(n_files = 50, size_mb = 3, prefix = "f_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(here::here(storage_t))
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-DVS Initialized
-```
-
-
-:::
-:::
-
-
-Time `dvs_add` with a single thread:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-set_dvs_threads(1)
-t1 <- system.time({
-  setwd(here::here(project_t))
-  invisible(dvs_add(glob = "data/*.csv", message = "1 thread"))
-})
-cat("1 thread :", round(t1["elapsed"], 2), "s\n")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-1 thread : 0.89 s
-```
-
-
-:::
-:::
-
-
-Re-stage files by appending a byte so dvs sees them as unsynced:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(project_t))
-for (f in fs::dir_ls("data", type = "file")) write("", f, append = TRUE)
-```
-:::
-
-
-Time with four threads:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-set_dvs_threads(4)
-t4 <- system.time({
-  setwd(here::here(project_t))
-  invisible(dvs_add(glob = "data/*.csv", message = "4 threads"))
-})
-cat("4 threads:", round(t4["elapsed"], 2), "s\n")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-4 threads: 0.24 s
-```
-
-
-:::
-:::
-
-
-# Custom metadata folder name
-
-`metadata_folder_name` overrides the default `.dvs` folder. Useful when
-another tool in the project already claims that name.
-
-
-::: {.cell}
-
-```{.r .cell-code}
-storage_m <- basename(tempfile(fileext = "_meta_storage"))
-project_m <- basename(tempfile(fileext = "_meta_project"))
-dir.create(here::here(storage_m))
-dir.create(here::here(project_m))
-```
-:::
-
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(project_m))
-mkdatasetfiles(n_files = 1, size_mb = 1, prefix = "d_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-dvs_init(here::here(storage_m), metadata_folder_name = "datalock")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-DVS Initialized
-```
-
-
-:::
-
-```{.r .cell-code}
-invisible(dvs_add(glob = "data/*.csv", message = "custom folder name demo"))
-```
-:::
-
-
-The meta files live under `datalock/` instead of `.dvs/`:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(project_m))
-fs::dir_tree("datalock", all = TRUE)
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-datalock
-├── .cache
-│   └── dvs.db
-└── data
-    └── d_1.csv.dvs
-```
-
-
-:::
-:::
-
-
-The `dvs.toml` records the custom name so all subsequent operations pick it up
-automatically:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-cat(readLines(here::here(project_m, "dvs.toml")), sep = "\n")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-compression = "zstd"
-metadata_folder_name = "datalock"
+compression = "none"
+metadata_folder_name = ".datalock"
 
 [backend]
-path = "/Users/elea/Documents/a2ai_github/dvs2-demo/filed8e74b51bf6b_meta_storage"
+path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpO6qi3L/dvs_config_480d7204516d/custom-store"
 group = "staff"
 ```
 
@@ -419,33 +125,71 @@ group = "staff"
 :::
 
 
-# `group` (Unix only)
+## Project discovery
 
-`dvs_init(storage, group = "mygroup")` sets the Unix group on the storage
-directory and all blobs written to it. This ensures that members of the group
-can read and write blobs without permission errors on shared filesystems.
-
-```r
-# example, not executed here
-dvs_init("/mnt/shared/storage", group = "data-team")
-```
-
-# Cleanup
+A command finds its project by walking up from the working directory to the
+nearest `dvs.toml`. A `dvs.toml` in a parent directory does not block a nested
+project: you can initialize a project inside another one, and you can have
+several projects in a single Git repository.
 
 
 ::: {.cell}
 
 ```{.r .cell-code}
-for (d in c(storage, new_project,
-            storage_zstd, storage_none, project_zstd, project_none,
-            storage_t, project_t,
-            storage_m, project_m)) {
-  unlink(here::here(d), recursive = TRUE)
-}
+root <- file.path(base, "repo")
+sub  <- file.path(root, "sub")
+dir.create(sub, recursive = TRUE)
+dir.create(file.path(base, "repo-store"))
+dir.create(file.path(base, "sub-store"))
+dvs_init(file.path(base, "repo-store"), root_dir = root)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
+dvs_init(file.path(base, "sub-store"), root_dir = sub)
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+DVS Initialized
+```
+
+
+:::
+
+```{.r .cell-code}
+list.files(root, pattern = "dvs.toml", recursive = TRUE)
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] "dvs.toml"     "sub/dvs.toml"
+```
+
+
+:::
 :::
 
 
----
+Each `dvs.toml` configures the files beneath it independently.
 
-**Next up**: [Audit log](audit.html): parsing and querying `audit.log.jsonl` with purrr and dplyr.
+::: {.callout-warning}
+`dvs_init()` errors if a `dvs.toml` already exists in the target root
+(`dvs is already initialized`). It does not overwrite an existing project.
+:::
+
+## See also
+
+- [dvs_init()](r-init.html) / [dvs init](cli-init.html): setting these fields.
+- [Storage and meta files](intro-internals.html): the blob and meta layout.
+- [The audit log](audit.html): the record kept in the storage directory.

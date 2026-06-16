@@ -1,12 +1,16 @@
 ---
-title: "dvs Error Reference"
-subtitle: "every error dvs can raise, shown side-by-side for R and the CLI"
+title: "Error reference"
+subtitle: "errors dvs can raise, shown side by side for R and the CLI"
 format:
   html:
     keep-md: true
 execute:
   freeze: auto
 ---
+
+::: {.callout-note}
+This page is implementation detail, beyond what normal use requires.
+:::
 
 # Setup
 
@@ -21,7 +25,7 @@ library(here)
 ::: {.cell-output .cell-output-stderr}
 
 ```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
+here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
 ```
 
 
@@ -462,7 +466,7 @@ res |> print(width = Inf, n = Inf)
 # A tibble: 1 × 2
   path                                                                              error                  
   <chr>                                                                             <chr>                  
-1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv path is outside project
+1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv path is outside project
 ```
 
 
@@ -484,7 +488,7 @@ str(res)
 
 ```
 tibble [1 × 2] (S3: tbl_df/tbl/data.frame)
- $ path : chr "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv"
+ $ path : chr "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv"
  $ error: chr "path is outside project"
 ```
 
@@ -498,7 +502,7 @@ res$path
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp6V9XA4/filedae122a0d3ca.csv"
+[1] "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv"
 ```
 
 
@@ -534,7 +538,7 @@ rm -f "$OUTSIDE_FILE"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.AMrsbIi84I.csv: path is outside project
+Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.FVdtIn7aaM.csv: path is outside project
 Error: Some files failed to add
 ```
 
@@ -728,7 +732,7 @@ dvs_status(paths = c("present.csv", "missing.csv")) |>
 # A tibble: 1 × 7
   path        status  hash                                                                size created_by compression add_time           
   <chr>       <chr>   <chr>                                                            <bytes> <chr>      <chr>       <dttm>             
-1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-04-24 12:59:45
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-06-16 16:50:04
 ```
 
 

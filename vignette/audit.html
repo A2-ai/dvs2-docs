@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.36">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>dvs audit log</title>
+<title>The audit log</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2280,8 +2280,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">dvs audit log</h1>
-<p class="subtitle lead">every dvs operation is appended to audit.log.jsonl in the storage directory</p>
+<h1 class="title">The audit log</h1>
+<p class="subtitle lead">audit.log.jsonl format and querying</p>
 </div>
 
 
@@ -2298,6 +2298,20 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This page is implementation detail, beyond what normal use requires.</p>
+</div>
+</div>
+<p>Every add is appended to <code>audit.log.jsonl</code> in the storage directory. The log is append-only and newline-delimited JSON, with one operation per line.</p>
 <section id="setup" class="level1">
 <h1>Setup</h1>
 <div class="cell">
@@ -2306,7 +2320,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo</code></pre>
+<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2333,7 +2347,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;initial add of file 2&quot;</span>))</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_3.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;initial add of file 3&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Simulate a restore (get):</p>
+<p>Restore a file with <code>get</code>. Note that <code>get</code> does not append to the audit log; only <code>init</code> and <code>add</code> are recorded.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/file_1.csv&quot;</span>)</span>
@@ -2349,7 +2363,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;99,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;updated file 2 — added row 99&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;updated file 2, added row 99&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="reading-the-log" class="level1">
@@ -2358,13 +2372,13 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>audit_path <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="st">&quot;audit.log.jsonl&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Raw file — one JSON object per line:</p>
+<p>Raw file, one JSON object per line:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(audit_path)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="er">cat(lines,</span> <span class="er">sep</span> <span class="er">=</span> <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span><span class="er">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>{“operation_id”:“180d4e11-51eb-4734-8309-e9177075b741”,“timestamp”:1777035581,“user”:“elea”,“action”:{“init”:{“settings”:{“compression”:“zstd”,“metadata_folder_name”:null,“backend”:{“path”:“/Users/elea/Documents/a2ai_github/dvs2-demo/fileda58494cb9ac_storage”,“group”:“staff”}},“project_path”:“/Users/elea/Documents/a2ai_github/dvs2-demo/fileda584c31f0cc_project”}}} {“operation_id”:“8b1c0538-421f-41f5-8b8c-4032dd5c24d5”,“timestamp”:1777035581,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_1.csv”,“hashes”:{“blake3”:“7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242”}},“compression”:“zstd”}}} {“operation_id”:“9d354cd7-c823-443e-9e17-f41c94bd9d7f”,“timestamp”:1777035582,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_2.csv”,“hashes”:{“blake3”:“855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd”}},“compression”:“zstd”}}} {“operation_id”:“b2e10221-ca4b-44a4-ba43-7ba35f78c619”,“timestamp”:1777035582,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_3.csv”,“hashes”:{“blake3”:“f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d”}},“compression”:“zstd”}}} {“operation_id”:“b35e681d-4531-4681-be2f-6734f57610a3”,“timestamp”:1777035582,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_2.csv”,“hashes”:{“blake3”:“166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d”}},“compression”:“zstd”}}}</p>
+<p>{“operation_id”:“717644d4-ddf0-4f51-a0e7-30962f17ef91”,“timestamp”:1781628655,“user”:“elea”,“action”:{“init”:{“settings”:{“compression”:“zstd”,“metadata_folder_name”:null,“backend”:{“path”:“/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e15578b4566_storage”,“group”:“staff”}},“project_path”:“/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e1578795870_project”}}} {“operation_id”:“ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7”,“timestamp”:1781628655,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_1.csv”,“hashes”:{“blake3”:“7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242”}},“compression”:“zstd”}}} {“operation_id”:“9ee5b98b-9eda-40ab-acfa-bdac95ebbf11”,“timestamp”:1781628655,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_2.csv”,“hashes”:{“blake3”:“855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd”}},“compression”:“zstd”}}} {“operation_id”:“9b30d94a-7ddb-4907-b689-33a24bc41f2a”,“timestamp”:1781628655,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_3.csv”,“hashes”:{“blake3”:“f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d”}},“compression”:“zstd”}}} {“operation_id”:“93f8fb63-ca84-4aa2-ba59-24b3fc703970”,“timestamp”:1781628655,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_2.csv”,“hashes”:{“blake3”:“166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d”}},“compression”:“zstd”}}}</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <pre><code>
 Same entries, pretty-printed:
@@ -2378,7 +2392,7 @@ cat(&quot;```json\n&quot;)</code></pre>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="er">cat(jsonlite</span><span class="fu">:</span><span class="er">:toJSON(jsonlite::fromJSON(l</span><span class="fu">,</span> <span class="er">simplifyVector</span> <span class="er">=</span> <span class="er">FALSE),</span> <span class="er">pretty</span> <span class="er">=</span> <span class="er">TRUE,</span> <span class="er">auto_unbox</span> <span class="er">=</span> <span class="er">TRUE))</span></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="er">cat(</span><span class="dt">&quot;</span><span class="ch">\n</span><span class="dt">&quot;</span><span class="er">)</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>{ “operation_id”: “180d4e11-51eb-4734-8309-e9177075b741”, “timestamp”: 1777035581, “user”: “elea”, “action”: { “init”: { “settings”: { “compression”: “zstd”, “metadata_folder_name”: {}, “backend”: { “path”: “/Users/elea/Documents/a2ai_github/dvs2-demo/fileda58494cb9ac_storage”, “group”: “staff” } }, “project_path”: “/Users/elea/Documents/a2ai_github/dvs2-demo/fileda584c31f0cc_project” } } } { “operation_id”: “8b1c0538-421f-41f5-8b8c-4032dd5c24d5”, “timestamp”: 1777035581, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_1.csv”, “hashes”: { “blake3”: “7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242” } }, “compression”: “zstd” } } } { “operation_id”: “9d354cd7-c823-443e-9e17-f41c94bd9d7f”, “timestamp”: 1777035582, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_2.csv”, “hashes”: { “blake3”: “855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd” } }, “compression”: “zstd” } } } { “operation_id”: “b2e10221-ca4b-44a4-ba43-7ba35f78c619”, “timestamp”: 1777035582, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_3.csv”, “hashes”: { “blake3”: “f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d” } }, “compression”: “zstd” } } } { “operation_id”: “b35e681d-4531-4681-be2f-6734f57610a3”, “timestamp”: 1777035582, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_2.csv”, “hashes”: { “blake3”: “166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d” } }, “compression”: “zstd” } } }</p>
+<p>{ “operation_id”: “717644d4-ddf0-4f51-a0e7-30962f17ef91”, “timestamp”: 1781628655, “user”: “elea”, “action”: { “init”: { “settings”: { “compression”: “zstd”, “metadata_folder_name”: {}, “backend”: { “path”: “/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e15578b4566_storage”, “group”: “staff” } }, “project_path”: “/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e1578795870_project” } } } { “operation_id”: “ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7”, “timestamp”: 1781628655, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_1.csv”, “hashes”: { “blake3”: “7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242” } }, “compression”: “zstd” } } } { “operation_id”: “9ee5b98b-9eda-40ab-acfa-bdac95ebbf11”, “timestamp”: 1781628655, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_2.csv”, “hashes”: { “blake3”: “855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd” } }, “compression”: “zstd” } } } { “operation_id”: “9b30d94a-7ddb-4907-b689-33a24bc41f2a”, “timestamp”: 1781628655, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_3.csv”, “hashes”: { “blake3”: “f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d” } }, “compression”: “zstd” } } } { “operation_id”: “93f8fb63-ca84-4aa2-ba59-24b3fc703970”, “timestamp”: 1781628655, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_2.csv”, “hashes”: { “blake3”: “166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d” } }, “compression”: “zstd” } } }</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <pre><code>
 # Parsing the log
@@ -2392,7 +2406,7 @@ Each entry has the shape:
   &quot;user&quot;:         &quot;&lt;username&gt;&quot;,
   &quot;action&quot;:       { &quot;&lt;command&gt;&quot;: { ... } }
 }</code></pre>
-<p>The <code>action</code> field is a tagged union — the single key is the command name (<code>&quot;init&quot;</code>, <code>&quot;add&quot;</code>, or <code>&quot;get&quot;</code>). Parse it with <code>purrr</code> and <code>jsonlite</code>:</p>
+<p>The <code>action</code> field is a tagged union. The single key is the command name, either <code>&quot;init&quot;</code> or <code>&quot;add&quot;</code> (<code>get</code> is not logged). Parse it with <code>purrr</code> and <code>jsonlite</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>parse_entry <span class="ot">&lt;-</span> <span class="cf">function</span>(line) {</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  entry <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(line)</span>
@@ -2420,11 +2434,11 @@ Each entry has the shape:
 <pre><code># A tibble: 5 × 5
   operation_id                         timestamp           user  command path           
   &lt;chr&gt;                                &lt;dttm&gt;              &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          
-1 180d4e11-51eb-4734-8309-e9177075b741 2026-04-24 14:59:41 elea  init    &lt;NA&gt;           
-2 8b1c0538-421f-41f5-8b8c-4032dd5c24d5 2026-04-24 14:59:41 elea  add     data/file_1.csv
-3 9d354cd7-c823-443e-9e17-f41c94bd9d7f 2026-04-24 14:59:42 elea  add     data/file_2.csv
-4 b2e10221-ca4b-44a4-ba43-7ba35f78c619 2026-04-24 14:59:42 elea  add     data/file_3.csv
-5 b35e681d-4531-4681-be2f-6734f57610a3 2026-04-24 14:59:42 elea  add     data/file_2.csv</code></pre>
+1 717644d4-ddf0-4f51-a0e7-30962f17ef91 2026-06-16 18:50:55 elea  init    &lt;NA&gt;           
+2 ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7 2026-06-16 18:50:55 elea  add     data/file_1.csv
+3 9ee5b98b-9eda-40ab-acfa-bdac95ebbf11 2026-06-16 18:50:55 elea  add     data/file_2.csv
+4 9b30d94a-7ddb-4907-b689-33a24bc41f2a 2026-06-16 18:50:55 elea  add     data/file_3.csv
+5 93f8fb63-ca84-4aa2-ba59-24b3fc703970 2026-06-16 18:50:55 elea  add     data/file_2.csv</code></pre>
 </div>
 </div>
 </section>
@@ -2451,10 +2465,10 @@ Each entry has the shape:
 <pre><code># A tibble: 4 × 3
   timestamp           command path           
   &lt;dttm&gt;              &lt;chr&gt;   &lt;chr&gt;          
-1 2026-04-24 14:59:41 add     data/file_1.csv
-2 2026-04-24 14:59:42 add     data/file_2.csv
-3 2026-04-24 14:59:42 add     data/file_3.csv
-4 2026-04-24 14:59:42 add     data/file_2.csv</code></pre>
+1 2026-06-16 18:50:55 add     data/file_1.csv
+2 2026-06-16 18:50:55 add     data/file_2.csv
+3 2026-06-16 18:50:55 add     data/file_3.csv
+4 2026-06-16 18:50:55 add     data/file_2.csv</code></pre>
 </div>
 </div>
 <p>How many times was each file touched?</p>
@@ -2478,8 +2492,14 @@ Each entry has the shape:
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-<p><strong>Next up</strong>: <a href="random_files.html">Random files</a> — the <code>mkdatasetfiles()</code> helper used to generate test data throughout these vignettes. Or return to the <a href="index.html">full index</a>.</p>
+<section id="see-also" class="level2">
+<h2 class="anchored" data-anchor-id="see-also">See also</h2>
+<ul>
+<li><a href="intro-internals.html">Storage and meta files</a>: the blob and meta layout.</li>
+<li><a href="config.html">The dvs.toml project file</a>: the project configuration.</li>
+<li>The command references: <a href="r-add.html">dvs_add()</a> / <a href="cli-add.html">dvs add</a>.</li>
+</ul>
+</section>
 </section>
 
 </main>

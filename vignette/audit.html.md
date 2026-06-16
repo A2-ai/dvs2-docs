@@ -1,12 +1,19 @@
 ---
-title: "dvs audit log"
-subtitle: "every dvs operation is appended to audit.log.jsonl in the storage directory"
+title: "The audit log"
+subtitle: "audit.log.jsonl format and querying"
 format:
   html:
     keep-md: true
 execute:
   freeze: auto
 ---
+
+::: {.callout-note}
+This page is implementation detail, beyond what normal use requires.
+:::
+
+Every add is appended to `audit.log.jsonl` in the storage directory. The log is
+append-only and newline-delimited JSON, with one operation per line.
 
 # Setup
 
@@ -23,7 +30,7 @@ library(here)
 ::: {.cell-output .cell-output-stderr}
 
 ```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
+here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
 ```
 
 
@@ -86,7 +93,8 @@ invisible(dvs_add("data/file_3.csv", message = "initial add of file 3"))
 :::
 
 
-Simulate a restore (get):
+Restore a file with `get`. Note that `get` does not append to the audit log;
+only `init` and `add` are recorded.
 
 
 ::: {.cell}
@@ -152,11 +160,11 @@ cat("```json\n")
 cat(lines, sep = "\n")
 ```
 
-{"operation_id":"180d4e11-51eb-4734-8309-e9177075b741","timestamp":1777035581,"user":"elea","action":{"init":{"settings":{"compression":"zstd","metadata_folder_name":null,"backend":{"path":"/Users/elea/Documents/a2ai_github/dvs2-demo/fileda58494cb9ac_storage","group":"staff"}},"project_path":"/Users/elea/Documents/a2ai_github/dvs2-demo/fileda584c31f0cc_project"}}}
-{"operation_id":"8b1c0538-421f-41f5-8b8c-4032dd5c24d5","timestamp":1777035581,"user":"elea","action":{"add":{"file":{"path":"data/file_1.csv","hashes":{"blake3":"7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242"}},"compression":"zstd"}}}
-{"operation_id":"9d354cd7-c823-443e-9e17-f41c94bd9d7f","timestamp":1777035582,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd"}},"compression":"zstd"}}}
-{"operation_id":"b2e10221-ca4b-44a4-ba43-7ba35f78c619","timestamp":1777035582,"user":"elea","action":{"add":{"file":{"path":"data/file_3.csv","hashes":{"blake3":"f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d"}},"compression":"zstd"}}}
-{"operation_id":"b35e681d-4531-4681-be2f-6734f57610a3","timestamp":1777035582,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d"}},"compression":"zstd"}}}
+{"operation_id":"717644d4-ddf0-4f51-a0e7-30962f17ef91","timestamp":1781628655,"user":"elea","action":{"init":{"settings":{"compression":"zstd","metadata_folder_name":null,"backend":{"path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e15578b4566_storage","group":"staff"}},"project_path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e1578795870_project"}}}
+{"operation_id":"ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7","timestamp":1781628655,"user":"elea","action":{"add":{"file":{"path":"data/file_1.csv","hashes":{"blake3":"7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242"}},"compression":"zstd"}}}
+{"operation_id":"9ee5b98b-9eda-40ab-acfa-bdac95ebbf11","timestamp":1781628655,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd"}},"compression":"zstd"}}}
+{"operation_id":"9b30d94a-7ddb-4907-b689-33a24bc41f2a","timestamp":1781628655,"user":"elea","action":{"add":{"file":{"path":"data/file_3.csv","hashes":{"blake3":"f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d"}},"compression":"zstd"}}}
+{"operation_id":"93f8fb63-ca84-4aa2-ba59-24b3fc703970","timestamp":1781628655,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d"}},"compression":"zstd"}}}
 
 ```{.r .cell-code}
 cat("\n```\n")
@@ -181,8 +189,8 @@ for (l in lines) {
 ```
 
 {
-  "operation_id": "180d4e11-51eb-4734-8309-e9177075b741",
-  "timestamp": 1777035581,
+  "operation_id": "717644d4-ddf0-4f51-a0e7-30962f17ef91",
+  "timestamp": 1781628655,
   "user": "elea",
   "action": {
     "init": {
@@ -190,17 +198,17 @@ for (l in lines) {
         "compression": "zstd",
         "metadata_folder_name": {},
         "backend": {
-          "path": "/Users/elea/Documents/a2ai_github/dvs2-demo/fileda58494cb9ac_storage",
+          "path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e15578b4566_storage",
           "group": "staff"
         }
       },
-      "project_path": "/Users/elea/Documents/a2ai_github/dvs2-demo/fileda584c31f0cc_project"
+      "project_path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e1578795870_project"
     }
   }
 }
 {
-  "operation_id": "8b1c0538-421f-41f5-8b8c-4032dd5c24d5",
-  "timestamp": 1777035581,
+  "operation_id": "ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7",
+  "timestamp": 1781628655,
   "user": "elea",
   "action": {
     "add": {
@@ -215,8 +223,8 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "9d354cd7-c823-443e-9e17-f41c94bd9d7f",
-  "timestamp": 1777035582,
+  "operation_id": "9ee5b98b-9eda-40ab-acfa-bdac95ebbf11",
+  "timestamp": 1781628655,
   "user": "elea",
   "action": {
     "add": {
@@ -231,8 +239,8 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "b2e10221-ca4b-44a4-ba43-7ba35f78c619",
-  "timestamp": 1777035582,
+  "operation_id": "9b30d94a-7ddb-4907-b689-33a24bc41f2a",
+  "timestamp": 1781628655,
   "user": "elea",
   "action": {
     "add": {
@@ -247,8 +255,8 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "b35e681d-4531-4681-be2f-6734f57610a3",
-  "timestamp": 1777035582,
+  "operation_id": "93f8fb63-ca84-4aa2-ba59-24b3fc703970",
+  "timestamp": 1781628655,
   "user": "elea",
   "action": {
     "add": {
@@ -282,8 +290,9 @@ Each entry has the shape:
 }
 ```
 
-The `action` field is a tagged union. The single key is the command name
-(`"init"`, `"add"`, or `"get"`). Parse it with `purrr` and `jsonlite`:
+The `action` field is a tagged union. The single key is the command name,
+either `"init"` or `"add"` (`get` is not logged). Parse it with `purrr` and
+`jsonlite`:
 
 
 ::: {.cell}
@@ -319,11 +328,11 @@ audit_tbl
 # A tibble: 5 × 5
   operation_id                         timestamp           user  command path           
   <chr>                                <dttm>              <chr> <chr>   <chr>          
-1 180d4e11-51eb-4734-8309-e9177075b741 2026-04-24 14:59:41 elea  init    <NA>           
-2 8b1c0538-421f-41f5-8b8c-4032dd5c24d5 2026-04-24 14:59:41 elea  add     data/file_1.csv
-3 9d354cd7-c823-443e-9e17-f41c94bd9d7f 2026-04-24 14:59:42 elea  add     data/file_2.csv
-4 b2e10221-ca4b-44a4-ba43-7ba35f78c619 2026-04-24 14:59:42 elea  add     data/file_3.csv
-5 b35e681d-4531-4681-be2f-6734f57610a3 2026-04-24 14:59:42 elea  add     data/file_2.csv
+1 717644d4-ddf0-4f51-a0e7-30962f17ef91 2026-06-16 18:50:55 elea  init    <NA>           
+2 ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7 2026-06-16 18:50:55 elea  add     data/file_1.csv
+3 9ee5b98b-9eda-40ab-acfa-bdac95ebbf11 2026-06-16 18:50:55 elea  add     data/file_2.csv
+4 9b30d94a-7ddb-4907-b689-33a24bc41f2a 2026-06-16 18:50:55 elea  add     data/file_3.csv
+5 93f8fb63-ca84-4aa2-ba59-24b3fc703970 2026-06-16 18:50:55 elea  add     data/file_2.csv
 ```
 
 
@@ -375,10 +384,10 @@ audit_tbl |>
 # A tibble: 4 × 3
   timestamp           command path           
   <dttm>              <chr>   <chr>          
-1 2026-04-24 14:59:41 add     data/file_1.csv
-2 2026-04-24 14:59:42 add     data/file_2.csv
-3 2026-04-24 14:59:42 add     data/file_3.csv
-4 2026-04-24 14:59:42 add     data/file_2.csv
+1 2026-06-16 18:50:55 add     data/file_1.csv
+2 2026-06-16 18:50:55 add     data/file_2.csv
+3 2026-06-16 18:50:55 add     data/file_3.csv
+4 2026-06-16 18:50:55 add     data/file_2.csv
 ```
 
 
@@ -425,6 +434,8 @@ unlink(here::here(storage),     recursive = TRUE)
 :::
 
 
----
+## See also
 
-**Next up**: [Random files](random_files.html): the `mkdatasetfiles()` helper used to generate test data throughout these vignettes. Or return to the [full index](index.html).
+- [Storage and meta files](intro-internals.html): the blob and meta layout.
+- [The dvs.toml project file](config.html): the project configuration.
+- The command references: [dvs_add()](r-add.html) / [dvs add](cli-add.html).

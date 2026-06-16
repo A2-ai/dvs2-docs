@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.36">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Getting Started with dvs CLI</title>
+<title>CLI walkthrough</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2280,8 +2280,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Getting Started with dvs CLI</h1>
-<p class="subtitle lead">init, add, status, and get — five minutes end to end</p>
+<h1 class="title">CLI walkthrough</h1>
+<p class="subtitle lead">The core loop with the dvs binary</p>
 </div>
 
 
@@ -2298,78 +2298,53 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
+<p>This walkthrough runs the everyday loop from the terminal: initialize a project, add a file, check its status, delete it, then get it back. It is the “I re-cloned a project and need its data” sequence. The <a href="getting-started.html">R walkthrough</a> covers the same steps from R.</p>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
-<p>R creates the sandbox directories and dataset; all dvs operations below run via the <code>dvs</code> CLI binary.</p>
+<p>R creates the sandbox directories and the dataset; all dvs operations run via the <code>dvs</code> binary.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width =</span> <span class="dv">1000</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo</code></pre>
+<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo</code></pre>
 </div>
-</div>
-<p>Create isolated temporary directories for this demo:</p>
-<div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>storage     <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>))</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Save the built-in <code>Theoph</code> pharmacokinetic dataset as a CSV:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;data&quot;</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Theoph, here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;data/theoph.csv&quot;</span>), <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Expose the paths to the shell:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">DVS_PROJECT =</span> here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">DVS_STORAGE =</span> here<span class="sc">::</span><span class="fu">here</span>(storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;data&quot;</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Theoph, here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;data/theoph.csv&quot;</span>), <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">DVS_PROJECT =</span> here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">DVS_STORAGE =</span> here<span class="sc">::</span><span class="fu">here</span>(storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="dvs-init" class="level2">
-<h2 class="anchored" data-anchor-id="dvs-init"><code>dvs init</code></h2>
-<p>Initialize a dvs repository pointing at the storage directory:</p>
+<section id="initialize" class="level2">
+<h2 class="anchored" data-anchor-id="initialize">1. Initialize</h2>
+<p>Point storage at the sibling directory. See <a href="cli-init.html">dvs init</a> for every flag.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DVS Initialized at &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file3854571482a1_project&quot;</code></pre>
+</div>
+</div>
+</section>
+<section id="add" class="level2">
+<h2 class="anchored" data-anchor-id="add">2. Add</h2>
+<p>Track the CSV with a message. See <a href="cli-add.html">dvs add</a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> dvs.toml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized at &quot;/Users/elea/Documents/a2ai_github/dvs2-demo/filed33b3b2c4b20_project&quot;
-compression = &quot;zstd&quot;
-
-[backend]
-path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo/filed33b2e93187b_storage&quot;
-group = &quot;staff&quot;</code></pre>
-</div>
-</div>
-</section>
-<section id="dvs-status-before-any-adds" class="level2">
-<h2 class="anchored" data-anchor-id="dvs-status-before-any-adds"><code>dvs status</code> (before any adds)</h2>
-<p>No files are tracked yet:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>No tracked files</code></pre>
-</div>
-</div>
-</section>
-<section id="dvs-add" class="level2">
-<h2 class="anchored" data-anchor-id="dvs-add"><code>dvs add</code></h2>
-<p>Track the dataset with a message:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/theoph.csv <span class="at">-m</span> <span class="st">&quot;add Theoph dataset&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/theoph.csv <span class="at">-m</span> <span class="st">&quot;initial Theoph data&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Added: data/theoph.csv [2.9 KB] --&gt; saved [842 B] as cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06</code></pre>
 </div>
 </div>
 </section>
-<section id="dvs-status" class="level2">
-<h2 class="anchored" data-anchor-id="dvs-status"><code>dvs status</code></h2>
-<p>The file is now tracked and <code>current</code>:</p>
+<section id="status" class="level2">
+<h2 class="anchored" data-anchor-id="status">3. Status</h2>
+<p>The file is tracked and <code>current</code>. See <a href="cli-status.html">dvs status</a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-----------------+---------+--------+
 | path            | status  | size   |
@@ -2379,101 +2354,83 @@ group = &quot;staff&quot;</code></pre>
 </div>
 </div>
 </section>
-<section id="add-a-second-copy" class="level2">
-<h2 class="anchored" data-anchor-id="add-a-second-copy">Add a second copy</h2>
-<p>Write another copy of the dataset and track it:</p>
+<section id="remove-the-file" class="level2">
+<h2 class="anchored" data-anchor-id="remove-the-file">4. Remove the file</h2>
+<p>Delete the local copy, the moment after a fresh clone where the data is not on disk yet.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(Theoph, here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;data/theoph_v2.csv&quot;</span>), <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/theoph.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</section>
+<section id="status-again" class="level2">
+<h2 class="anchored" data-anchor-id="status-again">5. Status again</h2>
+<p>The file is now <code>absent</code>: tracked, but missing locally.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/theoph_v2.csv <span class="at">-m</span> <span class="st">&quot;add second Theoph copy&quot;</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Added: data/theoph_v2.csv [2.9 KB] as cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06
-+--------------------+---------+--------+
-| path               | status  | size   |
-+--------------------+---------+--------+
-| data/theoph.csv    | current | 2.9 KB |
-+--------------------+---------+--------+
-| data/theoph_v2.csv | current | 2.9 KB |
-+--------------------+---------+--------+</code></pre>
+<pre><code>+-----------------+--------+--------+
+| path            | status | size   |
++-----------------+--------+--------+
+| data/theoph.csv | absent | 2.9 KB |
++-----------------+--------+--------+</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>dvs reports three states: <code>current</code>, <code>absent</code>, and <code>unsynced</code> (on disk but not matching the stored hash). See <a href="intro-internals.html">Storage and meta files</a>.</p>
 </div>
 </div>
 </section>
-<section id="modify-a-file-check-status" class="level2">
-<h2 class="anchored" data-anchor-id="modify-a-file-check-status">Modify a file, check status</h2>
-<p>Append a row to <code>theoph.csv</code> to simulate a local edit after it was stored:</p>
+<section id="get" class="level2">
+<h2 class="anchored" data-anchor-id="get">6. Get</h2>
+<p>Restore the file from storage. See <a href="cli-get.html">dvs get</a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;99,70.5,320,0,0.1&quot;</span> <span class="op">&gt;&gt;</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">/data/theoph.csv&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><code>dvs status</code> detects that the file on disk no longer matches the stored hash:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>+--------------------+----------+--------+
-| path               | status   | size   |
-+--------------------+----------+--------+
-| data/theoph.csv    | unsynced | 2.9 KB |
-+--------------------+----------+--------+
-| data/theoph_v2.csv | current  | 2.9 KB |
-+--------------------+----------+--------+</code></pre>
-</div>
-</div>
-</section>
-<section id="delete-the-original-check-status" class="level2">
-<h2 class="anchored" data-anchor-id="delete-the-original-check-status">Delete the original, check status</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/theoph.csv</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>+--------------------+---------+--------+
-| path               | status  | size   |
-+--------------------+---------+--------+
-| data/theoph.csv    | absent  | 2.9 KB |
-+--------------------+---------+--------+
-| data/theoph_v2.csv | current | 2.9 KB |
-+--------------------+---------+--------+</code></pre>
-</div>
-</div>
-<p><code>theoph.csv</code> shows <code>absent</code>; <code>theoph_v2.csv</code> remains <code>current</code>.</p>
-</section>
-<section id="dvs-get" class="level2">
-<h2 class="anchored" data-anchor-id="dvs-get"><code>dvs get</code></h2>
-<p>Restore the deleted file from storage:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/theoph.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/theoph.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>data/theoph.csv [2.9 KB]
 Total: 1 files, 2.9 KB</code></pre>
 </div>
 </div>
-<p>Both files are <code>current</code> again:</p>
+</section>
+<section id="status-again-1" class="level2">
+<h2 class="anchored" data-anchor-id="status-again-1">7. Status again</h2>
+<p>The file is <code>current</code> again. The loop is complete.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>+--------------------+---------+--------+
-| path               | status  | size   |
-+--------------------+---------+--------+
-| data/theoph.csv    | current | 2.9 KB |
-+--------------------+---------+--------+
-| data/theoph_v2.csv | current | 2.9 KB |
-+--------------------+---------+--------+</code></pre>
+<pre><code>+-----------------+---------+--------+
+| path            | status  | size   |
++-----------------+---------+--------+
+| data/theoph.csv | current | 2.9 KB |
++-----------------+---------+--------+</code></pre>
 </div>
 </div>
 </section>
 <section id="cleanup" class="level2">
 <h2 class="anchored" data-anchor-id="cleanup">Cleanup</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-<p><strong>Next up</strong>: <a href="getting-started.html">Getting Started — R API</a> — the same workflow using the <code>dvs</code> R package functions directly.</p>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">Next steps</h2>
+<ul>
+<li>The <a href="cli-init.html">CLI</a> reference covers every flag of <a href="cli-init.html">dvs init</a>, <a href="cli-add.html">dvs add</a>, <a href="cli-status.html">dvs status</a>, and <a href="cli-get.html">dvs get</a>.</li>
+<li>The same loop from R: <a href="getting-started.html">R walkthrough</a>.</li>
+<li>How dvs stores data: <a href="intro-internals.html">Storage and meta files</a>.</li>
+</ul>
 </section>
 
 </main>

@@ -1,5 +1,6 @@
 ---
-title: "Introduction to dvs internals"
+title: "Storage and meta files"
+subtitle: "blob layout, hashing, meta JSON, and compression"
 format:
   html:
     keep-md: true
@@ -7,9 +8,15 @@ execute:
   freeze: auto
 ---
 
-# Data project
+::: {.callout-note}
+This page is implementation detail, beyond what normal use requires. You do not
+need any of it to run the four verbs.
+:::
 
-Same project as `vignette/intro.qmd`: 1x25MB `large`, 3x1MB `small`, 50x3MB `individual` CSVs under `data/`, with a dvs repository initialized against an external `storage` directory.
+This page builds a project with files of several sizes, then inspects the
+metadata folder and the storage directory to show how dvs lays data out: a
+content-addressed blob store, a `.dvs` meta file per tracked file, and per-file
+compression.
 
 # Setup
 
@@ -116,35 +123,6 @@ cat("```json\n")
 cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
 cat("\n```\n")
 ```
-# Storage internals
-
-```{r}
-fs::dir_tree(here::here(storage), all = TRUE, regexp = "\\.git", invert = TRUE)
-```
-
-
-# Audit log
-
-The audit log lives in the storage directory as `audit.log.jsonl`.
-
-```{r}
-#| warning: false
-
-audit <- here::here(storage, "audit.log.jsonl")
-audit
-```
-
-```{r}
-#| results: asis
-lines <- readLines(audit)
-cat("```json\n")
-for (l in lines) {
-  cat(jsonlite::toJSON(jsonlite::fromJSON(l, simplifyVector = FALSE), pretty = TRUE, auto_unbox = TRUE))
-  cat("\n")
-}
-cat("```\n")
-```
-
 # Storage directory
 
 ```{r}
@@ -224,6 +202,8 @@ unlink(here::here(new_project), recursive = TRUE)
 unlink(here::here(storage),     recursive = TRUE)
 ```
 
----
+## See also
 
-**Next up**: [Lifecycle](lifecycle.html): modifying tracked files, `unsynced` status, `dry_run` previews, and what happens when a storage blob goes missing.
+- [The dvs.toml project file](config.html): the project configuration.
+- [The audit log](audit.html): the append-only record of every add.
+- The command references: [dvs_add()](r-add.html) / [dvs add](cli-add.html).

@@ -1,12 +1,17 @@
 ---
-title: "Getting Started with dvs"
-subtitle: "init, add, status, and get: five minutes end to end"
+title: "R walkthrough"
+subtitle: "The core loop with library(dvs)"
 format:
   html:
     keep-md: true
 execute:
   freeze: auto
 ---
+
+This walkthrough runs the everyday loop from R: initialize a project, add a
+file, check its status, delete it, then get it back. It is the "I re-cloned a
+project and need its data" sequence. The [CLI walkthrough](getting-started-cli.html)
+covers the same steps from the terminal.
 
 ## Setup
 
@@ -16,14 +21,13 @@ execute:
 ```{.r .cell-code}
 options(width = 1000)
 library(dvs)
-library(fs)
 library(here)
 ```
 
 ::: {.cell-output .cell-output-stderr}
 
 ```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
+here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
 ```
 
 
@@ -31,7 +35,8 @@ here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
 :::
 
 
-Create isolated temporary directories for this demo:
+Create a project directory and a sibling storage directory, then save R's
+built-in `Theoph` dataset as a CSV.
 
 
 ::: {.cell}
@@ -41,25 +46,16 @@ storage     <- basename(tempfile(fileext = "_storage"))
 new_project <- basename(tempfile(fileext = "_project"))
 dir.create(here::here(storage))
 dir.create(here::here(new_project))
-```
-:::
-
-
-Save the built-in `Theoph` pharmacokinetic dataset as a CSV:
-
-
-::: {.cell}
-
-```{.r .cell-code}
 dir.create(here::here(new_project, "data"))
 write.csv(Theoph, here::here(new_project, "data/theoph.csv"), row.names = FALSE)
 ```
 :::
 
 
-## `dvs_init`
+## 1. Initialize
 
-Initialize a dvs repository pointing at the storage directory:
+Point storage at the sibling directory. See [dvs_init()](r-init.html) for every
+parameter.
 
 
 ::: {.cell}
@@ -80,39 +76,16 @@ DVS Initialized
 :::
 
 
-## `dvs_status` (before any adds)
+## 2. Add
 
-No files are tracked yet:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(new_project))
-dvs_status()
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 0 × 0
-```
-
-
-:::
-:::
-
-
-## `dvs_add`
-
-Track the dataset with a message:
+Track the CSV with a message. See [dvs_add()](r-add.html).
 
 
 ::: {.cell}
 
 ```{.r .cell-code}
 setwd(here::here(new_project))
-dvs_add("data/theoph.csv", message = "add Theoph dataset")
+dvs_add("data/theoph.csv", message = "initial Theoph data")
 ```
 
 ::: {.cell-output .cell-output-stdout}
@@ -129,9 +102,9 @@ dvs_add("data/theoph.csv", message = "add Theoph dataset")
 :::
 
 
-## `dvs_status`
+## 3. Status
 
-The file is now tracked and `current`:
+The file is tracked and `current`. See [dvs_status()](r-status.html).
 
 
 ::: {.cell}
@@ -145,9 +118,9 @@ dvs_status()
 
 ```
 # A tibble: 1 × 8
-  path            status  hash                                                                size created_by compression message            add_time           
-  <chr>           <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>              <dttm>             
-1 data/theoph.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add Theoph dataset 2026-04-24 12:58:26
+  path            status  hash                                                                size created_by compression message             add_time           
+  <chr>           <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>               <dttm>             
+1 data/theoph.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data 2026-06-16 16:46:45
 ```
 
 
@@ -155,101 +128,10 @@ dvs_status()
 :::
 
 
-## Add a second copy
+## 4. Remove the file
 
-Write another copy of the dataset and track it:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-write.csv(Theoph, here::here(new_project, "data/theoph_v2.csv"), row.names = FALSE)
-```
-:::
-
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(new_project))
-dvs_add("data/theoph_v2.csv", message = "add second Theoph copy")
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 1 × 5
-  path               outcome hash                                                                size stored_size
-  <chr>              <chr>   <chr>                                                            <bytes>     <bytes>
-1 data/theoph_v2.csv copied  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB      2.9 KB
-```
-
-
-:::
-
-```{.r .cell-code}
-dvs_status()
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 2 × 8
-  path               status  hash                                                                size created_by compression message                add_time           
-  <chr>              <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>                  <dttm>             
-1 data/theoph.csv    current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add Theoph dataset     2026-04-24 12:58:26
-2 data/theoph_v2.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add second Theoph copy 2026-04-24 12:58:26
-```
-
-
-:::
-:::
-
-
-## Modify a file, check status
-
-Append a row to `theoph.csv` to simulate a local edit after it was stored:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-write.csv(
-  rbind(Theoph, Theoph[1L, ]),
-  here::here(new_project, "data/theoph.csv"),
-  row.names = FALSE
-)
-```
-:::
-
-
-`dvs_status` detects that the file on disk no longer matches the stored hash:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(new_project))
-dvs_status()
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-# A tibble: 2 × 8
-  path               status   hash                                                                size created_by compression message                add_time           
-  <chr>              <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>                  <dttm>             
-1 data/theoph.csv    unsynced cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add Theoph dataset     2026-04-24 12:58:26
-2 data/theoph_v2.csv current  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add second Theoph copy 2026-04-24 12:58:26
-```
-
-
-:::
-:::
-
-
-## Delete the original, check status
+Delete the local copy, the moment after a fresh clone where the data is not on
+disk yet.
 
 
 ::: {.cell}
@@ -260,7 +142,9 @@ unlink(here::here(new_project, "data/theoph.csv"))
 :::
 
 
-`theoph.csv` now shows `absent`; `theoph_v2.csv` remains `current`:
+## 5. Status again
+
+The file is now `absent`: tracked, but missing locally.
 
 
 ::: {.cell}
@@ -273,11 +157,10 @@ dvs_status()
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 2 × 8
-  path               status  hash                                                                size created_by compression message                add_time           
-  <chr>              <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>                  <dttm>             
-1 data/theoph.csv    absent  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add Theoph dataset     2026-04-24 12:58:26
-2 data/theoph_v2.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add second Theoph copy 2026-04-24 12:58:26
+# A tibble: 1 × 8
+  path            status hash                                                                size created_by compression message             add_time           
+  <chr>           <chr>  <chr>                                                            <bytes> <chr>      <chr>       <chr>               <dttm>             
+1 data/theoph.csv absent cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data 2026-06-16 16:46:45
 ```
 
 
@@ -285,9 +168,14 @@ dvs_status()
 :::
 
 
-## `dvs_get`
+::: {.callout-note}
+dvs reports three states: `current`, `absent`, and `unsynced` (on disk but not
+matching the stored hash). See [Storage and meta files](intro-internals.html).
+:::
 
-Restore the deleted file from storage:
+## 6. Get
+
+Restore the file from storage. See [dvs_get()](r-get.html).
 
 
 ::: {.cell}
@@ -311,7 +199,9 @@ dvs_get("data/theoph.csv")
 :::
 
 
-Both files are `current` again:
+## 7. Status again
+
+The file is `current` again. The loop is complete.
 
 
 ::: {.cell}
@@ -324,11 +214,10 @@ dvs_status()
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 2 × 8
-  path               status  hash                                                                size created_by compression message                add_time           
-  <chr>              <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>                  <dttm>             
-1 data/theoph.csv    current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add Theoph dataset     2026-04-24 12:58:26
-2 data/theoph_v2.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        add second Theoph copy 2026-04-24 12:58:26
+# A tibble: 1 × 8
+  path            status  hash                                                                size created_by compression message             add_time           
+  <chr>           <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>               <dttm>             
+1 data/theoph.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data 2026-06-16 16:46:45
 ```
 
 
@@ -348,6 +237,10 @@ unlink(here::here(storage),     recursive = TRUE)
 :::
 
 
----
+## Next steps
 
-**Next up**: [Getting Started, CLI](getting-started-cli.html): the same workflow driven from the terminal via the `dvs` binary.
+- The [R Package](r-init.html) reference covers every parameter of
+  [dvs_init()](r-init.html), [dvs_add()](r-add.html),
+  [dvs_status()](r-status.html), and [dvs_get()](r-get.html).
+- The same loop from the terminal: [CLI walkthrough](getting-started-cli.html).
+- How dvs stores data: [Storage and meta files](intro-internals.html).
