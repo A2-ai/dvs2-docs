@@ -1,0 +1,32 @@
+---
+title: "dvs"
+description: "Data Version Control System by A2-AI — version large or sensitive files alongside Git without storing their content in Git."
+template: splash
+pagefind: true
+hero:
+  tagline: "Version large or sensitive files alongside Git — content-addressed storage with blake3, tracked in Git-friendly .dvs files."
+  actions:
+    - text: "Get Started"
+      link: "./articles/readme/"
+      icon: right-arrow
+      variant: primary
+    - text: "View on GitHub"
+      link: "https://github.com/A2-ai/dvs2"
+      icon: external
+      variant: minimal
+---
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## Quick links
+
+<CardGrid stagger>
+  <Card title="Track Files" icon="document">
+    dvs_add() copies files into content-addressed storage and writes Git-friendly .dvs metadata
+    [Learn more >](./reference/dvs_add/)
+  </Card>
+  <Card title="dvs Reference" icon="open-book">
+    See the full dvs reference for all exported functions
+    [Learn more >](./reference/dvs_init/)
+  </Card>
+</CardGrid>
+

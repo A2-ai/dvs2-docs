@@ -1,0 +1,56 @@
+---
+title: "Set the log level for DVS internals"
+description: "Controls which log messages from the DVS internals are routed to R's console. `error` and `warn` go to ; `info`, `debug`, and `trace` go to stdout."
+sidebar:
+  label: "set_dvs_log_level"
+pagefind: true
+---
+
+## Description
+
+Controls which log messages from the DVS internals are routed to R's console. `error` and `warn` go to [`stderr()`](../stderr/); `info`, `debug`, and `trace` go to stdout.
+
+
+
+
+
+
+
+## Usage
+
+```r
+set_dvs_log_level(level = c("off", "error", "warn", "info", "debug", "trace"))
+```
+
+## Arguments
+
+<div class="arg-table">
+<table>
+<thead>
+<tr><th>Argument</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><code>level</code></td>
+<td>Character string giving the desired log level. The default is `"off"`.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+## Value
+
+Called for its side effect; returns `NULL` invisibly.
+
+
+
+## Examples
+
+```r
+# Not run:
+set_dvs_log_level("info")    # opt in
+set_dvs_log_level("debug")
+set_dvs_log_level("off")     # restore default (silent)
+```
+

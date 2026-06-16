@@ -1,0 +1,49 @@
+[site]
+title = "dvs"
+description = "Data Version Control System by A2-AI — version large or sensitive files alongside Git without storing their content in Git."
+
+[output]
+dir = "../dvs-docs"
+
+[reference]
+skip_sections = ["title", "name", "alias", "doc type", "keyword"]
+section_order = ["Description", "Details"]
+include_pagefind = true
+
+[home]
+hero = { tagline = "Version large or sensitive files alongside Git — content-addressed storage with blake3, tracked in Git-friendly .dvs files.", actions = [
+  { text = "Get Started", link = "./articles/readme/", icon = "right-arrow", variant = "primary" },
+  { text = "View on GitHub", link = "https://github.com/A2-ai/dvs2", icon = "external", variant = "minimal" },
+] }
+cards = [
+  { icon = "document", title = "Track Files", description = "dvs_add() copies files into content-addressed storage and writes Git-friendly .dvs metadata", link = "./reference/dvs_add/" },
+  { icon = "open-book", title = "dvs Reference", description = "See the full dvs reference for all exported functions", link = "./reference/dvs_init/" },
+]
+
+[sidebar]
+articles = [
+  { label = "Getting Started", contents = [
+    { slug = "README", label = "Welcome" },
+  ], collapsed = true },
+]
+reference = [
+  { label = "Core Workflow", collapsed = false, contents = [
+    "dvs_init",
+    "dvs_add",
+    "dvs_status",
+    "dvs_get",
+  ] },
+  { label = "Options", collapsed = true, contents = [
+    "set_dvs_threads",
+    "set_dvs_log_level",
+  ] },
+  { label = "Byte Sizes", collapsed = true, contents = [
+    "format_byte_size",
+    "new_dvs_bytes",
+  ] },
+]
+
+[navbar]
+right = [
+  { icon = "github", href = "https://github.com/A2-ai/dvs2" },
+]

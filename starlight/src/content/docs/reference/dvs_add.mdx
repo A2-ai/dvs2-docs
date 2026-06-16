@@ -1,0 +1,53 @@
+---
+title: "Add files to DVS-managed storage"
+description: "Hashes and copies the specified files into DVS storage."
+sidebar:
+  label: "dvs_add"
+pagefind: true
+---
+
+## Description
+
+Hashes and copies the specified files into DVS storage.
+
+
+
+
+
+
+## Usage
+
+```r
+dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
+```
+
+## Arguments
+
+<div class="arg-table">
+<table>
+<thead>
+<tr><th>Argument</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><code>paths</code></td>
+<td>Character vector of file paths to add to DVS storage.</td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td>Optional commit message describing why the files were added.</td>
+</tr>
+<tr>
+<td><code>glob</code></td>
+<td>Optional glob pattern to select files (e.g. `"data/*.csv"`). Globs use a literal path separator: `*.csv` only matches files in the target directory and will not match `subdir/file.csv`. Use `**/*.csv` to match recursively across subdirectories.</td>
+</tr>
+<tr>
+<td><code>dry_run</code></td>
+<td>If `TRUE`, report what would be added without modifying anything.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+

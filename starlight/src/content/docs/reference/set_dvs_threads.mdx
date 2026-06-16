@@ -1,0 +1,65 @@
+---
+title: "Set the number of threads used by DVS operations"
+description: "Controls the thread pool size for parallel file operations (add, get, status). The value is stored as the `dvs. num_threads` option and synced to the Rust backe"
+sidebar:
+  label: "set_dvs_threads"
+pagefind: true
+---
+
+## Description
+
+Controls the thread pool size for parallel file operations (add, get, status).
+The value is stored as the `dvs.num_threads` option and synced to the
+Rust backend before each operation.
+
+## Details
+
+Can also be set via `.Rprofile` or temporarily with withr::with_options().
+
+
+
+
+
+
+## Usage
+
+```r
+set_dvs_threads(threads)
+```
+
+## Arguments
+
+<div class="arg-table">
+<table>
+<thead>
+<tr><th>Argument</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><code>threads</code></td>
+<td>Integer number of threads to use. Set to `NULL` to revert to the default (automatic detection).</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+## Value
+
+The previous value of `dvs.num_threads` (invisibly).
+
+
+
+
+## Examples
+
+```r
+# Not run:
+set_dvs_threads(4)
+
+# Temporarily use 2 threads
+withr::with_options(list(dvs.num_threads = 2), {
+  dvs_add(files = "big_data.csv")
+})
+```
+

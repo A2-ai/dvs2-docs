@@ -1,0 +1,50 @@
+---
+title: "Construct a dvs_bytes vector"
+description: "A thin constructor used by , and to tag byte-size columns so that pillar renders them as human-readable sizes in tibble output. Stored as `double` to safely rep"
+sidebar:
+  label: "new_dvs_bytes"
+pagefind: true
+---
+
+## Description
+
+A thin constructor used by [`dvs_add()`](../dvs_add/), [`dvs_status()`](../dvs_status/) and [`dvs_get()`](../dvs_get/) to
+tag byte-size columns so that pillar renders them as human-readable sizes
+in tibble output. Stored as `double` to safely represent file sizes up to
+`2^53` bytes — `integer` in R is 32 bits and would silently overflow at
+~2 GB.
+
+
+
+
+
+
+## Usage
+
+```r
+new_dvs_bytes(x)
+```
+
+## Arguments
+
+<div class="arg-table">
+<table>
+<thead>
+<tr><th>Argument</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>atomic numeric / integer / logical vector (incl. `NA`)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+## Value
+
+a `dvs_bytes` object inheriting from `numeric`
+
+
+
