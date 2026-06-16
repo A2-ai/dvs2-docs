@@ -113,6 +113,13 @@ pre {
   code { background: none; padding: 0; color: inherit; font-size: inherit; }
 }
 
+// Highlighted blocks (giallo) carry inline `light-dark()` colors and a
+// `color-scheme: light dark` that would otherwise follow the OS. Pin the
+// used scheme to the site's manual theme toggle so code matches the page.
+// `color-scheme` inherits, so children resolve `light-dark()` the same way.
+pre.giallo { color-scheme: light !important; }
+[data-theme="dark"] pre.giallo { color-scheme: dark !important; }
+
 :focus { outline: none; }
 :focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -230,6 +237,17 @@ pre {
 [data-theme="dark"] .theme-toggle {
   .icon-moon { display: none; }
   .icon-sun { display: block; }
+}
+
+.nav-github {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
+  &:hover { color: var(--primary); }
+  svg { width: 20px; height: 20px; }
 }
 
 // Site search
