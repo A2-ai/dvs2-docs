@@ -77,7 +77,7 @@ Re-add with a new message. dvs writes a new blob and overwrites the meta file:
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
-dvs_add("data/large/large_1.csv", message = "add row 99 — corrected dataset")
+dvs_add("data/large/large_1.csv", message = "add row 99, corrected dataset")
 ```
 
 Back to `current`:

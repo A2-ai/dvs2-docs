@@ -162,7 +162,7 @@ Re-add with a new message. dvs writes a new blob and overwrites the meta file:
 
 ```{.r .cell-code}
 setwd(here::here(new_project))
-dvs_add("data/large/large_1.csv", message = "add row 99 — corrected dataset")
+dvs_add("data/large/large_1.csv", message = "add row 99, corrected dataset")
 ```
 
 ::: {.cell-output .cell-output-stdout}
@@ -195,7 +195,7 @@ dvs_status(status = "current")
 # A tibble: 4 × 8
   path                   status  hash                                                                  size created_by compression message                        add_time           
   <chr>                  <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>                          <dttm>             
-1 data/large/large_1.csv current 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c   25.0 MB elea       zstd        add row 99 — corrected dataset 2026-04-24 12:59:15
+1 data/large/large_1.csv current 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c   25.0 MB elea       zstd        add row 99, corrected dataset 2026-04-24 12:59:15
 2 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
 3 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
 4 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
@@ -262,7 +262,7 @@ dvs_status(status = "unsynced")
 # A tibble: 1 × 8
   path                   status   hash                                                                size created_by compression message                        add_time           
   <chr>                  <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>                          <dttm>             
-1 data/large/large_1.csv unsynced 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB elea       zstd        add row 99 — corrected dataset 2026-04-24 12:59:15
+1 data/large/large_1.csv unsynced 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB elea       zstd        add row 99, corrected dataset 2026-04-24 12:59:15
 ```
 
 
@@ -351,7 +351,7 @@ dvs_status()
 # A tibble: 4 × 8
   path                   status   hash                                                                  size created_by compression message                        add_time           
   <chr>                  <chr>    <chr>                                                              <bytes> <chr>      <chr>       <chr>                          <dttm>             
-1 data/large/large_1.csv unsynced 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c   25.0 MB elea       zstd        add row 99 — corrected dataset 2026-04-24 12:59:15
+1 data/large/large_1.csv unsynced 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c   25.0 MB elea       zstd        add row 99, corrected dataset 2026-04-24 12:59:15
 2 data/small/small_1.csv current  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
 3 data/small/small_2.csv current  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
 4 data/small/small_3.csv current  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15

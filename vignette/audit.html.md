@@ -119,7 +119,7 @@ Modify `file_2.csv` and re-add:
 ```{.r .cell-code}
 setwd(here::here(new_project))
 cat("99,0,0,0,0,0\n", file = "data/file_2.csv", append = TRUE)
-invisible(dvs_add("data/file_2.csv", message = "updated file 2 — added row 99"))
+invisible(dvs_add("data/file_2.csv", message = "updated file 2, added row 99"))
 ```
 :::
 

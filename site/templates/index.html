@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}{{ config.title }} &middot; data version control for R{% endblock %}
+{% block title %}{{ config.title }} &middot; data version control{% endblock %}
 
 {% block content %}
 <section class="hero">
   <h1>{{ config.title }}</h1>
   <p class="hero-subtitle">{{ config.description }}</p>
   <p class="hero-summary">
-    <code>dvs</code> versions large or sensitive datasets — the kind routine in
-    pharma and other data-intensive work — without committing their contents to
-    your source tree. It works alongside Git or entirely on its own. Add,
-    restore, and check the status of versioned data from R or the command line.
+    <code>dvs</code> versions large or sensitive datasets, common in pharma and
+    other data-intensive work, without committing their contents to your source
+    tree. It works alongside Git or on its own. Add, restore, and check the
+    status of versioned data from R or the command line.
   </p>
   <div class="hero-actions">
     <a class="btn" href="{{ get_url(path='@/getting-started/_index.md') }}">Get started</a>

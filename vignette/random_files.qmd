@@ -9,24 +9,23 @@ execute:
 
 ## Overview
 
-`mkdatasetfiles()` is a test-data generator used throughout these vignettes to stress-test dvs.
-It is not part of dvs itself — it exists solely to produce arbitrary numbers of CSV files at
-arbitrary sizes so you can exercise dvs's add, push, fetch, hash, and compression behavior at
-realistic or extreme scale: from a single 1 MB file up to multi-gigabyte batches of hundreds
-of files.
+`mkdatasetfiles()` is a test-data generator used throughout these vignettes. It is not part of
+dvs. It produces a chosen number of CSV files at a chosen size, so you can exercise dvs add,
+push, fetch, hash, and compression at any scale, from a single 1 MB file to multi-gigabyte
+batches of hundreds of files.
 
 Key controls:
 
-- `n_files` — how many files to generate
-- `size_mb` — target on-disk size for each file (bytes are padded precisely to this target)
-- `dir` — output directory (created automatically)
-- `prefix` — filename prefix; files are numbered `<prefix>1.csv`, `<prefix>2.csv`, etc.
-- `dataset` — base R data frame whose columns seed the content (default: `ChickWeight`)
-- `extra_cols` — number of random-integer columns appended to each row (increases width and
-  therefore file size independently of row count)
+- `n_files`: how many files to generate
+- `size_mb`: target on-disk size for each file (bytes are padded to this target)
+- `dir`: output directory (created automatically)
+- `prefix`: filename prefix; files are numbered `<prefix>1.csv`, `<prefix>2.csv`, and so on
+- `dataset`: base R data frame whose columns seed the content (default: `ChickWeight`)
+- `extra_cols`: number of random-integer columns appended to each row (increases width, and
+  therefore file size, independently of row count)
 
-Each file gets its own `set.seed(i)` so the files in a batch are distinct (non-duplicate) even
-though they are the same size.
+Each file gets its own `set.seed(i)`, so the files in a batch are distinct even though they are
+the same size.
 
 The helper is sourced inline at the top of any vignette that needs test files; nothing is
 installed into the R session permanently.

@@ -21,3 +21,4 @@ site/public/
 site/content/**/*.md
 !site/content/**/_index.md
 !site/content/about.md
+.claude/worktrees/

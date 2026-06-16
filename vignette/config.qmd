@@ -203,7 +203,7 @@ directory and all blobs written to it. This ensures that members of the group
 can read and write blobs without permission errors on shared filesystems.
 
 ```r
-# example — not executed here
+# example, not executed here
 dvs_init("/mnt/shared/storage", group = "data-team")
 ```
 
