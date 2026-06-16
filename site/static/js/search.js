@@ -25,7 +25,7 @@ function initSearch() {
     const input = document.getElementById("search");
     if (!input) return;
 
-    const resultsContainer = document.querySelector(".search-results");
+    const searchContainer = document.querySelector(".site-search");
     const resultsItems = document.querySelector(".search-results__items");
     let index;
 
@@ -41,13 +41,13 @@ function initSearch() {
     const doSearch = debounce(function() {
         const query = input.value.trim();
         if (!query) {
-            resultsContainer.classList.remove("active");
+            searchContainer.classList.remove("has-results");
             return;
         }
 
         if (!index) {
             renderEmptyState(resultsItems, "Loading index...");
-            resultsContainer.classList.add("active");
+            searchContainer.classList.add("has-results");
             return;
         }
 
@@ -56,7 +56,7 @@ function initSearch() {
 
         if (results.length === 0) {
             renderEmptyState(resultsItems, "No matching pages");
-            resultsContainer.classList.add("active");
+            searchContainer.classList.add("has-results");
             return;
         }
 
@@ -79,21 +79,21 @@ function initSearch() {
             resultsItems.appendChild(link);
         });
 
-        resultsContainer.classList.add("active");
+        searchContainer.classList.add("has-results");
     }, 180);
 
     input.addEventListener("input", doSearch);
     input.addEventListener("focus", doSearch);
 
     document.addEventListener("click", function(event) {
-        if (!event.target.closest(".search-container")) {
-            resultsContainer.classList.remove("active");
+        if (!event.target.closest(".site-search")) {
+            searchContainer.classList.remove("has-results");
         }
     });
 
     document.addEventListener("keydown", function(event) {
         if (event.key === "Escape") {
-            resultsContainer.classList.remove("active");
+            searchContainer.classList.remove("has-results");
             input.blur();
         }
     });
