@@ -69,17 +69,29 @@
 
     <footer class="site-footer">
       <div class="footer-inner">
-        <a class="footer-logo" href="https://a2-ai.com" rel="noopener">
-          <img class="logo-light" src="{{ get_url(path='images/a2ai-logo-color.png') }}" alt="A2-AI" width="1237" height="394">
-          <img class="logo-dark" src="{{ get_url(path='images/a2ai-logo-black.png') }}" alt="A2-AI" width="1241" height="382">
-        </a>
-        <div class="footer-links">
-          <a href="{{ get_url(path='/') }}">Home</a>
-          <a href="{{ get_url(path='@/getting-started/_index.md') }}">Getting Started</a>
-          <a href="{{ get_url(path='@/about.md') }}">About</a>
-          <a href="{{ config.extra.repo_url }}" rel="noopener">GitHub</a>
+        <div class="footer-top">
+          <div class="footer-brand">
+            <a class="footer-logo" href="https://a2-ai.com" rel="noopener" aria-label="A2-AI">
+              <img class="logo-light" src="{{ get_url(path='images/a2ai-logo-color.png') }}" alt="A2-AI" width="1237" height="394">
+              <img class="logo-dark" src="{{ get_url(path='images/a2ai-logo-black.png') }}" alt="A2-AI" width="1241" height="382">
+            </a>
+            <a class="footer-wordmark" href="{{ get_url(path='/') }}">dvs</a>
+          </div>
+          <nav class="footer-links" aria-label="Site map">
+            <a href="{{ get_url(path='/') }}">Home</a>
+            <a href="{{ get_url(path='@/getting-started/_index.md') }}">Getting Started</a>
+            <a href="{{ get_url(path='@/r-package/_index.md') }}">R Package</a>
+            <a href="{{ get_url(path='r/') }}">R Reference</a>
+            <a href="{{ get_url(path='@/cli/_index.md') }}">CLI</a>
+            <a href="{{ get_url(path='@/internals/_index.md') }}">Internals</a>
+            <a href="{{ get_url(path='@/about.md') }}">About</a>
+            <a href="{{ config.extra.repo_url }}" rel="noopener">GitHub</a>
+          </nav>
         </div>
-        <p>dvs &middot; a data version control system by <a href="https://a2-ai.com" rel="noopener">A2-AI</a></p>
+        <div class="footer-bottom">
+          <p>&copy; {{ now() | date(format="%Y") }} A2-AI. All rights reserved.</p>
+          <p>dvs &middot; data version control by <a href="https://a2-ai.com" rel="noopener">A2-AI</a>.</p>
+        </div>
       </div>
     </footer>
 

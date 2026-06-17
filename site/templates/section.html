@@ -4,16 +4,7 @@
 {% block main_class %} wide{% endblock %}
 
 {% block content %}
-<div class="doc-layout">
-  <aside class="doc-sidebar" aria-label="{{ section.title }} pages">
-    <p class="eyebrow">{{ section.title }}</p>
-    <ul>
-      {% for p in section.pages %}
-      <li><a href="{{ p.permalink }}">{{ p.title }}</a></li>
-      {% endfor %}
-    </ul>
-  </aside>
-
+<div class="doc-layout listing">
   <article class="doc-main section-page">
     <header class="page-header">
       <div class="breadcrumb">
@@ -42,5 +33,14 @@
     </div>
     {% endif %}
   </article>
+
+  <aside class="doc-sidebar" aria-label="{{ section.title }} pages">
+    <p class="eyebrow">{{ section.title }}</p>
+    <ul>
+      {% for p in section.pages %}
+      <li><a href="{{ p.permalink }}">{{ p.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </aside>
 </div>
 {% endblock %}

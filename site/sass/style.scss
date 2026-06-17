@@ -3,8 +3,8 @@ $font-body: 'Outfit', 'Rubik', -apple-system, BlinkMacSystemFont, 'Helvetica Neu
 $font-heading: 'Outfit', 'Rubik', sans-serif;
 $font-mono: 'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace;
 
-$max-width: 960px;
-$max-width-wide: 1200px;
+$reading: 720px;          // capped reading measure for prose (home, about) — matches docs column
+$max-width-wide: 1200px;  // shared content frame: nav, footer, and main all align to this
 $nav-height: 60px;
 $radius: 6px;
 
@@ -164,7 +164,7 @@ pre.giallo { color-scheme: light !important; }
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.85rem;
 }
 
 .nav-logo {
@@ -186,6 +186,9 @@ pre.giallo { color-scheme: light !important; }
   font-size: 1.15rem;
   color: var(--primary);
   letter-spacing: -0.02em;
+  // divider between the A2-AI logo and the dvs wordmark
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--border);
 }
 .nav-wordmark:hover { color: var(--accent); }
 
@@ -306,16 +309,14 @@ pre.giallo { color-scheme: light !important; }
 }
 
 // ── Main Content ──────────────────────────────────────
+// Single frame for every page (matches .nav-inner and .footer-inner), so the
+// content's left/right edges never shift between Home, sections, and About.
 main.content {
-  max-width: $max-width;
+  max-width: $max-width-wide;
   margin: 0 auto;
   padding: 2.5rem 1.5rem 4rem;
   width: 100%;
   flex: 1;
-}
-
-main.content.wide {
-  max-width: 1400px;
 }
 
 // ── Hero ──────────────────────────────────────────────
@@ -394,6 +395,7 @@ main.content.wide {
 
 // ── Home sections ─────────────────────────────────────
 .home-content {
+  max-width: $reading;
   > h2 {
     font-size: 1.4rem;
     font-weight: 700;
@@ -664,9 +666,9 @@ main.content.wide {
   }
 }
 
-// ≥1024px: add the left sidebar column.
+// ≥1024px: reading column at frame-left, section nav in the right rail.
 @media (min-width: 1024px) {
-  .doc-layout { grid-template-columns: 220px minmax(0, 1fr); }
+  .doc-layout { grid-template-columns: minmax(0, 1fr) 220px; }
   .doc-sidebar {
     display: block;
     position: sticky;
@@ -677,9 +679,11 @@ main.content.wide {
   }
 }
 
-// ≥1320px: add the right "on this page" TOC column.
+// ≥1320px: add the "on this page" TOC as the far-right column.
 @media (min-width: 1320px) {
-  .doc-layout { grid-template-columns: 220px minmax(0, 1fr) 200px; }
+  .doc-layout { grid-template-columns: minmax(0, 1fr) 220px 200px; }
+  // Listing (section) pages have no TOC — keep the nav flush right, no empty column.
+  .doc-layout.listing { grid-template-columns: minmax(0, 1fr) 220px; }
   .doc-toc {
     display: block;
     position: sticky;
@@ -809,11 +813,11 @@ main.content.wide {
   border-top: 1px solid var(--border);
 }
 
-// ── Footer ────────────────────────────────────────────
+// ── Footer (mirrors the nav: brand left, site-map links right) ──
 .site-footer {
   border-top: 1px solid var(--border);
-  padding: 2rem 1.5rem;
-  text-align: center;
+  background: var(--nav-bg);
+  padding: 1.75rem 1.5rem;
   margin-top: auto;
 }
 
@@ -822,21 +826,52 @@ main.content.wide {
   margin: 0 auto;
 }
 
+.footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.footer-wordmark {
+  font-family: $font-heading;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--border);
+  &:hover { color: var(--accent); }
+}
+
 .footer-logo {
-  display: inline-block;
-  margin-bottom: 1rem;
-  img { height: 30px; width: auto; }
+  display: inline-flex;
+  align-items: center;
+  img { height: 26px; width: auto; display: block; }
   .logo-dark { display: none; }
 }
 [data-theme="dark"] .footer-logo {
   .logo-light { display: none; }
-  .logo-dark { display: inline-block; filter: invert(1) brightness(1.7); }
+  .logo-dark { display: block; filter: invert(1) brightness(1.7); }
+}
+
+.footer-bottom {
+  margin-top: 1.25rem;
+  p { margin: 0; }
 }
 
 // ── About page ────────────────────────────────────────
 .about-page {
-  max-width: 720px;
-  margin: 0 auto;
+  max-width: $reading;
   padding-top: 1rem;
 
   .about-logo {
@@ -854,9 +889,8 @@ main.content.wide {
 
 .footer-links {
   display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 0.8rem;
+  justify-content: flex-end;
+  gap: 1.25rem 1.5rem;
   flex-wrap: wrap;
   a {
     font-size: 0.9rem;

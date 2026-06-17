@@ -7,17 +7,6 @@
 {% set doc_section = get_section(path=page.ancestors | last) %}
 
 <div class="doc-layout">
-  <aside class="doc-sidebar" aria-label="{{ doc_section.title }} pages">
-    <p class="eyebrow">{{ doc_section.title }}</p>
-    <ul>
-      {% for p in doc_section.pages %}
-      <li class="{% if current_path == p.path %}active{% endif %}">
-        <a href="{{ p.permalink }}">{{ p.title }}</a>
-      </li>
-      {% endfor %}
-    </ul>
-  </aside>
-
   <article class="doc-main">
     <header class="page-header">
       <div class="breadcrumb">
@@ -43,6 +32,17 @@
       <a class="btn btn-outline" href="{{ doc_section.permalink }}">Back to {{ doc_section.title }}</a>
     </div>
   </article>
+
+  <aside class="doc-sidebar" aria-label="{{ doc_section.title }} pages">
+    <p class="eyebrow">{{ doc_section.title }}</p>
+    <ul>
+      {% for p in doc_section.pages %}
+      <li class="{% if current_path == p.path %}active{% endif %}">
+        <a href="{{ p.permalink }}">{{ p.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
 
   {% if page.toc | length > 0 %}
   <aside class="doc-toc" aria-label="On this page">
