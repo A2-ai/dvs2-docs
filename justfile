@@ -95,6 +95,9 @@ site-rustdoc dvs_src=".dvs2":
     export RUSTDOCFLAGS="-Z unstable-options --default-setting use-system-theme=true \
       --extend-css $PWD/site/rustdoc/zola.css \
       --html-before-content $PWD/site/rustdoc/banner.html"
+    # cargo fingerprints RUSTDOCFLAGS but not the css/banner file contents, so
+    # editing them alone won't trigger a rebuild. Clean the doc output first.
+    cargo +nightly clean --doc --manifest-path {{dvs_src}}/Cargo.toml
     cargo +nightly doc -p dvs --manifest-path {{dvs_src}}/Cargo.toml
     rm -rf site/static/rustdoc && mkdir -p site/static/rustdoc
     cp -r {{dvs_src}}/target/doc/. site/static/rustdoc/

@@ -28,14 +28,22 @@ pre, code, .code-header, kbd, .example-wrap {
 }
 
 /* Slim "back to docs" banner injected by --html-before-content. Uses
- * rustdoc's own theme variables so it follows the active rustdoc theme. */
+ * rustdoc's own theme variables so it follows the active rustdoc theme.
+ *
+ * body has class "rustdoc" and is display:flex;flex-direction:row;
+ * flex-wrap:nowrap, so the injected banner would otherwise be squeezed into a
+ * narrow column to the LEFT of the sidebar. Allow the row to wrap and force the
+ * banner onto its own full-width line above the sidebar+main row. (On desktop
+ * rustdoc-topbar is display:none, so the second line is just sidebar + main.) */
+body.rustdoc { flex-wrap: wrap; }
 .zola-banner {
+  flex: 0 0 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.5rem 1rem;
-  margin-bottom: 1rem;
+  padding: 0.5rem 1.25rem;
   font-size: 0.9rem;
   border-bottom: 1px solid var(--border-color, #ccc);
   background: var(--main-background-color, #fff);
