@@ -85,8 +85,17 @@ site-build:
 # mirroring the CI step in .github/workflows/pages.yml (deps included for the
 # complete picture). Placed in static/ so zola build/serve/check all pick it up
 # at /rustdoc/ automatically. The dir is gitignored; CI builds its own copy.
+#
+# Nightly + -Z unstable-options theme the docs to match the Zola site:
+# --extend-css overrides rustdoc's per-theme color/font variables, and
+# --html-before-content injects a "back to docs" banner (site/rustdoc/).
 site-rustdoc dvs_src=".dvs2":
-    cargo doc -p dvs --manifest-path {{dvs_src}}/Cargo.toml
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export RUSTDOCFLAGS="-Z unstable-options --default-theme light \
+      --extend-css $PWD/site/rustdoc/zola.css \
+      --html-before-content $PWD/site/rustdoc/banner.html"
+    cargo +nightly doc -p dvs --manifest-path {{dvs_src}}/Cargo.toml
     rm -rf site/static/rustdoc && mkdir -p site/static/rustdoc
     cp -r {{dvs_src}}/target/doc/. site/static/rustdoc/
 

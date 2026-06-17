@@ -46,8 +46,12 @@ jobs:
       # cargo/rustup are preinstalled on ubuntu-latest.
       - name: Build rustdoc (dvs + dependencies)
         run: |
+          rustup toolchain install nightly --profile minimal
           git clone --depth 1 https://github.com/A2-ai/dvs2 dvs2-src
-          cargo doc -p dvs --manifest-path dvs2-src/Cargo.toml
+          export RUSTDOCFLAGS="-Z unstable-options --default-theme light \
+            --extend-css $PWD/site/rustdoc/zola.css \
+            --html-before-content $PWD/site/rustdoc/banner.html"
+          cargo +nightly doc -p dvs --manifest-path dvs2-src/Cargo.toml
           mkdir -p site/public/rustdoc
           cp -r dvs2-src/target/doc/. site/public/rustdoc/
 

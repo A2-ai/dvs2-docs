@@ -1,0 +1,45 @@
+/* Match the dvs Zola docs site (site/sass/style.scss).
+ *
+ * Loaded via rustdoc `--extend-css`, so it lands AFTER rustdoc's bundled
+ * theme CSS. rustdoc keeps all themes in one sheet, scoped by
+ * `:root[data-theme="light|dark|ayu"]`, and switches the attribute on <html>.
+ * Overriding the same variables under the same selectors stays theme-aware
+ * (no !important, no breakage when the user toggles rustdoc's own themes). */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* Fonts: Outfit for prose, IBM Plex Mono for code (same as the Zola site). */
+body {
+  font-family: 'Outfit', 'Rubik', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+pre, code, .code-header, kbd, .example-wrap {
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+}
+
+/* Accent (links + sidebar) -> Zola --primary, per theme. */
+:root[data-theme="light"] {
+  --link-color: #1f6f83;
+  --sidebar-link-color: #1f6f83;
+}
+:root[data-theme="dark"],
+:root[data-theme="ayu"] {
+  --link-color: #5fc6dd;
+  --sidebar-link-color: #5fc6dd;
+}
+
+/* Slim "back to docs" banner injected by --html-before-content. Uses
+ * rustdoc's own theme variables so it follows the active rustdoc theme. */
+.zola-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border-color, #ccc);
+  background: var(--main-background-color, #fff);
+}
+.zola-banner a { color: var(--link-color); font-weight: 600; text-decoration: none; }
+.zola-banner a:hover { text-decoration: underline; }
+.zola-banner span { color: var(--main-color); opacity: 0.7; }
