@@ -18,9 +18,9 @@ site-build:
     set -euo pipefail
 
     # "<vignette> <section/file> <in-section weight>"
-    # Five sections: Getting Started (install + two walkthroughs), R Package
-    # (one page per function), CLI (one page per command), Helpers (R-only
-    # utilities), Internals (last). The harvested vignettes (intro, intro-cli,
+    # Four sections: Getting Started (install + two walkthroughs), R Package
+    # (one page per function, plus the R-only helper utilities), CLI (one page
+    # per command), Internals (last). The harvested vignettes (intro, intro-cli,
     # lifecycle, collab, random_files) and the splash deck are excluded.
     MAP=(
       "getting-started     getting-started/r            1"
@@ -33,11 +33,11 @@ site-build:
       "cli-add             cli/add                      2"
       "cli-status          cli/status                   3"
       "cli-get             cli/get                      4"
-      "r-threads           helpers/threads              1"
-      "r-loglevel          helpers/log-level            2"
-      "r-format-bytes      helpers/format-bytes         3"
-      "r-bytes             helpers/bytes                4"
-      "r-version           helpers/version              5"
+      "r-threads           r-package/threads            5"
+      "r-loglevel          r-package/log-level          6"
+      "r-format-bytes      r-package/format-bytes       7"
+      "r-bytes             r-package/bytes              8"
+      "r-version           r-package/version            9"
       "intro-internals     internals/storage            1"
       "config              internals/config             2"
       "audit               internals/audit              3"

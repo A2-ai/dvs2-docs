@@ -10,14 +10,6 @@ The `dvs` binary drives four subcommands: `init`, `add`, `status`, `get`. Every
 command accepts `--json` for machine-readable output. New to dvs? Start with the
 [CLI walkthrough](@/getting-started/cli.md) in Getting Started.
 
-## Install
-
-With [cargo](https://rustup.rs):
-
-```bash
-cargo install --git https://github.com/A2-ai/dvs2 --locked --force --all-features dvs-cli
-```
-
 ## Global options
 
 These apply to the top level and to every subcommand:
@@ -44,3 +36,11 @@ different shapes: the CLI prints tables (or JSON) and takes a per-call
 `--threads`, while R returns data frames and sets threads process-wide. `status`
 hides metadata behind `--with-metadata`; R always returns it. `init` uses
 `--no-compression` where R uses `compression = "none"`.
+
+## Installation (advanced users)
+
+With [cargo](https://rustup.rs):
+
+```bash
+cargo install --git https://github.com/A2-ai/dvs2 --locked --force --all-features dvs-cli
+```

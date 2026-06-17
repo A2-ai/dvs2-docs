@@ -10,14 +10,6 @@ The `dvs` R package wraps the dvs core. Each function returns a native R object:
 the verbs return tibbles, `dvs_init()` returns a list. New to dvs? Start with the
 [R walkthrough](@/getting-started/r.md) in Getting Started.
 
-## Install
-
-With [rv](https://github.com/A2-ai/rv):
-
-```bash
-rv add dvs --git https://github.com/A2-ai/dvs2 --branch main --directory dvs-rpkg
-```
-
 ## Functions
 
 One page per function, covering every parameter.
@@ -33,11 +25,11 @@ R-only utilities that sit outside the four-verb workflow. They configure the
 dvs core process-wide (threads, logging) or format its output. The CLI exposes
 the same controls through flags and environment variables.
 
-- [set_dvs_threads()](@/helpers/threads.md): set the process-wide thread pool size.
-- [set_dvs_log_level()](@/helpers/log-level.md): route core log output to the R console.
-- [format_byte_size()](@/helpers/format-bytes.md): human-readable byte sizes.
-- [new_dvs_bytes()](@/helpers/bytes.md): the `dvs_bytes` vector type and pillar printing.
-- [dvs_version()](@/helpers/version.md): report the core crate version.
+- [set_dvs_threads()](@/r-package/threads.md): set the process-wide thread pool size.
+- [set_dvs_log_level()](@/r-package/log-level.md): route core log output to the R console.
+- [format_byte_size()](@/r-package/format-bytes.md): human-readable byte sizes.
+- [new_dvs_bytes()](@/r-package/bytes.md): the `dvs_bytes` vector type and pillar printing.
+- [dvs_version()](@/r-package/version.md): report the core crate version.
 
 ## How the R surface differs from the CLI
 
@@ -47,7 +39,15 @@ different shapes:
 - R returns native data frames and lists; there is no `--json`.
 - `dvs_status()` always returns the metadata columns; the CLI hides them behind
   `--with-metadata`.
-- Threads are set process-wide with [set_dvs_threads()](@/helpers/threads.md);
+- Threads are set process-wide with [set_dvs_threads()](@/r-package/threads.md);
   the CLI takes a per-call `--threads`.
 - `dvs_init()` uses `compression = c("zstd", "none")`; the CLI uses a
   `--no-compression` flag.
+
+## Installation (advanced users)
+
+With [rv](https://github.com/A2-ai/rv):
+
+```bash
+rv add dvs --git https://github.com/A2-ai/dvs2 --branch main --directory dvs-rpkg
+```
