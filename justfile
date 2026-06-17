@@ -81,6 +81,19 @@ site-build:
     echo "==> zola build"
     cd site && zola build
 
+# Build the dvs rustdoc into site/static/rustdoc using the local .dvs2 clone,
+# mirroring the CI step in .github/workflows/pages.yml (deps included for the
+# complete picture). Placed in static/ so zola build/serve/check all pick it up
+# at /rustdoc/ automatically. The dir is gitignored; CI builds its own copy.
+site-rustdoc dvs_src=".dvs2":
+    cargo doc -p dvs --manifest-path {{dvs_src}}/Cargo.toml
+    rm -rf site/static/rustdoc && mkdir -p site/static/rustdoc
+    cp -r {{dvs_src}}/target/doc/. site/static/rustdoc/
+
+# Build rustdoc + site, then verify all links (rustdoc resolves at /rustdoc/).
+site-check: site-rustdoc site-build
+    cd site && zola check
+
 # Build (via site-build), then live-preview the site in a browser
 site-serve: site-build
     cd site && zola serve --open

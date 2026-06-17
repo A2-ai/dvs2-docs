@@ -18,6 +18,9 @@ rv/library/
 # `just site-build`. Authored pages (_index.md section landings, about.md) are
 # kept; the generated vignette pages in section subdirs are not.
 site/public/
+# Rustdoc built locally by `just site-rustdoc` into static/ for preview/checks.
+# CI builds it fresh into public/rustdoc (see .github/workflows/pages.yml).
+site/static/rustdoc/
 site/content/**/*.md
 !site/content/**/_index.md
 !site/content/about.md
