@@ -21,6 +21,9 @@ site/public/
 # Rustdoc built locally by `just site-rustdoc` into static/ for preview/checks.
 # CI builds it fresh into public/rustdoc (see .github/workflows/pages.yml).
 site/static/rustdoc/
+# Starlight R docs built locally by `just site-r` into static/ for preview.
+# CI builds it fresh into public/r (see .github/workflows/pages.yml).
+site/static/r/
 site/content/**/*.md
 !site/content/**/_index.md
 !site/content/about.md

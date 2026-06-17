@@ -102,12 +102,31 @@ site-rustdoc dvs_src=".dvs2":
     rm -rf site/static/rustdoc && mkdir -p site/static/rustdoc
     cp -r {{dvs_src}}/target/doc/. site/static/rustdoc/
 
-# Build rustdoc + site, then verify all links (rustdoc resolves at /rustdoc/).
-site-check: site-rustdoc site-build
+# Build the Starlight (Astro) R-package reference into site/static/r, mirroring
+# the CI step in .github/workflows/pages.yml. Placed in static/ so zola
+# serve/build/check pick it up at /r/ automatically. Base is /r/ for local
+# serving (CI uses /dvs2-docs/r/). The dir is gitignored; CI builds its own
+# copy into public/r. Plain Astro project: uses bun (matches the committed
+# bun.lock; sharp's prebuilt binaries resolve under bun but not always npm).
+site-r:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd starlight
+    bun install
+    ASTRO_SITE=http://127.0.0.1:1111 ASTRO_BASE=/r/ bun run build
+    cd ..
+    rm -rf site/static/r && mkdir -p site/static/r
+    cp -r starlight/dist/. site/static/r/
+
+# Build rustdoc + Starlight + site, then verify all links (resolve at
+# /rustdoc/ and /r/).
+site-check: site-rustdoc site-r site-build
     cd site && zola check
 
-# Build (via site-build), then live-preview the site in a browser
-site-serve: site-build
+# Build the Starlight R docs (/r/) and the site, then live-preview in a browser.
+# Rustdoc (/rustdoc/) is heavier (nightly + dvs2 clone); run `just site-rustdoc`
+# separately if you need it in the preview.
+site-serve: site-r site-build
     cd site && zola serve --open
 
 # === Vignettes ===
