@@ -13,6 +13,6 @@ environment variables.
 
 - [set_dvs_threads()](@/helpers/threads.md): set the process-wide thread pool size.
 - [set_dvs_log_level()](@/helpers/log-level.md): route core log output to the R console.
-- [dvs_version()](@/helpers/version.md): report the core crate version.
 - [format_byte_size()](@/helpers/format-bytes.md): human-readable byte sizes.
 - [new_dvs_bytes()](@/helpers/bytes.md): the `dvs_bytes` vector type and pillar printing.
+- [dvs_version()](@/helpers/version.md): report the core crate version.
