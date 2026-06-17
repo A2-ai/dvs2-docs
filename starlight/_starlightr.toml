@@ -5,6 +5,10 @@ description = "Data Version Control System by A2-AI — version large or sensiti
 [output]
 dir = "../dvs-docs"
 
+# dvs reference docs contain no math; skip the (abandoned) starlight-katex plugin.
+[features]
+katex = false
+
 [reference]
 skip_sections = ["title", "name", "alias", "doc type", "keyword"]
 section_order = ["Description", "Details"]
