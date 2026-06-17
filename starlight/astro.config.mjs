@@ -2,7 +2,6 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import { remarkBaseUrl } from "./remark-base-url.mjs";
-import { starlightKatex } from "starlight-katex";
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,7 +15,6 @@ export default defineConfig({
     starlight({
       title: "dvs",
       customCss: ["./src/styles/starlightr.css", "./src/styles/custom.css"],
-      plugins: [starlightKatex()],
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/A2-ai/dvs2' }],
       sidebar: [
     {
