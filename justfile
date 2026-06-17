@@ -92,7 +92,7 @@ site-build:
 site-rustdoc dvs_src=".dvs2":
     #!/usr/bin/env bash
     set -euo pipefail
-    export RUSTDOCFLAGS="-Z unstable-options --default-theme light \
+    export RUSTDOCFLAGS="-Z unstable-options --default-setting use-system-theme=true \
       --extend-css $PWD/site/rustdoc/zola.css \
       --html-before-content $PWD/site/rustdoc/banner.html"
     cargo +nightly doc -p dvs --manifest-path {{dvs_src}}/Cargo.toml
