@@ -23,8 +23,8 @@ site-build:
     # utilities), Internals (last). The harvested vignettes (intro, intro-cli,
     # lifecycle, collab, random_files) and the splash deck are excluded.
     MAP=(
-      "getting-started-cli getting-started/cli          1"
-      "getting-started     getting-started/r            2"
+      "getting-started     getting-started/r            1"
+      "getting-started-cli getting-started/cli          2"
       "r-init              r-package/init               1"
       "r-add               r-package/add                2"
       "r-status            r-package/status             3"

@@ -28,11 +28,13 @@
 <body{% block body_attr %}{% endblock %}>
     <nav class="site-nav">
       <div class="nav-inner">
-        <a class="nav-logo" href="{{ get_url(path='/') }}">
-          <img class="logo-light" src="{{ get_url(path='images/a2ai-logo-color.png') }}" alt="A2-AI" width="1237" height="394">
-          <img class="logo-dark" src="{{ get_url(path='images/a2ai-logo-black.png') }}" alt="A2-AI" width="1241" height="382">
-          <span class="nav-wordmark">dvs</span>
-        </a>
+        <div class="nav-brand">
+          <a class="nav-logo" href="https://a2-ai.com" rel="noopener" aria-label="A2-AI">
+            <img class="logo-light" src="{{ get_url(path='images/a2ai-logo-color.png') }}" alt="A2-AI" width="1237" height="394">
+            <img class="logo-dark" src="{{ get_url(path='images/a2ai-logo-black.png') }}" alt="A2-AI" width="1241" height="382">
+          </a>
+          <a class="nav-wordmark" href="{{ get_url(path='/') }}">dvs</a>
+        </div>
         <button class="nav-toggle" aria-label="Toggle navigation" onclick="this.classList.toggle('open')">
           <span></span><span></span><span></span>
         </button>

@@ -32,8 +32,8 @@ The CLI and the R package expose the same four verbs: `init`, `add`, `status`,
 saved as a CSV) through the full loop: initialize a repository, add the file,
 check status, delete it, then get it back.
 
-- [CLI walkthrough](@/getting-started/cli.md): the workflow from the terminal.
-- [R walkthrough](@/getting-started/r.md): the same workflow with `library(dvs)`.
+- [R walkthrough](@/getting-started/r.md): the workflow with `library(dvs)`.
+- [CLI walkthrough](@/getting-started/cli.md): the same workflow from the terminal.
 
 Once the basics are clear, the [R Package](@/r-package/_index.md) and
 [CLI](@/cli/_index.md) sections document every function and command, the

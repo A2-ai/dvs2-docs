@@ -161,10 +161,15 @@ pre.giallo { color-scheme: light !important; }
   min-height: $nav-height;
 }
 
-.nav-logo {
+.nav-brand {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
   white-space: nowrap;
   img { height: 26px; width: auto; display: block; }
   .logo-dark { display: none; }
@@ -182,7 +187,7 @@ pre.giallo { color-scheme: light !important; }
   color: var(--primary);
   letter-spacing: -0.02em;
 }
-.nav-logo:hover .nav-wordmark { color: var(--accent); }
+.nav-wordmark:hover { color: var(--accent); }
 
 .nav-links {
   display: flex;
