@@ -15,7 +15,7 @@ section_order = ["Description", "Details"]
 include_pagefind = true
 
 [home]
-hero = { tagline = "Version large or sensitive files alongside Git — content-addressed storage with blake3, tracked in Git-friendly .dvs files.", actions = [
+hero = { tagline = "Version large or sensitive files under Git without tracking the file content directly.", actions = [
   { text = "Get Started", link = "./articles/readme/", icon = "right-arrow", variant = "primary" },
   { text = "View on GitHub", link = "https://github.com/A2-ai/dvs2", icon = "external", variant = "minimal" },
 ] }
