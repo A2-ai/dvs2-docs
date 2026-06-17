@@ -24,7 +24,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Zola
         run: |
@@ -40,11 +40,22 @@ jobs:
       - name: Build site
         run: just site-build
 
+      # Rustdoc for the dvs library, deps included ("complete picture"). The
+      # dvs2 source is not vendored here, so clone it fresh and document it.
+      # Pin the ref to a release tag to freeze the docs to a version.
+      # cargo/rustup are preinstalled on ubuntu-latest.
+      - name: Build rustdoc (dvs + dependencies)
+        run: |
+          git clone --depth 1 https://github.com/A2-ai/dvs2 dvs2-src
+          cargo doc -p dvs --manifest-path dvs2-src/Cargo.toml
+          mkdir -p site/public/rustdoc
+          cp -r dvs2-src/target/doc/. site/public/rustdoc/
+
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site/public
 
@@ -57,4 +68,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

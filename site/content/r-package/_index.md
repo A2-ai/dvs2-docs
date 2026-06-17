@@ -27,8 +27,17 @@ One page per function, covering every parameter.
 - [dvs_status()](@/r-package/status.md): report the sync status of tracked files.
 - [dvs_get()](@/r-package/get.md): restore files from storage.
 
-The R-only [helpers](@/helpers/_index.md) (threads, logging, byte sizes) have
-their own section.
+## Helpers
+
+R-only utilities that sit outside the four-verb workflow. They configure the
+dvs core process-wide (threads, logging) or format its output. The CLI exposes
+the same controls through flags and environment variables.
+
+- [set_dvs_threads()](@/helpers/threads.md): set the process-wide thread pool size.
+- [set_dvs_log_level()](@/helpers/log-level.md): route core log output to the R console.
+- [dvs_version()](@/helpers/version.md): report the core crate version.
+- [format_byte_size()](@/helpers/format-bytes.md): human-readable byte sizes.
+- [new_dvs_bytes()](@/helpers/bytes.md): the `dvs_bytes` vector type and pillar printing.
 
 ## How the R surface differs from the CLI
 
