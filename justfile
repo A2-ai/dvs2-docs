@@ -179,33 +179,35 @@ preview NAME:
 open:
     open vignette/intro.html vignette/intro-r.html vignette/intro-cli.html vignette/collab.html
 
-# Publish all rendered vignettes to alx.dev.a2-ai.cloud (dvs2-demo project)
+# Publish all rendered vignettes to alx.dev.a2-ai.cloud (dvs2-demo project).
+# Titles carry a 0-padded reading-order prefix so alx sorts them; a shared
+# number marks a fork (equivalent alternatives: R or CLI, take your pick).
 publish:
-    alx publish vignette/intro.html                -S vignette/intro.qmd                                   -I vignette/intro.html.md                -t intro                --overwrite --skip-warnings --no-prompt
-    alx publish vignette/intro-r.html              -S vignette/intro-r.qmd         -S R/mkdatasetfiles.R   -I vignette/intro-r.html.md              -t intro-r              --overwrite --skip-warnings --no-prompt
-    alx publish vignette/intro-cli.html            -S vignette/intro-cli.qmd       -S R/mkdatasetfiles.R   -I vignette/intro-cli.html.md            -t intro-cli            --overwrite --skip-warnings --no-prompt
-    alx publish vignette/collab.html               -S vignette/collab.qmd          -S R/mkdatasetfiles.R   -I vignette/collab.html.md               -t collab               --overwrite --skip-warnings --no-prompt
-    alx publish vignette/getting-started.html      -S vignette/getting-started.qmd                         -I vignette/getting-started.html.md      -t getting-started      --overwrite --skip-warnings --no-prompt
-    alx publish vignette/getting-started-cli.html  -S vignette/getting-started-cli.qmd                     -I vignette/getting-started-cli.html.md  -t getting-started-cli  --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-init.html               -S vignette/r-init.qmd                                  -I vignette/r-init.html.md               -t r-init               --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-add.html                -S vignette/r-add.qmd                                   -I vignette/r-add.html.md                -t r-add                --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-status.html             -S vignette/r-status.qmd                                -I vignette/r-status.html.md             -t r-status             --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-get.html                -S vignette/r-get.qmd                                   -I vignette/r-get.html.md                -t r-get                --overwrite --skip-warnings --no-prompt
-    alx publish vignette/cli-init.html             -S vignette/cli-init.qmd                                -I vignette/cli-init.html.md             -t cli-init             --overwrite --skip-warnings --no-prompt
-    alx publish vignette/cli-add.html              -S vignette/cli-add.qmd                                 -I vignette/cli-add.html.md              -t cli-add              --overwrite --skip-warnings --no-prompt
-    alx publish vignette/cli-status.html           -S vignette/cli-status.qmd                              -I vignette/cli-status.html.md           -t cli-status           --overwrite --skip-warnings --no-prompt
-    alx publish vignette/cli-get.html              -S vignette/cli-get.qmd                                 -I vignette/cli-get.html.md              -t cli-get              --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-threads.html            -S vignette/r-threads.qmd                               -I vignette/r-threads.html.md            -t r-threads            --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-loglevel.html           -S vignette/r-loglevel.qmd                              -I vignette/r-loglevel.html.md           -t r-loglevel           --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-version.html            -S vignette/r-version.qmd                               -I vignette/r-version.html.md            -t r-version            --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-format-bytes.html       -S vignette/r-format-bytes.qmd                          -I vignette/r-format-bytes.html.md       -t r-format-bytes       --overwrite --skip-warnings --no-prompt
-    alx publish vignette/r-bytes.html              -S vignette/r-bytes.qmd                                 -I vignette/r-bytes.html.md              -t r-bytes              --overwrite --skip-warnings --no-prompt
-    alx publish vignette/intro-internals.html      -S vignette/intro-internals.qmd -S R/mkdatasetfiles.R   -I vignette/intro-internals.html.md      -t intro-internals      --overwrite --skip-warnings --no-prompt
-    alx publish vignette/config.html               -S vignette/config.qmd                                  -I vignette/config.html.md               -t config               --overwrite --skip-warnings --no-prompt
-    alx publish vignette/audit.html                -S vignette/audit.qmd           -S R/mkdatasetfiles.R   -I vignette/audit.html.md                -t audit                --overwrite --skip-warnings --no-prompt
-    alx publish vignette/error.html                -S vignette/error.qmd                                   -I vignette/error.html.md                -t error                --overwrite --skip-warnings --no-prompt
-    alx publish vignette/splash.html               -S vignette/splash.qmd          -S vignette/splash.scss                                          -t splash               --overwrite --skip-warnings --no-prompt
-    alx publish showcase/dvs-showcase.html         -S showcase/build.py                                                                             -t showcase             --overwrite --skip-warnings --no-prompt
+    alx publish vignette/splash.html               -S vignette/splash.qmd          -S vignette/splash.scss                                          -t 00-splash               --overwrite --skip-warnings --no-prompt
+    alx publish showcase/dvs-showcase.html         -S showcase/build.py                                                                             -t 01-showcase             --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro.html                -S vignette/intro.qmd                                   -I vignette/intro.html.md                -t 02-intro                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro-r.html              -S vignette/intro-r.qmd         -S R/mkdatasetfiles.R   -I vignette/intro-r.html.md              -t 03-intro-r              --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro-cli.html            -S vignette/intro-cli.qmd       -S R/mkdatasetfiles.R   -I vignette/intro-cli.html.md            -t 03-intro-cli            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/collab.html               -S vignette/collab.qmd          -S R/mkdatasetfiles.R   -I vignette/collab.html.md               -t 04-collab               --overwrite --skip-warnings --no-prompt
+    alx publish vignette/getting-started.html      -S vignette/getting-started.qmd                         -I vignette/getting-started.html.md      -t 05-getting-started      --overwrite --skip-warnings --no-prompt
+    alx publish vignette/getting-started-cli.html  -S vignette/getting-started-cli.qmd                     -I vignette/getting-started-cli.html.md  -t 05-getting-started-cli  --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-init.html               -S vignette/r-init.qmd                                  -I vignette/r-init.html.md               -t 06-r-init               --overwrite --skip-warnings --no-prompt
+    alx publish vignette/cli-init.html             -S vignette/cli-init.qmd                                -I vignette/cli-init.html.md             -t 06-cli-init             --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-add.html                -S vignette/r-add.qmd                                   -I vignette/r-add.html.md                -t 07-r-add                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/cli-add.html              -S vignette/cli-add.qmd                                 -I vignette/cli-add.html.md              -t 07-cli-add              --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-status.html             -S vignette/r-status.qmd                                -I vignette/r-status.html.md             -t 08-r-status             --overwrite --skip-warnings --no-prompt
+    alx publish vignette/cli-status.html           -S vignette/cli-status.qmd                              -I vignette/cli-status.html.md           -t 08-cli-status           --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-get.html                -S vignette/r-get.qmd                                   -I vignette/r-get.html.md                -t 09-r-get                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/cli-get.html              -S vignette/cli-get.qmd                                 -I vignette/cli-get.html.md              -t 09-cli-get              --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-threads.html            -S vignette/r-threads.qmd                               -I vignette/r-threads.html.md            -t 10-r-threads            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-loglevel.html           -S vignette/r-loglevel.qmd                              -I vignette/r-loglevel.html.md           -t 11-r-loglevel           --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-format-bytes.html       -S vignette/r-format-bytes.qmd                          -I vignette/r-format-bytes.html.md       -t 12-r-format-bytes       --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-bytes.html              -S vignette/r-bytes.qmd                                 -I vignette/r-bytes.html.md              -t 13-r-bytes              --overwrite --skip-warnings --no-prompt
+    alx publish vignette/r-version.html            -S vignette/r-version.qmd                               -I vignette/r-version.html.md            -t 14-r-version            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro-internals.html      -S vignette/intro-internals.qmd -S R/mkdatasetfiles.R   -I vignette/intro-internals.html.md      -t 15-intro-internals      --overwrite --skip-warnings --no-prompt
+    alx publish vignette/config.html               -S vignette/config.qmd                                  -I vignette/config.html.md               -t 16-config               --overwrite --skip-warnings --no-prompt
+    alx publish vignette/audit.html                -S vignette/audit.qmd           -S R/mkdatasetfiles.R   -I vignette/audit.html.md                -t 17-audit                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/error.html                -S vignette/error.qmd                                   -I vignette/error.html.md                -t 18-error                --overwrite --skip-warnings --no-prompt
 
 # Rebuild the showcase page from the committed captures + screenshots
 showcase:
