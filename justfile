@@ -205,6 +205,11 @@ publish:
     alx publish vignette/audit.html                -S vignette/audit.qmd           -S R/mkdatasetfiles.R   -I vignette/audit.html.md                -t audit                --overwrite --skip-warnings --no-prompt
     alx publish vignette/error.html                -S vignette/error.qmd                                   -I vignette/error.html.md                -t error                --overwrite --skip-warnings --no-prompt
     alx publish vignette/splash.html               -S vignette/splash.qmd          -S vignette/splash.scss                                          -t splash               --overwrite --skip-warnings --no-prompt
+    alx publish showcase/dvs-showcase.html         -S showcase/build.py                                                                             -t showcase             --overwrite --skip-warnings --no-prompt
+
+# Rebuild the showcase page from the committed captures + screenshots
+showcase:
+    python3 showcase/build.py
 
 # === rv / R package management ===
 

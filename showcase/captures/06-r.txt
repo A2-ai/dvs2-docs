@@ -1,0 +1,27 @@
+> options(width = 110)
+> library(dvs)
+> dvs_init("/tmp/nfs-share/dvs-storage-r")
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                         backend_group
+  <chr>       <lgl>                <chr>                                <chr>        
+1 zstd        NA                   /private/tmp/nfs-share/dvs-storage-r staff        
+> dvs_add(glob = "data/*.csv", message = "PK profiles and NCA summary, data cut 2026-06")
+# A tibble: 2 × 5
+  path                 outcome hash                                                           size stored_size
+  <chr>                <chr>   <chr>                                                        <byte>     <bytes>
+1 data/nca_summary.csv copied  e91c34f4f9f5e4c564ee69ec0782881a239446c90c82390161f453b3104…  180 B       126 B
+2 data/pk_profiles.csv copied  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd… 2.9 KB       842 B
+> file.remove("data/pk_profiles.csv")
+[1] TRUE
+> dvs_status()
+# A tibble: 2 × 8
+  path                 status  hash                    size created_by compression message add_time           
+  <chr>                <chr>   <chr>                 <byte> <chr>      <chr>       <chr>   <dttm>             
+1 data/nca_summary.csv current e91c34f4f9f5e4c564ee…  180 B elea       zstd        PK pro… 2026-08-10 15:35:21
+2 data/pk_profiles.csv absent  cdd978e51298006701f7… 2.9 KB elea       zstd        PK pro… 2026-08-10 15:35:21
+> dvs_get("data/pk_profiles.csv")
+# A tibble: 1 × 3
+  path                 outcome    size
+  <chr>                <chr>   <bytes>
+1 data/pk_profiles.csv copied   2.9 KB
+> 

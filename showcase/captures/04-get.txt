@@ -1,0 +1,17 @@
+$ dvs get data/pk_profiles.csv
+data/pk_profiles.csv [2.9 KB]
+Total: 1 files, 2.9 KB
+
+$ dvs add data/covariates.csv -m "add subject 13"
+Added: data/covariates.csv [148 B] --> saved [107 B] as 56f3f7732737c53ebbab2a2b10f5e49d1f7440d7d0a979f17ac1c92a7a55565a
+
+$ dvs status
++------------------------------+---------+--------+
+| path                         | status  | size   |
++------------------------------+---------+--------+
+| data/covariates.csv          | current |  148 B |
++------------------------------+---------+--------+
+| data/derived/nca_summary.csv | current |  180 B |
++------------------------------+---------+--------+
+| data/pk_profiles.csv         | current | 2.9 KB |
++------------------------------+---------+--------+

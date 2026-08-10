@@ -1,0 +1,22 @@
+$ cat .dvs/data/pk_profiles.csv.dvs
+{
+  "hashes": {
+    "blake3": "cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06"
+  },
+  "size": 2992,
+  "created_by": "elea",
+  "add_time": "2026-08-10T15:34:08.709881Z",
+  "compression": "zstd",
+  "message": "PK profiles, NCA summary, covariates (data cut 2026-06)"
+}
+$ git status --short
+A  .dvs/.gitignore
+A  .dvs/data/covariates.csv.dvs
+A  .dvs/data/derived/nca_summary.csv.dvs
+A  .dvs/data/pk_profiles.csv.dvs
+A  data/.gitignore
+A  data/derived/.gitignore
+A  dvs.toml
+
+$ ls -lh /tmp/nfs-share/dvs-storage/cd/
+-r--r-----@ 1 elea  staff   842B Aug 10 17:34 d978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06

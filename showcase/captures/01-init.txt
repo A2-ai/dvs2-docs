@@ -1,0 +1,9 @@
+$ dvs init /tmp/nfs-share/dvs-storage
+DVS Initialized at "/private/tmp/projects/pkpd-study"
+
+$ cat dvs.toml
+compression = "zstd"
+
+[backend]
+path = "/private/tmp/nfs-share/dvs-storage"
+group = "staff"
