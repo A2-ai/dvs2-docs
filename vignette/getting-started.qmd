@@ -16,6 +16,7 @@ covers the same steps from the terminal.
 ## Setup
 
 ```{r}
+#| message: false
 options(width = 1000)
 library(dvs)
 library(here)

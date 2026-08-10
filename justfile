@@ -9,13 +9,13 @@ default:
 # === Website (zola) ===
 # A dedicated static site built from the rendered vignettes, separate from the
 # alx publish. Content is generated from vignette/*.html.md by
-# tools/build-site.sh; theming lives in site/ (lifted from miniextendr/site).
+# tools/htmlmd_to_zola.py; theming lives in site/ (lifted from miniextendr/site).
 
 # Regenerate site/content from the rendered vignettes and build to site/public.
 # Content comes from the committed vignette/<name>.html.md (Quarto keep-md, i.e.
 # the executed markdown); tools/htmlmd_to_zola.py converts each to a Zola page.
 # The vignettes are grouped into sections (Getting Started, R Package, CLI,
-# Reference) via the name->"section/file" map below. Section landing pages
+# Internals) via the name->"section/file" map below. Section landing pages
 # (_index.md) and about.md are authored and committed, never generated here.
 # `splash` is a reveal.js deck and is intentionally excluded.
 site-build:

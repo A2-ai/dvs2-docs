@@ -41,6 +41,7 @@ Options:
 ## Setup
 
 ```{r}
+#| message: false
 options(width = 1000)
 library(here)
 proj    <- here::here(basename(tempfile(fileext = "_project")))
@@ -141,20 +142,27 @@ printf "e,f\n5,6\n" > data/as_json.csv
 dvs add data/as_json.csv --json
 ```
 
-## Partial failure
+## Invalid paths refuse the batch
 
-If any path fails, `add` reports the error per file and exits with code 1.
+Input paths are validated before anything is written. If a path cannot be
+resolved to a file to add, because it is missing, is a directory passed without
+a glob, or lands outside the project root, the whole batch is refused: nothing
+is added, and `add` exits 1.
 
 ```{bash}
 cd "$DVS_PROJECT"
 dvs add data/missing.csv; echo "exit code: $?"
 ```
 
+A failure in the copy phase of an already valid batch behaves differently.
+Files that can be copied are still added, the failing ones are reported per
+file, and `add` exits 1 all the same.
+
 ## Differences from R
 
 The R function is [dvs_add()](r-add.html). It returns a data frame rather than
-printed lines, has no `--threads` or `--json`, and exposes the progress bar as
-an internal `progress_callback` handle rather than always printing one.
+printed lines, has no `--threads` or `--json`, and shows a progress bar only in
+interactive sessions, rather than always printing one.
 
 ## See also
 

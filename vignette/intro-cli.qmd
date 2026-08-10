@@ -160,14 +160,15 @@ dvs add data/large/large_1.csv -m "append row 99"
 ### Directory scoping and --recursive
 
 `get` and `status` accept directory paths, which cover their direct children
-only. `-r/--recursive` walks the whole subtree. With no paths at all, `get`
-scopes to the current directory, so at the project root `dvs get -r` means
-"restore everything":
+only. `-r/--recursive` walks the whole subtree, and it is mutually exclusive
+with `--glob`. `get` always needs at least one path or a glob, so "restore
+everything" from the project root is `dvs get . -r` (or, equivalently,
+`dvs get --glob '**/*'`):
 
 ```{bash}
 cd "$DVS_PROJECT"
 rm -r data
-dvs get -r | tail -3
+dvs get . -r | tail -3
 dvs status --absent
 ```
 

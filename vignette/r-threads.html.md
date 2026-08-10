@@ -86,9 +86,11 @@ NULL
 
 ## Differences from the CLI
 
-The CLI sets threads per call with `--threads <N>`, or process-wide with the
-`DVS_NUM_THREADS` environment variable. The R setting is process-wide only; see
-the `--threads` flag on any [CLI command](cli-init.html).
+The CLI sets threads per call with `--threads <N>`; the R setting is
+process-wide. Threads set directly on either surface win. The
+`DVS_NUM_THREADS` environment variable applies only when neither the CLI flag
+nor `set_dvs_threads()` has set a count. See the `--threads` flag on any
+[CLI command](cli-init.html).
 
 ## See also
 

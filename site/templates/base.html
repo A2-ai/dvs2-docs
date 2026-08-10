@@ -90,7 +90,7 @@
         </div>
         <div class="footer-bottom">
           <p>&copy; {{ now() | date(format="%Y") }} A2-AI. All rights reserved.</p>
-          <p>dvs &middot; data version control by <a href="https://a2-ai.com" rel="noopener">A2-AI</a>.</p>
+          <p>dvs &middot; data versioning system by <a href="https://a2-ai.com" rel="noopener">A2-AI</a>.</p>
         </div>
       </div>
     </footer>
@@ -102,7 +102,7 @@
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
       }
-      window.MINIEXTENDR_SEARCH_INDEX_URL = "{{ get_url(path='search_index.en.json') }}";
+      window.DVS_SEARCH_INDEX_URL = "{{ get_url(path='search_index.en.json') }}";
     </script>
     <script src="{{ get_url(path='elasticlunr.min.js') }}"></script>
     <script src="{{ get_url(path='js/search.js') }}"></script>

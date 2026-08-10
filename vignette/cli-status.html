@@ -2307,6 +2307,7 @@ Arguments:
 Options:
       --json               Output results as JSON
   -r, --recursive          Recurse into subdirectories of given directories
+  -g, --glob &lt;GLOB&gt;        Select files by glob pattern
       --current            Include current files
       --absent             Include absent files
       --unsynced           Include unsynced files
@@ -2344,36 +2345,42 @@ Options:
 <td>Include files in subdirectories of given directories.</td>
 </tr>
 <tr class="odd">
+<td><code>-g</code>, <code>--glob</code></td>
+<td>pattern</td>
+<td>none</td>
+<td>Library-expanded glob, literal path separator (use <code>**</code> to recurse).</td>
+</tr>
+<tr class="even">
 <td><code>--current</code></td>
 <td>flag</td>
 <td>off</td>
 <td>Include <code>current</code> files.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>--absent</code></td>
 <td>flag</td>
 <td>off</td>
 <td>Include <code>absent</code> files.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>--unsynced</code></td>
 <td>flag</td>
 <td>off</td>
 <td>Include <code>unsynced</code> files.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>--with-metadata</code></td>
 <td>flag</td>
 <td>off</td>
 <td>Add hash, created_by, add_time, compression, message columns.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>--threads</code></td>
 <td>integer</td>
 <td><code>0</code> (auto)</td>
 <td>Thread pool size for this command.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>--json</code></td>
 <td>flag</td>
 <td>off</td>
@@ -2388,34 +2395,31 @@ Options:
 <p>Add three files, then delete one and edit another so all three states appear.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width =</span> <span class="dv">1000</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>proj    <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>)))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>storage <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>)))</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(proj)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(storage)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">file.path</span>(proj, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;sub&quot;</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(mtcars[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, ],   <span class="fu">file.path</span>(proj, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;f1.csv&quot;</span>))</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(mtcars[<span class="dv">9</span><span class="sc">:</span><span class="dv">16</span>, ],  <span class="fu">file.path</span>(proj, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;f2.csv&quot;</span>))</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(iris[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, ],    <span class="fu">file.path</span>(proj, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;sub&quot;</span>, <span class="st">&quot;f3.csv&quot;</span>), <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">DVS_PROJECT =</span> proj, <span class="at">DVS_STORAGE =</span> storage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>proj    <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>)))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>storage <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>)))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(proj)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(storage)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">file.path</span>(proj, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;sub&quot;</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(mtcars[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, ],   <span class="fu">file.path</span>(proj, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;f1.csv&quot;</span>))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(mtcars[<span class="dv">9</span><span class="sc">:</span><span class="dv">16</span>, ],  <span class="fu">file.path</span>(proj, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;f2.csv&quot;</span>))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(iris[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, ],    <span class="fu">file.path</span>(proj, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;sub&quot;</span>, <span class="st">&quot;f3.csv&quot;</span>), <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">DVS_PROJECT =</span> proj, <span class="at">DVS_STORAGE =</span> storage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span> <span class="op">&gt;</span>/dev/null</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/f1.csv data/f2.csv data/sub/f3.csv <span class="op">&gt;</span>/dev/null</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/f2.csv                      <span class="co"># -&gt; absent</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;extra,row&quot;</span> <span class="op">&gt;&gt;</span> data/f1.csv     <span class="co"># -&gt; unsynced</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span> <span class="op">&gt;</span>/dev/null</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/f1.csv data/f2.csv data/sub/f3.csv <span class="op">&gt;</span>/dev/null</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/f2.csv                      <span class="co"># -&gt; absent</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;extra,row&quot;</span> <span class="op">&gt;&gt;</span> data/f1.csv     <span class="co"># -&gt; unsynced</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="all-files" class="level2">
 <h2 class="anchored" data-anchor-id="all-files">All files</h2>
 <p>With no arguments and no filters, every tracked file is reported.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-----------------+----------+-------+
 | path            | status   | size  |
@@ -2433,8 +2437,8 @@ Options:
 <h2 class="anchored" data-anchor-id="paths">Paths</h2>
 <p>Scope the report to specific files or directories.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status data/sub/f3.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status data/sub/f3.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-----------------+---------+-------+
 | path            | status  | size  |
@@ -2448,8 +2452,8 @@ Options:
 <h2 class="anchored" data-anchor-id="r---recursive"><code>-r</code>, <code>--recursive</code></h2>
 <p>Without <code>-r</code>, a directory argument reports only files directly in it. With <code>-r</code>, files in subdirectories are included too.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-------------+----------+-------+
 | path        | status   | size  |
@@ -2461,8 +2465,8 @@ Options:
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status data <span class="at">-r</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status data <span class="at">-r</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-----------------+----------+-------+
 | path            | status   | size  |
@@ -2475,6 +2479,24 @@ Options:
 +-----------------+----------+-------+</code></pre>
 </div>
 </div>
+</section>
+<section id="g---glob" class="level2">
+<h2 class="anchored" data-anchor-id="g---glob"><code>-g</code>, <code>--glob</code></h2>
+<p>Report the files matching a library-expanded glob. The path separator is literal, so <code>data/*.csv</code> stops at <code>data/</code>; use <code>**</code> to cross directory boundaries.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">-g</span> <span class="st">&quot;data/*.csv&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>+-------------+----------+-------+
+| path        | status   | size  |
++-------------+----------+-------+
+| data/f1.csv | unsynced | 488 B |
++-------------+----------+-------+
+| data/f2.csv | absent   | 500 B |
++-------------+----------+-------+</code></pre>
+</div>
+</div>
+<p><code>--recursive</code> and <code>--glob</code> are mutually exclusive; passing both is a usage error.</p>
 </section>
 <section id="status-filters" class="level2">
 <h2 class="anchored" data-anchor-id="status-filters">Status filters</h2>
@@ -2537,11 +2559,11 @@ Options:
 <pre><code>+-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
 | path            | status   | size  | hash                                                             | created_by | add_time                    | compression | message |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/f1.csv     | unsynced | 488 B | 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 | elea       | 2026-08-10T15:22:38.358648Z | zstd        |         |
+| data/f1.csv     | unsynced | 488 B | 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 | elea       | 2026-08-10T19:43:44.058688Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/f2.csv     | absent   | 500 B | c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 | elea       | 2026-08-10T15:22:38.3586Z   | zstd        |         |
+| data/f2.csv     | absent   | 500 B | c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 | elea       | 2026-08-10T19:43:44.058651Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/sub/f3.csv | current  | 312 B | 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce | elea       | 2026-08-10T15:22:38.358562Z | zstd        |         |
+| data/sub/f3.csv | current  | 312 B | 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce | elea       | 2026-08-10T19:43:44.058727Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+</code></pre>
 </div>
 </div>
@@ -2572,7 +2594,7 @@ Options:
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--json</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[{&quot;path&quot;:&quot;data/f1.csv&quot;,&quot;status&quot;:&quot;unsynced&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;},&quot;size&quot;:488,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T15:22:38.358648Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}},{&quot;path&quot;:&quot;data/f2.csv&quot;,&quot;status&quot;:&quot;absent&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871&quot;},&quot;size&quot;:500,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T15:22:38.3586Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}},{&quot;path&quot;:&quot;data/sub/f3.csv&quot;,&quot;status&quot;:&quot;current&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce&quot;},&quot;size&quot;:312,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T15:22:38.358562Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}}]</code></pre>
+<pre><code>[{&quot;path&quot;:&quot;data/f1.csv&quot;,&quot;status&quot;:&quot;unsynced&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;},&quot;size&quot;:488,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T19:43:44.058688Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}},{&quot;path&quot;:&quot;data/f2.csv&quot;,&quot;status&quot;:&quot;absent&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871&quot;},&quot;size&quot;:500,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T19:43:44.058651Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}},{&quot;path&quot;:&quot;data/sub/f3.csv&quot;,&quot;status&quot;:&quot;current&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce&quot;},&quot;size&quot;:312,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T19:43:44.058727Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}}]</code></pre>
 </div>
 </div>
 </section>

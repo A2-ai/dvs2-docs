@@ -25,9 +25,8 @@ dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
 | `glob` | character(1) | `NULL` | Library-expanded glob. Uses a literal path separator (use `**` to recurse). |
 | `dry_run` | logical(1) | `NULL` (treated as `FALSE`) | Report what would be added; write nothing. |
 
-A progress bar is shown automatically while files are processed (the wrapper
-creates an internal `progress_callback` handle); it is not a parameter. No bar
-is shown for a dry run.
+In interactive sessions a progress bar is shown while files are processed. It is
+not a parameter, and no bar appears in scripts, rendered documents, or dry runs.
 
 ## Setup
 
@@ -41,6 +40,7 @@ dir.create(store)
 dir.create(file.path(proj, "data", "sub"), recursive = TRUE)
 write.csv(mtcars[1:8, ],  file.path(proj, "data", "f1.csv"))
 write.csv(mtcars[9:16, ], file.path(proj, "data", "f2.csv"))
+write.csv(mtcars[3:10, ], file.path(proj, "data", "f3.csv"))
 write.csv(iris[1:10, ],   file.path(proj, "data", "g1.csv"), row.names = FALSE)
 write.csv(iris[11:20, ],  file.path(proj, "data", "g2.csv"), row.names = FALSE)
 write.csv(iris[21:30, ],  file.path(proj, "data", "sub", "g3.csv"), row.names = FALSE)
@@ -58,11 +58,11 @@ setwd(proj)
 dvs_add("data/f1.csv")
 ```
 
-Add several files in one call:
+`paths` is a character vector, so several files go in one call:
 
 ```{r}
 setwd(proj)
-dvs_add(c("data/f2.csv"))
+dvs_add(c("data/f2.csv", "data/f3.csv"))
 ```
 
 ## `message`

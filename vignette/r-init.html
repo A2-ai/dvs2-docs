@@ -2380,7 +2380,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                          backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                 &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/basic-store staff        </code></pre>
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpERAu23/dvs_init_726310197a76/basic-store staff        </code></pre>
 </div>
 </div>
 <p><code>dvs.toml</code> is written in <code>root_dir</code> and records the storage path:</p>
@@ -2390,7 +2390,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code>compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/basic-store&quot;
+path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpERAu23/dvs_init_726310197a76/basic-store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2405,8 +2405,10 @@ group = &quot;staff&quot;</code></pre>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(store)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(store, <span class="at">root_dir =</span> proj, <span class="at">group =</span> <span class="st">&quot;rstudio&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>status</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="st">&quot;initialized&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A tibble: 1 × 4</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  compression metadata_folder_name backend_path                                        backend_group</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="sc">&lt;</span>chr<span class="sc">&gt;</span>       <span class="er">&lt;</span>lgl<span class="sc">&gt;</span>                <span class="er">&lt;</span>chr<span class="sc">&gt;</span>                                               <span class="er">&lt;</span>chr<span class="sc">&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> zstd        <span class="cn">NA</span>                   <span class="sc">/</span>tmp<span class="sc">/</span>Rtmp0oQgN3<span class="sc">/</span>dvs_init_d13e1444c8b2<span class="sc">/</span>grouped<span class="sc">-</span>store rstudio</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The chosen group is written to <code>dvs.toml</code> under <code>[backend]</code>.</p>
 </section>
 <section id="metadata_folder_name" class="level2">
@@ -2422,7 +2424,7 @@ group = &quot;staff&quot;</code></pre>
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                         backend_group
   &lt;chr&gt;       &lt;chr&gt;                &lt;chr&gt;                                                                                                &lt;chr&gt;        
-1 zstd        .meta                /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/meta-store staff        </code></pre>
+1 zstd        .meta                /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpERAu23/dvs_init_726310197a76/meta-store staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(proj, <span class="at">all.files =</span> <span class="cn">TRUE</span>, <span class="at">no.. =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2476,7 +2478,7 @@ Note
 </section>
 <section id="return-value" class="level2">
 <h2 class="anchored" data-anchor-id="return-value">Return value</h2>
-<p><code>dvs_init()</code> returns a one-row tibble describing the resulting configuration: the compression mode, the metadata folder name (<code>NA</code> when the default <code>.dvs</code> is used), and the backend path and group. It is still called primarily for its side effect of creating the project.</p>
+<p><code>dvs_init()</code> returns a one-row tibble describing the resulting configuration: the compression mode, the metadata folder name (<code>NA</code> when the default <code>.dvs</code> is used), and the backend path and group. The call’s purpose is the side effect of creating the project; the return value describes what was written.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>proj  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(base, <span class="st">&quot;ret&quot;</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>store <span class="ot">&lt;-</span> <span class="fu">file.path</span>(base, <span class="st">&quot;ret-store&quot;</span>)</span>
@@ -2488,7 +2490,7 @@ Note
 <pre><code>tibble [1 × 4] (S3: tbl_df/tbl/data.frame)
  $ compression         : chr &quot;zstd&quot;
  $ metadata_folder_name: logi NA
- $ backend_path        : chr &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/ret-store&quot;
+ $ backend_path        : chr &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpERAu23/dvs_init_726310197a76/ret-store&quot;
  $ backend_group       : chr &quot;staff&quot;</code></pre>
 </div>
 </div>

@@ -21,6 +21,7 @@ Arguments:
 
 Options:
   -g, --glob <GLOB>        Select files by glob pattern
+  -r, --recursive          Recurse into subdirectories of directory inputs
       --json               Output results as JSON
       --dry-run            Show what would be retrieved without writing files
       --threads <THREADS>  Threads (0 = auto-detect)
@@ -33,9 +34,13 @@ Options:
 |---|---|---|---|
 | `[PATHS]...` | paths | none | Files to retrieve. |
 | `-g`, `--glob` | pattern | none | Library-expanded glob, literal path separator (use `**` to recurse). |
+| `-r`, `--recursive` | flag | off | Walk subdirectories of directory inputs. Without it, a directory retrieves only its direct children. |
 | `--dry-run` | flag | off | Report what would be retrieved; write nothing. |
 | `--threads` | integer | `0` (auto) | Thread pool size for this command. |
 | `--json` | flag | off | Emit results as JSON. |
+
+`--recursive` and `--glob` are mutually exclusive. At least one path or
+`--glob` is required; `dvs get` with neither is a usage error.
 
 ::: {.callout-note}
 `get` exposes a short `-g` for `--glob`; `add` only has the long `--glob`.
@@ -51,18 +56,6 @@ Add three files, then delete them so `get` has something to restore.
 ```{.r .cell-code}
 options(width = 1000)
 library(here)
-```
-
-::: {.cell-output .cell-output-stderr}
-
-```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
-```
-
-
-:::
-
-```{.r .cell-code}
 proj    <- here::here(basename(tempfile(fileext = "_project")))
 storage <- here::here(basename(tempfile(fileext = "_storage")))
 dir.create(proj)
@@ -184,6 +177,98 @@ Total: 2 files, 812 B
 :::
 
 
+## `-r`, `--recursive`
+
+A directory argument retrieves only the files directly in it. Here the nested
+`data/sub/f3.csv` is left alone.
+
+
+::: {.cell}
+
+```{.bash .cell-code}
+cd "$DVS_PROJECT"
+rm data/f1.csv data/f2.csv data/sub/f3.csv
+dvs get data
+dvs status --absent
+```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+data/f1.csv [488 B]
+data/f2.csv [500 B]
+Total: 2 files, 988 B
++-----------------+--------+-------+
+| path            | status | size  |
++-----------------+--------+-------+
+| data/sub/f3.csv | absent | 312 B |
++-----------------+--------+-------+
+```
+
+
+:::
+:::
+
+
+With `-r` the rest of the subtree is retrieved.
+
+
+::: {.cell}
+
+```{.bash .cell-code}
+cd "$DVS_PROJECT"
+dvs get data -r
+```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+data/sub/f3.csv [312 B]
+Total: 1 files, 312 B
+```
+
+
+:::
+:::
+
+
+## Restore the whole project
+
+`get` needs at least one path or a `--glob`, so there is no bare `dvs get` that
+means "everything". Pass the project root as a recursive directory instead: from
+the root, `dvs get . -r` restores every tracked file. A directory argument is
+resolved from where you run it, so the same command in a subdirectory restores
+only that subtree.
+
+
+::: {.cell}
+
+```{.bash .cell-code}
+cd "$DVS_PROJECT"
+rm data/f1.csv data/f2.csv data/sub/f3.csv
+dvs get . -r
+```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+data/f1.csv [488 B]
+data/f2.csv [500 B]
+data/sub/f3.csv [312 B]
+Total: 3 files, 1.3 KB
+```
+
+
+:::
+:::
+
+
+`dvs get -g '**/*'` does the same thing through the glob surface. Quote the
+pattern so the shell does not expand it first.
+
 ## `--dry-run`
 
 Report what would be retrieved without writing files.
@@ -288,8 +373,8 @@ dvs get data/f1.csv --json
 ## Differences from R
 
 The R function is [dvs_get()](r-get.html). It returns a data frame rather than
-printed lines, has no `--threads` or `--json`, and exposes the progress bar as
-an internal `progress_callback` handle.
+printed lines, has no `--threads` or `--json`, and shows a progress bar only in
+interactive sessions.
 
 ## See also
 

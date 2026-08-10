@@ -35,7 +35,7 @@ Sr. Scientific Software Engineer
 
 ## What is dvs?
 
-**dvs** is a data version control system for R projects.
+**dvs** is a data versioning system for R projects.
 
 It stores large data files in a content-addressed **storage directory** (separate from your git repo) and tracks them through small, text-based **meta files** that live alongside your code.
 

@@ -24,18 +24,6 @@ the `dvs` binary.
 ```{.r .cell-code}
 options(width = 1000)
 library(here)
-```
-
-::: {.cell-output .cell-output-stderr}
-
-```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
-```
-
-
-:::
-
-```{.r .cell-code}
 storage     <- basename(tempfile(fileext = "_storage"))
 new_project <- basename(tempfile(fileext = "_project"))
 dir.create(here::here(storage))
@@ -64,7 +52,7 @@ dvs init "$DVS_STORAGE"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filed0823b3bbe79_project"
+DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file7518680de0cd_project"
 ```
 
 

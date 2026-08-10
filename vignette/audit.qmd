@@ -12,12 +12,14 @@ execute:
 This page is implementation detail, beyond what normal use requires.
 :::
 
-Every add is appended to `audit.log.jsonl` in the storage directory. The log is
-append-only and newline-delimited JSON, with one operation per line.
+Every `init` and `add` is appended to `audit.log.jsonl` in the storage
+directory. The log is append-only and newline-delimited JSON, with one operation
+per line.
 
 # Setup
 
 ```{r}
+#| message: false
 options(width = 1000)
 library(dvs)
 library(fs)
@@ -52,8 +54,8 @@ invisible(dvs_add("data/file_2.csv", message = "initial add of file 2"))
 invisible(dvs_add("data/file_3.csv", message = "initial add of file 3"))
 ```
 
-Restore a file with `get`. Note that `get` does not append to the audit log;
-only `init` and `add` are recorded.
+Restore a file with `get`. `get` does not append to the audit log; only `init`
+and `add` are recorded.
 
 ```{r}
 #| warning: false
@@ -124,9 +126,10 @@ either `"init"` or `"add"` (`get` is not logged). Parse it with `purrr` and
 parse_entry <- function(line) {
   entry <- jsonlite::fromJSON(line)
   cmd   <- names(entry$action)[1]
+  # init records settings and project_path, not a file, so it has no path.
   path  <- switch(cmd,
     add  = entry$action$add$file$path,
-    get  = entry$action$get$file$path,
+    init = NA_character_,
     NA_character_
   )
   list(

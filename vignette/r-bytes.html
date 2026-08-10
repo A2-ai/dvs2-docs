@@ -2298,7 +2298,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
-<p><code>new_dvs_bytes()</code> constructs a <code>dvs_bytes</code> vector. The <code>size</code> and <code>stored_size</code> columns returned by <a href="r-add.html">dvs_add()</a>, <a href="r-status.html">dvs_status()</a>, and <a href="r-get.html">dvs_get()</a> are <code>dvs_bytes</code> values, so they print as human-readable sizes in a tibble. Values are stored as <code>double</code> to represent sizes past 2 GB without integer overflow.</p>
+<p><code>new_dvs_bytes()</code> constructs a <code>dvs_bytes</code> vector. The <code>size</code> column returned by <a href="r-add.html">dvs_add()</a>, <a href="r-status.html">dvs_status()</a>, and <a href="r-get.html">dvs_get()</a>, and the <code>stored_size</code> column returned by <a href="r-add.html">dvs_add()</a>, are <code>dvs_bytes</code> values, so they print as human-readable sizes in a tibble. Values are stored as <code>double</code> to represent sizes past 2 GB without integer overflow.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">new_dvs_bytes</span>(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>

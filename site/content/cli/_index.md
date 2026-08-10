@@ -12,13 +12,14 @@ command accepts `--json` for machine-readable output. New to dvs? Start with the
 
 ## Global options
 
-These apply to the top level and to every subcommand:
+`--json` and `--threads` apply to the top level and to every subcommand.
+`-V` / `--version` is accepted only at the top level.
 
 | Flag | Behavior |
 |---|---|
 | `--json` | Emit results as JSON. |
 | `--threads <N>` | Thread pool size for the command (`0` = auto-detect). Process-wide default via the `DVS_NUM_THREADS` environment variable. |
-| `-V`, `--version` | Print the version. |
+| `-V`, `--version` | Print the version. Top level only: `dvs -V`, not `dvs add -V`. |
 
 ## Commands
 

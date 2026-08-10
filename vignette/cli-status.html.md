@@ -21,6 +21,7 @@ Arguments:
 Options:
       --json               Output results as JSON
   -r, --recursive          Recurse into subdirectories of given directories
+  -g, --glob <GLOB>        Select files by glob pattern
       --current            Include current files
       --absent             Include absent files
       --unsynced           Include unsynced files
@@ -35,6 +36,7 @@ Options:
 |---|---|---|---|
 | `[PATHS]...` | paths | whole project | Files or directories to report. |
 | `-r`, `--recursive` | flag | off | Include files in subdirectories of given directories. |
+| `-g`, `--glob` | pattern | none | Library-expanded glob, literal path separator (use `**` to recurse). |
 | `--current` | flag | off | Include `current` files. |
 | `--absent` | flag | off | Include `absent` files. |
 | `--unsynced` | flag | off | Include `unsynced` files. |
@@ -55,18 +57,6 @@ Add three files, then delete one and edit another so all three states appear.
 ```{.r .cell-code}
 options(width = 1000)
 library(here)
-```
-
-::: {.cell-output .cell-output-stderr}
-
-```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
-```
-
-
-:::
-
-```{.r .cell-code}
 proj    <- here::here(basename(tempfile(fileext = "_project")))
 storage <- here::here(basename(tempfile(fileext = "_storage")))
 dir.create(proj)
@@ -212,6 +202,41 @@ dvs status data -r
 :::
 
 
+## `-g`, `--glob`
+
+Report the files matching a library-expanded glob. The path separator is
+literal, so `data/*.csv` stops at `data/`; use `**` to cross directory
+boundaries.
+
+
+::: {.cell}
+
+```{.bash .cell-code}
+cd "$DVS_PROJECT"
+dvs status -g "data/*.csv"
+```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
++-------------+----------+-------+
+| path        | status   | size  |
++-------------+----------+-------+
+| data/f1.csv | unsynced | 488 B |
++-------------+----------+-------+
+| data/f2.csv | absent   | 500 B |
++-------------+----------+-------+
+```
+
+
+:::
+:::
+
+
+`--recursive` and `--glob` are mutually exclusive; passing both is a usage
+error.
+
 ## Status filters
 
 Each filter alone:
@@ -336,11 +361,11 @@ dvs status --with-metadata
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
 | path            | status   | size  | hash                                                             | created_by | add_time                    | compression | message |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/f1.csv     | unsynced | 488 B | 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 | elea       | 2026-08-10T15:22:38.358648Z | zstd        |         |
+| data/f1.csv     | unsynced | 488 B | 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 | elea       | 2026-08-10T19:43:44.058688Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/f2.csv     | absent   | 500 B | c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 | elea       | 2026-08-10T15:22:38.3586Z   | zstd        |         |
+| data/f2.csv     | absent   | 500 B | c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 | elea       | 2026-08-10T19:43:44.058651Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/sub/f3.csv | current  | 312 B | 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce | elea       | 2026-08-10T15:22:38.358562Z | zstd        |         |
+| data/sub/f3.csv | current  | 312 B | 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce | elea       | 2026-08-10T19:43:44.058727Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
 ```
 
@@ -397,7 +422,7 @@ dvs status --json
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[{"path":"data/f1.csv","status":"unsynced","metadata":{"hashes":{"blake3":"5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65"},"size":488,"created_by":"elea","add_time":"2026-08-10T15:22:38.358648Z","compression":"zstd"}},{"path":"data/f2.csv","status":"absent","metadata":{"hashes":{"blake3":"c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871"},"size":500,"created_by":"elea","add_time":"2026-08-10T15:22:38.3586Z","compression":"zstd"}},{"path":"data/sub/f3.csv","status":"current","metadata":{"hashes":{"blake3":"881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce"},"size":312,"created_by":"elea","add_time":"2026-08-10T15:22:38.358562Z","compression":"zstd"}}]
+[{"path":"data/f1.csv","status":"unsynced","metadata":{"hashes":{"blake3":"5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65"},"size":488,"created_by":"elea","add_time":"2026-08-10T19:43:44.058688Z","compression":"zstd"}},{"path":"data/f2.csv","status":"absent","metadata":{"hashes":{"blake3":"c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871"},"size":500,"created_by":"elea","add_time":"2026-08-10T19:43:44.058651Z","compression":"zstd"}},{"path":"data/sub/f3.csv","status":"current","metadata":{"hashes":{"blake3":"881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce"},"size":312,"created_by":"elea","add_time":"2026-08-10T19:43:44.058727Z","compression":"zstd"}}]
 ```
 
 

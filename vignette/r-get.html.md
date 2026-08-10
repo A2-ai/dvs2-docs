@@ -14,7 +14,7 @@ writes the contents back to their original paths. It is the inverse of
 is not on disk.
 
 ```r
-dvs_get(paths = character(0), glob = NULL, dry_run = NULL)
+dvs_get(paths = character(0), glob = NULL, recursive = NULL, dry_run = NULL)
 ```
 
 ## Parameters
@@ -23,11 +23,11 @@ dvs_get(paths = character(0), glob = NULL, dry_run = NULL)
 |---|---|---|---|
 | `paths` | character | `character(0)` | Files to retrieve. |
 | `glob` | character(1) | `NULL` | Library-expanded glob. Uses a literal path separator (use `**` to recurse). |
+| `recursive` | logical(1) | `NULL` (treated as `FALSE`) | If `TRUE`, walk explicit directory paths recursively (same as the CLI `-r`). |
 | `dry_run` | logical(1) | `NULL` (treated as `FALSE`) | Report what would be retrieved; write nothing. |
 
-A progress bar is shown automatically while files are processed (the wrapper
-creates an internal `progress_callback` handle); it is not a parameter. No bar
-is shown for a dry run.
+In interactive sessions a progress bar is shown while files are processed. It is
+not a parameter, and no bar appears in scripts, rendered documents, or dry runs.
 
 ## Setup
 
@@ -55,9 +55,9 @@ dvs_init(store)
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                            backend_group
-  <chr>       <lgl>                <chr>                                                                                   <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpMutGJ4/storage_d42bf068f7d staff        
+  compression metadata_folder_name backend_path                                                                             backend_group
+  <chr>       <lgl>                <chr>                                                                                    <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmprdiVZ0/storage_6f3d5f0b9746 staff        
 ```
 
 
@@ -191,6 +191,98 @@ dvs_get(glob = "data/**/*.csv")
 :::
 :::
 
+
+## `recursive`
+
+A directory path restores only the files directly in it. Here the nested
+`data/sub/f3.csv` is left alone.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(proj)
+file.remove("data/f1.csv", "data/f2.csv", "data/sub/f3.csv")
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] TRUE TRUE TRUE
+```
+
+
+:::
+
+```{.r .cell-code}
+dvs_get("data")
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 2 × 3
+  path        outcome    size
+  <chr>       <chr>   <bytes>
+1 data/f1.csv copied    488 B
+2 data/f2.csv copied    500 B
+```
+
+
+:::
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(proj)
+dvs_status("data/sub/f3.csv")[, c("path", "status")]
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 1 × 2
+  path            status
+  <chr>           <chr> 
+1 data/sub/f3.csv absent
+```
+
+
+:::
+:::
+
+
+With `recursive = TRUE` the whole subtree is restored. Files already back on
+disk are reported as `present` rather than retrieved again.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(proj)
+dvs_get("data", recursive = TRUE)
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 3 × 3
+  path            outcome    size
+  <chr>           <chr>   <bytes>
+1 data/f1.csv     present   488 B
+2 data/f2.csv     present   500 B
+3 data/sub/f3.csv copied    312 B
+```
+
+
+:::
+:::
+
+
+`glob` and `recursive` are mutually exclusive; passing both raises an error.
 
 ## `dry_run`
 

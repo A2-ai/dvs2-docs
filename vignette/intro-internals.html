@@ -2319,47 +2319,44 @@ Note
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo</code></pre>
-</div>
 </div>
 </section>
 <section id="helpers" class="level1">
 <h1>Helpers</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>storage     <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>))</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>storage     <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>,  <span class="at">size_mb =</span> <span class="dv">25</span>, <span class="at">prefix =</span> <span class="st">&quot;large_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/large&quot;</span>,      <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>,  <span class="at">size_mb =</span> <span class="dv">1</span>,  <span class="at">prefix =</span> <span class="st">&quot;small_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/small&quot;</span>,      <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">50</span>, <span class="at">size_mb =</span> <span class="dv">3</span>,  <span class="at">prefix =</span> <span class="st">&quot;individual_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/individual&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>,  <span class="at">size_mb =</span> <span class="dv">25</span>, <span class="at">prefix =</span> <span class="st">&quot;large_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/large&quot;</span>,      <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>,  <span class="at">size_mb =</span> <span class="dv">1</span>,  <span class="at">prefix =</span> <span class="st">&quot;small_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/small&quot;</span>,      <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">50</span>, <span class="at">size_mb =</span> <span class="dv">3</span>,  <span class="at">prefix =</span> <span class="st">&quot;individual_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/individual&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(here<span class="sc">::</span><span class="fu">here</span>(storage), <span class="at">compression =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(here<span class="sc">::</span><span class="fu">here</span>(storage), <span class="at">compression =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 none        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filedcf91c5ad80f_storage staff        </code></pre>
+1 none        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file75ac4d223d8b_storage staff        </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add one large dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add one large dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 5
   path                   outcome hash                                                                size stored_size
   &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
-1 data/large/large_1.csv copied  45c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def 25.0 MB     25.0 MB</code></pre>
+1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     25.0 MB</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>), <span class="at">message =</span> <span class="st">&quot;add small corpus datasets&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>), <span class="at">message =</span> <span class="st">&quot;add small corpus datasets&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 5
   path                   outcome hash                                                                  size stored_size
@@ -2368,7 +2365,7 @@ Note
 2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB   1024.0 KB
 3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB   1024.0 KB</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/individual/individual_*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add individual datasets via glob&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/individual/individual_*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add individual datasets via glob&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 50 × 5
    path                              outcome hash                                                                size stored_size
@@ -2391,9 +2388,9 @@ Note
 <h1>Internals of <code>.dvs</code></h1>
 <p><code>.dvs</code> is hidden, so <code>fs::</code> helpers need <code>all = TRUE</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>.dvs
 ├── .cache
@@ -2460,11 +2457,11 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(size, path, type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(size, path, type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 56 × 3
           size path                                       type 
@@ -2472,9 +2469,9 @@ Note
  1         20K .dvs/.cache/dvs.db                         file 
  2           0 .dvs/.cache/dvs.db-journal                 file 
  3         264 .dvs/data/individual/individual_01.csv.dvs file 
- 4         264 .dvs/data/individual/individual_02.csv.dvs file 
+ 4         263 .dvs/data/individual/individual_02.csv.dvs file 
  5         264 .dvs/data/individual/individual_03.csv.dvs file 
- 6         263 .dvs/data/individual/individual_04.csv.dvs file 
+ 6         264 .dvs/data/individual/individual_04.csv.dvs file 
  7         264 .dvs/data/individual/individual_05.csv.dvs file 
  8         264 .dvs/data/individual/individual_06.csv.dvs file 
  9         264 .dvs/data/individual/individual_07.csv.dvs file 
@@ -2483,12 +2480,12 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subdir =</span> path <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_dir</span>() <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_rel</span>(<span class="st">&quot;.dvs&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">n_files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> subdir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subdir =</span> path <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_dir</span>() <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_rel</span>(<span class="st">&quot;.dvs&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">n_files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> subdir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
   subdir          n_files        size
@@ -2504,11 +2501,11 @@ Note
 <h1>Meta files</h1>
 <p>Each tracked data file has a <code>.dvs</code> meta file under <code>.dvs/</code>, mirroring the data tree.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>meta_files <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">glob =</span> <span class="st">&quot;*.dvs&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>meta_files <span class="ot">&lt;-</span> meta_files[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, meta_files)]</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>meta_files</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>meta_files <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">glob =</span> <span class="st">&quot;*.dvs&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>meta_files <span class="ot">&lt;-</span> meta_files[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, meta_files)]</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>meta_files</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>.dvs/data/individual/individual_01.csv.dvs .dvs/data/individual/individual_02.csv.dvs .dvs/data/individual/individual_03.csv.dvs .dvs/data/individual/individual_04.csv.dvs .dvs/data/individual/individual_05.csv.dvs .dvs/data/individual/individual_06.csv.dvs .dvs/data/individual/individual_07.csv.dvs .dvs/data/individual/individual_08.csv.dvs .dvs/data/individual/individual_09.csv.dvs .dvs/data/individual/individual_10.csv.dvs .dvs/data/individual/individual_11.csv.dvs .dvs/data/individual/individual_12.csv.dvs .dvs/data/individual/individual_13.csv.dvs .dvs/data/individual/individual_14.csv.dvs .dvs/data/individual/individual_15.csv.dvs .dvs/data/individual/individual_16.csv.dvs .dvs/data/individual/individual_17.csv.dvs .dvs/data/individual/individual_18.csv.dvs .dvs/data/individual/individual_19.csv.dvs .dvs/data/individual/individual_20.csv.dvs .dvs/data/individual/individual_21.csv.dvs .dvs/data/individual/individual_22.csv.dvs .dvs/data/individual/individual_23.csv.dvs 
 .dvs/data/individual/individual_24.csv.dvs .dvs/data/individual/individual_25.csv.dvs .dvs/data/individual/individual_26.csv.dvs .dvs/data/individual/individual_27.csv.dvs .dvs/data/individual/individual_28.csv.dvs .dvs/data/individual/individual_29.csv.dvs .dvs/data/individual/individual_30.csv.dvs .dvs/data/individual/individual_31.csv.dvs .dvs/data/individual/individual_32.csv.dvs .dvs/data/individual/individual_33.csv.dvs .dvs/data/individual/individual_34.csv.dvs .dvs/data/individual/individual_35.csv.dvs .dvs/data/individual/individual_36.csv.dvs .dvs/data/individual/individual_37.csv.dvs .dvs/data/individual/individual_38.csv.dvs .dvs/data/individual/individual_39.csv.dvs .dvs/data/individual/individual_40.csv.dvs .dvs/data/individual/individual_41.csv.dvs .dvs/data/individual/individual_42.csv.dvs .dvs/data/individual/individual_43.csv.dvs .dvs/data/individual/individual_44.csv.dvs .dvs/data/individual/individual_45.csv.dvs .dvs/data/individual/individual_46.csv.dvs 
@@ -2517,22 +2514,22 @@ Note
 </div>
 <p>Contents of the meta file for <code>data/large/large_1.csv</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>large_meta <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;large_1&quot;</span>, meta_files, <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>large_meta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>large_meta <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;large_1&quot;</span>, meta_files, <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>large_meta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  .dvs/data/large/large_1.csv.dvs 
 &quot;.dvs/data/large/large_1.csv.dvs&quot; </code></pre>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="er">cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta,</span> <span class="er">simplifyVector</span> <span class="er">=</span> <span class="er">FALSE),</span> <span class="er">pretty</span> <span class="er">=</span> <span class="er">TRUE,</span> <span class="er">auto_unbox</span> <span class="er">=</span> <span class="er">TRUE))</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>{ “hashes”: { “blake3”: “45c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def” }, “size”: 26214383, “created_by”: “elea”, “add_time”: “2026-08-10T15:23:33.689314Z”, “compression”: “none”, “message”: “add one large dataset” }</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="er">cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta,</span> <span class="er">simplifyVector</span> <span class="er">=</span> <span class="er">FALSE),</span> <span class="er">pretty</span> <span class="er">=</span> <span class="er">TRUE,</span> <span class="er">auto_unbox</span> <span class="er">=</span> <span class="er">TRUE))</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>{ “hashes”: { “blake3”: “3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838” }, “size”: 26214390, “created_by”: “elea”, “add_time”: “2026-08-10T19:44:25.791254Z”, “compression”: “none”, “message”: “add one large dataset” }</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <pre><code># Storage directory
 
 
@@ -2541,7 +2538,7 @@ Note
 ```{.r .cell-code}
 fs::dir_tree(here::here(storage), all = TRUE, regexp = &quot;\\.git&quot;, invert = TRUE)</code></pre>
 <div class="cell-output cell-output-stdout">
-<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filedcf91c5ad80f_storage
+<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file75ac4d223d8b_storage
 ├── 0d
 │   └── bb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92
 ├── 15
@@ -2563,13 +2560,14 @@ fs::dir_tree(here::here(storage), all = TRUE, regexp = &quot;\\.git&quot;, inver
 │   └── fd92ee0ed3122e814c275ba2d4bcf83e749ea0a4fda462d56afbd0f62fea8a
 ├── 38
 │   └── 8c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee
+├── 3c
+│   └── 77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838
 ├── 3e
 │   └── 5fb7f5dab7515086635a93328785b2b703922b6b7499cf3de2d6f4e954e98c
 ├── 44
 │   └── 3b0aad3af092b510e3624d737d71f60cf771b5bf387c1f7126e0cd712cc8cf
 ├── 45
-│   ├── 6eaf1e596ccf2e8cc982c9ca3192f996efa0638d9dbd96a03f90fc35a34c51
-│   └── c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def
+│   └── 6eaf1e596ccf2e8cc982c9ca3192f996efa0638d9dbd96a03f90fc35a34c51
 ├── 48
 │   └── dff588f909e9720dff2a675afef20a44add218cb55e7883736326938917b73
 ├── 49
@@ -2648,12 +2646,12 @@ fs::dir_tree(here::here(storage), all = TRUE, regexp = &quot;\\.git&quot;, inver
 </div>
 <p>:::</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(here<span class="sc">::</span><span class="fu">here</span>(storage), <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subdir =</span> path <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_dir</span>() <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_rel</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))) <span class="sc">|&gt;</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">n_files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> subdir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(here<span class="sc">::</span><span class="fu">here</span>(storage), <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, path)) <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subdir =</span> path <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_dir</span>() <span class="sc">|&gt;</span> fs<span class="sc">::</span><span class="fu">path_rel</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">n_files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> subdir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 49 × 3
+<pre><code># A tibble: 50 × 3
    subdir     n_files        size
    &lt;fs::path&gt;   &lt;int&gt; &lt;fs::bytes&gt;
  1 0d               1          3M
@@ -2666,7 +2664,7 @@ fs::dir_tree(here::here(storage), all = TRUE, regexp = &quot;\\.git&quot;, inver
  8 31               1          3M
  9 34               1          3M
 10 38               1          3M
-# ℹ 39 more rows</code></pre>
+# ℹ 40 more rows</code></pre>
 </div>
 </div>
 </section>
@@ -2674,24 +2672,24 @@ fs::dir_tree(here::here(storage), all = TRUE, regexp = &quot;\\.git&quot;, inver
 <h1>Hashed blob is plain text</h1>
 <p>Pick up the blake3 hash from the meta file.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(large_meta)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>meta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(large_meta)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>meta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$hashes
 $hashes$blake3
-[1] &quot;45c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def&quot;
+[1] &quot;3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838&quot;
 
 
 $size
-[1] 26214383
+[1] 26214390
 
 $created_by
 [1] &quot;elea&quot;
 
 $add_time
-[1] &quot;2026-08-10T15:23:33.689314Z&quot;
+[1] &quot;2026-08-10T19:44:25.791254Z&quot;
 
 $compression
 [1] &quot;none&quot;
@@ -2699,38 +2697,38 @@ $compression
 $message
 [1] &quot;add one large dataset&quot;</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>hash <span class="ot">&lt;-</span> meta<span class="sc">$</span>hashes<span class="sc">$</span>blake3</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>hash</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>hash <span class="ot">&lt;-</span> meta<span class="sc">$</span>hashes<span class="sc">$</span>blake3</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>hash</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;45c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def&quot;</code></pre>
+<pre><code>[1] &quot;3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838&quot;</code></pre>
 </div>
 </div>
 <p>Blobs are split into <code>&lt;first-2&gt;/&lt;rest&gt;</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>large_blob <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="fu">substr</span>(hash, <span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">substr</span>(hash, <span class="dv">3</span>, <span class="fu">nchar</span>(hash)))</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>large_blob</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>large_blob <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="fu">substr</span>(hash, <span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">substr</span>(hash, <span class="dv">3</span>, <span class="fu">nchar</span>(hash)))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>large_blob</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filedcf91c5ad80f_storage/45/c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def&quot;</code></pre>
+<pre><code>[1] &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file75ac4d223d8b_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838&quot;</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_exists</span>(large_blob)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_exists</span>(large_blob)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filedcf91c5ad80f_storage/45/c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def 
+<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file75ac4d223d8b_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 
                                                                                                                                        TRUE </code></pre>
 </div>
 </div>
 <p>Initialized with <code>compression = &quot;none&quot;</code>, the stored object is the original CSV, addressable by hash. Readable as-is.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">readLines</span>(large_blob, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">readLines</span>(large_blob, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10&quot; &quot;42,0,1,1,835,475,571,523,358,220,987,778,49,882&quot;                                     &quot;51,2,1,1,678,484,390,482,440,326,359,709,87,838&quot;                                     &quot;59,4,1,1,128,618,870,811,46,28,575,121,948,206&quot;                                      &quot;64,6,1,1,929,499,656,663,418,947,790,505,833,625&quot;                                   </code></pre>
+<pre><code>[1] &quot;weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10&quot; &quot;42,0,1,1,835,744,435,780,819,845,933,348,470,634&quot;                                    &quot;51,2,1,1,678,501,383,179,313,256,607,120,393,638&quot;                                    &quot;59,4,1,1,128,687,923,696,798,190,506,122,254,584&quot;                                    &quot;64,6,1,1,929,315,597,366,830,800,287,457,774,403&quot;                                   </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">readLines</span>(</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">5</span>, here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;large&quot;</span>, <span class="st">&quot;large_1.csv&quot;</span>)</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">readLines</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">5</span>, here<span class="sc">::</span><span class="fu">here</span>(new_project, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;large&quot;</span>, <span class="st">&quot;large_1.csv&quot;</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10&quot; &quot;42,0,1,1,835,475,571,523,358,220,987,778,49,882&quot;                                     &quot;51,2,1,1,678,484,390,482,440,326,359,709,87,838&quot;                                     &quot;59,4,1,1,128,618,870,811,46,28,575,121,948,206&quot;                                      &quot;64,6,1,1,929,499,656,663,418,947,790,505,833,625&quot;                                   </code></pre>
+<pre><code>[1] &quot;weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10&quot; &quot;42,0,1,1,835,744,435,780,819,845,933,348,470,634&quot;                                    &quot;51,2,1,1,678,501,383,179,313,256,607,120,393,638&quot;                                    &quot;59,4,1,1,128,687,923,696,798,190,506,122,254,584&quot;                                    &quot;64,6,1,1,929,315,597,366,830,800,287,457,774,403&quot;                                   </code></pre>
 </div>
 </div>
 </section>
@@ -2738,9 +2736,9 @@ $message
 <h1><code>.dvs/</code> mirrors <code>data/</code></h1>
 <p>Meta files live under <code>.dvs/</code> at the same relative paths as the data files they track.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;data&quot;</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;data&quot;</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>data
 ├── individual
@@ -2803,9 +2801,9 @@ $message
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.git&quot;</span>, <span class="at">invert =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>.dvs
 ├── .cache
@@ -2883,8 +2881,8 @@ $message
 <h1>Untracking a file</h1>
 <p>dvs tracks a file through its meta file. Remove the meta file and dvs no longer tracks the file. The stored blob is left in place, so other meta files that reference the same content still resolve.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>)[, <span class="fu">c</span>(<span class="st">&quot;path&quot;</span>, <span class="st">&quot;status&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>)[, <span class="fu">c</span>(<span class="st">&quot;path&quot;</span>, <span class="st">&quot;status&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 2
   path                   status 
@@ -2893,12 +2891,12 @@ $message
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(large_meta)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(large_meta)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 0 × 0</code></pre>
 </div>
@@ -2907,8 +2905,8 @@ $message
 <section id="cleanup" class="level1">
 <h1>Cleanup</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="see-also" class="level2">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>

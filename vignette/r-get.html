@@ -2299,7 +2299,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 
 <p><code>dvs_get()</code> reads the meta files, finds the matching blobs in storage, and writes the contents back to their original paths. It is the inverse of <a href="r-add.html">dvs_add()</a>: the call to run after re-cloning a project whose data is not on disk.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="fu">character</span>(<span class="dv">0</span>), <span class="at">glob =</span> <span class="cn">NULL</span>, <span class="at">dry_run =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="fu">character</span>(<span class="dv">0</span>), <span class="at">glob =</span> <span class="cn">NULL</span>, <span class="at">recursive =</span> <span class="cn">NULL</span>, <span class="at">dry_run =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="caption-top table">
@@ -2331,6 +2331,12 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <td>Library-expanded glob. Uses a literal path separator (use <code>**</code> to recurse).</td>
 </tr>
 <tr class="odd">
+<td><code>recursive</code></td>
+<td>logical(1)</td>
+<td><code>NULL</code> (treated as <code>FALSE</code>)</td>
+<td>If <code>TRUE</code>, walk explicit directory paths recursively (same as the CLI <code>-r</code>).</td>
+</tr>
+<tr class="even">
 <td><code>dry_run</code></td>
 <td>logical(1)</td>
 <td><code>NULL</code> (treated as <code>FALSE</code>)</td>
@@ -2338,7 +2344,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </tr>
 </tbody>
 </table>
-<p>A progress bar is shown automatically while files are processed (the wrapper creates an internal <code>progress_callback</code> handle); it is not a parameter. No bar is shown for a dry run.</p>
+<p>In interactive sessions a progress bar is shown while files are processed. It is not a parameter, and no bar appears in scripts, rendered documents, or dry runs.</p>
 </section>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
@@ -2358,9 +2364,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(store)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                            backend_group
-  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                   &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpMutGJ4/storage_d42bf068f7d staff        </code></pre>
+  compression metadata_folder_name backend_path                                                                             backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                    &lt;chr&gt;        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmprdiVZ0/storage_6f3d5f0b9746 staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="fu">c</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="st">&quot;data/f2.csv&quot;</span>, <span class="st">&quot;data/sub/f3.csv&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2427,16 +2433,59 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </div>
 </div>
 </section>
+<section id="recursive" class="level2">
+<h2 class="anchored" data-anchor-id="recursive"><code>recursive</code></h2>
+<p>A directory path restores only the files directly in it. Here the nested <code>data/sub/f3.csv</code> is left alone.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="st">&quot;data/f2.csv&quot;</span>, <span class="st">&quot;data/sub/f3.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE TRUE TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  path        outcome    size
+  &lt;chr&gt;       &lt;chr&gt;   &lt;bytes&gt;
+1 data/f1.csv copied    488 B
+2 data/f2.csv copied    500 B</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/sub/f3.csv&quot;</span>)[, <span class="fu">c</span>(<span class="st">&quot;path&quot;</span>, <span class="st">&quot;status&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  path            status
+  &lt;chr&gt;           &lt;chr&gt; 
+1 data/sub/f3.csv absent</code></pre>
+</div>
+</div>
+<p>With <code>recursive = TRUE</code> the whole subtree is restored. Files already back on disk are reported as <code>present</code> rather than retrieved again.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  path            outcome    size
+  &lt;chr&gt;           &lt;chr&gt;   &lt;bytes&gt;
+1 data/f1.csv     present   488 B
+2 data/f2.csv     present   500 B
+3 data/sub/f3.csv copied    312 B</code></pre>
+</div>
+</div>
+<p><code>glob</code> and <code>recursive</code> are mutually exclusive; passing both raises an error.</p>
+</section>
 <section id="dry_run" class="level2">
 <h2 class="anchored" data-anchor-id="dry_run"><code>dry_run</code></h2>
 <p>With <code>dry_run = TRUE</code> the result reports what would be retrieved, but no file is written.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;data/f2.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;data/f2.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/f2.csv&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/f2.csv&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   path        outcome    size
@@ -2446,8 +2495,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </div>
 <p>The file is still absent after a dry run:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/f2.csv&quot;</span>)[, <span class="fu">c</span>(<span class="st">&quot;path&quot;</span>, <span class="st">&quot;status&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/f2.csv&quot;</span>)[, <span class="fu">c</span>(<span class="st">&quot;path&quot;</span>, <span class="st">&quot;status&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 2
   path        status

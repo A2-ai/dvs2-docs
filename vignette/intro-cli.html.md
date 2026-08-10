@@ -81,11 +81,11 @@ cat dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef81a602de52a_project"
+DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file897a32623b5a_project"
 compression = "zstd"
 
 [backend]
-path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef81a22e6d31c_storage"
+path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file897a474b920f_storage"
 group = "staff"
 ```
 
@@ -202,7 +202,7 @@ cat .dvs/data/large/large_1.csv.dvs
   },
   "size": 26214390,
   "created_by": "elea",
-  "add_time": "2026-08-10T15:26:23.051906Z",
+  "add_time": "2026-08-10T19:48:36.161915Z",
   "compression": "zstd",
   "message": "one large dataset"
 }
@@ -316,7 +316,7 @@ dvs status --unsynced --with-metadata
 +------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
 | path                   | status   | size    | hash                                                             | created_by | add_time                    | compression | message           |
 +------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
-| data/large/large_1.csv | unsynced | 25.0 MB | 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 | elea       | 2026-08-10T15:26:23.051906Z | zstd        | one large dataset |
+| data/large/large_1.csv | unsynced | 25.0 MB | 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 | elea       | 2026-08-10T19:48:36.161915Z | zstd        | one large dataset |
 +------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
 ```
 
@@ -352,7 +352,7 @@ dvs status --absent --json | python3 -m json.tool | head -20
             },
             "size": 3145709,
             "created_by": "elea",
-            "add_time": "2026-08-10T15:26:23.261707Z",
+            "add_time": "2026-08-10T19:48:36.410722Z",
             "compression": "zstd",
             "message": "individual datasets"
         }
@@ -421,9 +421,10 @@ Added: data/large/large_1.csv [25.0 MB] --> saved [10.5 MB] as 5e21922b470b3f985
 ### Directory scoping and --recursive
 
 `get` and `status` accept directory paths, which cover their direct children
-only. `-r/--recursive` walks the whole subtree. With no paths at all, `get`
-scopes to the current directory, so at the project root `dvs get -r` means
-"restore everything":
+only. `-r/--recursive` walks the whole subtree, and it is mutually exclusive
+with `--glob`. `get` always needs at least one path or a glob, so "restore
+everything" from the project root is `dvs get . -r` (or, equivalently,
+`dvs get --glob '**/*'`):
 
 
 ::: {.cell}
@@ -431,7 +432,7 @@ scopes to the current directory, so at the project root `dvs get -r` means
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
 rm -r data
-dvs get -r | tail -3
+dvs get . -r | tail -3
 dvs status --absent
 ```
 
@@ -439,123 +440,10 @@ dvs status --absent
 ::: {.cell-output .cell-output-stdout}
 
 ```
-error: the following required arguments were not provided:
-  <PATHS>...
-
-Usage: dvs get --recursive <PATHS>...
-
-For more information, try '--help'.
-+-----------------------------------+--------+-----------+
-| path                              | status | size      |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_01.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_02.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_03.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_04.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_05.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_06.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_07.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_08.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_09.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_10.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_11.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_12.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_13.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_14.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_15.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_16.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_17.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_18.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_19.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_20.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_21.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_22.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_23.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_24.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_25.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_26.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_27.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_28.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_29.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_30.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_31.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_32.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_33.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_34.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_35.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_36.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_37.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_38.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_39.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_40.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_41.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_42.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_43.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_44.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_45.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_46.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_47.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_48.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_49.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/individual/individual_50.csv | absent |    3.0 MB |
-+-----------------------------------+--------+-----------+
-| data/large/large_1.csv            | absent |   25.0 MB |
-+-----------------------------------+--------+-----------+
-| data/small/small_1.csv            | absent | 1024.0 KB |
-+-----------------------------------+--------+-----------+
-| data/small/small_2.csv            | absent | 1024.0 KB |
-+-----------------------------------+--------+-----------+
-| data/small/small_3.csv            | absent | 1024.0 KB |
-+-----------------------------------+--------+-----------+
+data/small/small_2.csv [1024.0 KB]
+data/small/small_3.csv [1024.0 KB]
+Total: 54 files, 178.0 MB
+No tracked files matching the filter
 ```
 
 
@@ -609,11 +497,11 @@ dvs status data/large data/no_such_dir && echo "exit code: 0"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-+------------------------+--------+---------+
-| path                   | status | size    |
-+------------------------+--------+---------+
-| data/large/large_1.csv | absent | 25.0 MB |
-+------------------------+--------+---------+
++------------------------+---------+---------+
+| path                   | status  | size    |
++------------------------+---------+---------+
+| data/large/large_1.csv | current | 25.0 MB |
++------------------------+---------+---------+
 exit code: 0
 ```
 
@@ -640,9 +528,9 @@ dvs status --threads 2 | tail -3
 ::: {.cell-output .cell-output-stdout}
 
 ```
-+-----------------------------------+--------+-----------+
-| data/small/small_3.csv            | absent | 1024.0 KB |
-+-----------------------------------+--------+-----------+
++-----------------------------------+---------+-----------+
+| data/small/small_3.csv            | current | 1024.0 KB |
++-----------------------------------+---------+-----------+
 ```
 
 

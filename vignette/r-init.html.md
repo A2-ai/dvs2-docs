@@ -70,7 +70,7 @@ dvs_init(store, root_dir = proj)
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                          backend_group
   <chr>       <lgl>                <chr>                                                                                                 <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/basic-store staff        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpERAu23/dvs_init_726310197a76/basic-store staff        
 ```
 
 
@@ -93,7 +93,7 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/basic-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpERAu23/dvs_init_726310197a76/basic-store"
 group = "staff"
 ```
 
@@ -122,8 +122,10 @@ dvs_init(store, root_dir = proj, group = "rstudio")
 
 
 ```r
-$status
-[1] "initialized"
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                        backend_group
+  <chr>       <lgl>                <chr>                                               <chr>
+1 zstd        NA                   /tmp/Rtmp0oQgN3/dvs_init_d13e1444c8b2/grouped-store rstudio
 ```
 
 The chosen group is written to `dvs.toml` under `[backend]`.
@@ -150,7 +152,7 @@ dvs_init(store, root_dir = proj, metadata_folder_name = ".meta")
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                         backend_group
   <chr>       <chr>                <chr>                                                                                                <chr>        
-1 zstd        .meta                /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/meta-store staff        
+1 zstd        .meta                /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpERAu23/dvs_init_726310197a76/meta-store staff        
 ```
 
 
@@ -234,8 +236,8 @@ There is no `no_compression` argument. The CLI flag `--no-compression` maps to
 
 `dvs_init()` returns a one-row tibble describing the resulting configuration:
 the compression mode, the metadata folder name (`NA` when the default `.dvs`
-is used), and the backend path and group. It is still called primarily for its
-side effect of creating the project.
+is used), and the backend path and group. The call's purpose is the side effect
+of creating the project; the return value describes what was written.
 
 
 ::: {.cell}
@@ -255,7 +257,7 @@ str(res)
 tibble [1 × 4] (S3: tbl_df/tbl/data.frame)
  $ compression         : chr "zstd"
  $ metadata_folder_name: logi NA
- $ backend_path        : chr "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/ret-store"
+ $ backend_path        : chr "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpERAu23/dvs_init_726310197a76/ret-store"
  $ backend_group       : chr "staff"
 ```
 

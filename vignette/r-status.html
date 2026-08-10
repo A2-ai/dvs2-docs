@@ -2302,8 +2302,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">paths =</span> <span class="fu">character</span>(<span class="dv">0</span>),</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">recursive =</span> <span class="cn">NULL</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> <span class="fu">c</span>(<span class="st">&quot;current&quot;</span>, <span class="st">&quot;absent&quot;</span>, <span class="st">&quot;unsynced&quot;</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">glob =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> <span class="fu">c</span>(<span class="st">&quot;current&quot;</span>, <span class="st">&quot;absent&quot;</span>, <span class="st">&quot;unsynced&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="caption-top table">
@@ -2335,6 +2336,12 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <td>Include files in subdirectories of given directories.</td>
 </tr>
 <tr class="odd">
+<td><code>glob</code></td>
+<td>character(1)</td>
+<td><code>NULL</code></td>
+<td>Library-expanded glob, same resolution rules as the CLI <code>--glob</code>. Mutually exclusive with <code>recursive</code>.</td>
+</tr>
+<tr class="even">
 <td><code>status</code></td>
 <td>character</td>
 <td>all three</td>
@@ -2363,7 +2370,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                             backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                    &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpjBmZV8/storage_d2db412e4f73 staff        </code></pre>
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpKG8M0x/storage_7171252ea01a staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="fu">c</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="st">&quot;data/f2.csv&quot;</span>, <span class="st">&quot;data/sub/f3.csv&quot;</span>), <span class="at">message =</span> <span class="st">&quot;initial add&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2391,9 +2398,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 3 × 8
   path            status   hash                                                                size created_by compression message     add_time           
   &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv     unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 15:22:13
-2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 15:22:13
-3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 15:22:13</code></pre>
+1 data/f1.csv     unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
+2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
+3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
 </div>
 </div>
 </section>
@@ -2407,7 +2414,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 1 × 8
   path            status  hash                                                                size created_by compression message     add_time           
   &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/sub/f3.csv current 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 15:22:13</code></pre>
+1 data/sub/f3.csv current 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
 </div>
 </div>
 </section>
@@ -2421,8 +2428,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 2 × 8
   path        status   hash                                                                size created_by compression message     add_time           
   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 15:22:13
-2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 15:22:13</code></pre>
+1 data/f1.csv unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
+2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2432,9 +2439,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 3 × 8
   path            status   hash                                                                size created_by compression message     add_time           
   &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv     unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 15:22:13
-2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 15:22:13
-3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 15:22:13</code></pre>
+1 data/f1.csv     unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
+2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
+3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
 </div>
 </div>
 </section>
@@ -2448,7 +2455,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 1 × 8
   path        status hash                                                                size created_by compression message     add_time           
   &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f2.csv absent c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 15:22:13</code></pre>
+1 data/f2.csv absent c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2458,8 +2465,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 2 × 8
   path        status   hash                                                                size created_by compression message     add_time           
   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 15:22:13
-2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 15:22:13</code></pre>
+1 data/f1.csv unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
+2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
 </div>
 </div>
 </section>
@@ -2486,9 +2493,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 3 × 4
   path            status   message     add_time           
   &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv     unsynced initial add 2026-08-10 15:22:13
-2 data/f2.csv     absent   initial add 2026-08-10 15:22:13
-3 data/sub/f3.csv current  initial add 2026-08-10 15:22:13</code></pre>
+1 data/f1.csv     unsynced initial add 2026-08-10 19:43:47
+2 data/f2.csv     absent   initial add 2026-08-10 19:43:47
+3 data/sub/f3.csv current  initial add 2026-08-10 19:43:47</code></pre>
 </div>
 </div>
 </section>
@@ -2496,6 +2503,11 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <h2 class="anchored" data-anchor-id="return-value">Return value</h2>
 <p>A tibble with one row per file:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Column</th>
@@ -2522,7 +2534,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <tr class="even">
 <td><code>size</code></td>
 <td><code>dvs_bytes</code></td>
-<td>Stored size.</td>
+<td>File size recorded in the meta file (uncompressed).</td>
 </tr>
 <tr class="odd">
 <td><code>created_by</code></td>

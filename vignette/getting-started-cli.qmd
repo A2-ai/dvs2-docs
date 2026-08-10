@@ -19,6 +19,7 @@ R creates the sandbox directories and the dataset; all dvs operations run via
 the `dvs` binary.
 
 ```{r}
+#| message: false
 options(width = 1000)
 library(here)
 storage     <- basename(tempfile(fileext = "_storage"))

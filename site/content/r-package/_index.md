@@ -6,8 +6,8 @@ template = "section.html"
 description = "Version data from R with library(dvs): init, add, status, get."
 +++
 
-The `dvs` R package wraps the dvs core. Each function returns a native R object:
-the verbs return tibbles, `dvs_init()` returns a list. New to dvs? Start with the
+The `dvs` R package wraps the dvs core. Every verb returns a tibble,
+`dvs_init()` included. New to dvs? Start with the
 [R walkthrough](@/getting-started/r.md) in Getting Started.
 
 ## Functions
@@ -36,7 +36,7 @@ the same controls through flags and environment variables.
 The R functions and the [CLI](@/cli/_index.md) cover the same operations with
 different shapes:
 
-- R returns native data frames and lists; there is no `--json`.
+- R returns native data frames; there is no `--json`.
 - `dvs_status()` always returns the metadata columns; the CLI hides them behind
   `--with-metadata`.
 - Threads are set process-wide with [set_dvs_threads()](@/r-package/threads.md);

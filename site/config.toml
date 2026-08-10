@@ -1,6 +1,6 @@
 base_url = "https://a2-ai.github.io/dvs2-docs"
 title = "dvs"
-description = "Independent data version control for large or sensitive datasets, with or without Git."
+description = "Independent data versioning system, with or without Git."
 compile_sass = true
 build_search_index = true
 generate_feeds = false
@@ -9,7 +9,7 @@ generate_feeds = false
 index_format = "elasticlunr_json"
 
 [link_checker]
-internal_level = "warn"
+internal_level = "error"
 
 [markdown]
 insert_anchor_links = "left"

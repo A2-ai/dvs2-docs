@@ -20,20 +20,9 @@ This page is implementation detail, beyond what normal use requires.
 ```{.r .cell-code}
 library(dvs)
 library(here)
-```
 
-::: {.cell-output .cell-output-stderr}
-
-```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
-```
-
-
-:::
-
-```{.r .cell-code}
 # Print tibbles wide so all columns appear on one row.
-# options(width = Inf) is rejected by base R (max 10000); 10000 is the ceiling.
+# 10000 is the ceiling base R allows.
 options(width = 10000)
 ```
 :::
@@ -124,9 +113,9 @@ dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                               backend_group
-  <chr>       <lgl>                <chr>                                                                      <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad313f11c09_storage staff        
+  compression metadata_folder_name backend_path                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                     <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f3a8a5fc6_storage staff        
 ```
 
 
@@ -194,9 +183,9 @@ dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_proje
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                               backend_group
-  <chr>       <lgl>                <chr>                                                                      <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad36acccfae_storage staff        
+  compression metadata_folder_name backend_path                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                     <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f4a84b4ee_storage staff        
 ```
 
 
@@ -475,7 +464,7 @@ dvs_add(paths = outside_file)
 ```
 Error in `dvs_add_impl()`:
 ! Refusing to add, the following paths are invalid:
-  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpSPdVmW/file13ad32591136d.csv: path is outside project
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmphOMKU8/file774f19adc335.csv: path is outside project
 ```
 
 
@@ -499,7 +488,7 @@ rm -f "$OUTSIDE_FILE"
 
 ```
 Error: Refusing to add, the following paths are invalid:
-  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.qAm1v8rOWr.csv: path is outside project
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.eMDZyPnyvz.csv: path is outside project
 ```
 
 
@@ -692,7 +681,7 @@ dvs_status(paths = c("present.csv", "missing.csv")) |>
 # A tibble: 1 × 7
   path        status  hash                                                                size created_by compression add_time           
   <chr>       <chr>   <chr>                                                            <bytes> <chr>      <chr>       <dttm>             
-1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-08-10 17:58:41
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-08-10 19:44:33
 ```
 
 
@@ -726,7 +715,7 @@ dvs status present.csv missing.csv
 
 ## Unparseable meta file
 
-If a `.dvs` metadata file is corrupted (non-JSON content), the parse error
+If a `.dvs` meta file is corrupted (non-JSON content), the parse error
 surfaces as a per-file row in the result rather than a top-level abort. The
 rest of the tree still resolves.
 
@@ -750,7 +739,7 @@ dvs_init(storage_path = here::here(ump_storage), root_dir = here::here(ump_proje
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad3e84be8c_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f34580c9c_storage staff        
 ```
 
 
@@ -1034,7 +1023,7 @@ dvs_init(storage_path = here::here(bm_storage), root_dir = here::here(bm_project
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad32ea88e9_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f2934d750_storage staff        
 ```
 
 
@@ -1141,9 +1130,9 @@ dvs_init(storage_path = here::here(hm_storage), root_dir = here::here(hm_project
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                               backend_group
-  <chr>       <lgl>                <chr>                                                                      <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad310f8c830_storage staff        
+  compression metadata_folder_name backend_path                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                     <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f2b394d53_storage staff        
 ```
 
 

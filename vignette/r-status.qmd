@@ -17,6 +17,7 @@ metadata columns.
 dvs_status(
   paths = character(0),
   recursive = NULL,
+  glob = NULL,
   status = c("current", "absent", "unsynced")
 )
 ```
@@ -27,6 +28,7 @@ dvs_status(
 |---|---|---|---|
 | `paths` | character | `character(0)` (whole project) | Files or directories to report. |
 | `recursive` | logical(1) | `NULL` (treated as `FALSE`) | Include files in subdirectories of given directories. |
+| `glob` | character(1) | `NULL` | Library-expanded glob, same resolution rules as the CLI `--glob`. Mutually exclusive with `recursive`. |
 | `status` | character | all three | Statuses to include. Validated with `match.arg(several.ok = TRUE)`. |
 
 ## Setup
@@ -124,7 +126,7 @@ A tibble with one row per file:
 | `path` | character | File path. |
 | `status` | character | `current`, `absent`, or `unsynced`. |
 | `hash` | character | blake3 content hash. |
-| `size` | `dvs_bytes` | Stored size. |
+| `size` | `dvs_bytes` | File size recorded in the meta file (uncompressed). |
 | `created_by` | character | User who added the file. |
 | `compression` | character | `zstd` or `none`, recorded per file. |
 | `message` | character | Message from `dvs_add()`, or `NA`. |

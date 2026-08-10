@@ -29,7 +29,7 @@ function initSearch() {
     const resultsItems = document.querySelector(".search-results__items");
     let index;
 
-    fetch(window.MINIEXTENDR_SEARCH_INDEX_URL)
+    fetch(window.DVS_SEARCH_INDEX_URL)
         .then(response => response.json())
         .then(data => {
             index = elasticlunr.Index.load(data);

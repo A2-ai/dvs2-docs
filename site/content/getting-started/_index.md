@@ -6,17 +6,15 @@ template = "section.html"
 description = "Run the core dvs workflow on a small dataset, from R or the CLI."
 +++
 
-dvs versions large or sensitive data files independently of your source control.
-File contents go to a content-addressed blob store. Small text meta files sit
-next to your code and record what is tracked. dvs works alongside Git or on its
-own.
+This section has the install steps and two walkthroughs of the core dvs loop:
+one with `library(dvs)`, one from the terminal.
 
 ## The core workflow
 
 The CLI and the R package expose the same four verbs: `init`, `add`, `status`,
-`get`. The two walkthroughs below take one small dataset (R's built-in `Theoph`,
-saved as a CSV) through the full loop: initialize a repository, add the file,
-check status, delete it, then get it back.
+`get`. Both walkthroughs take one small dataset (R's built-in `Theoph`, saved as
+a CSV) through the full loop: initialize a project, add the file, check status,
+delete it, then get it back.
 
 - [R walkthrough](@/getting-started/r.md): the workflow with `library(dvs)`.
 - [CLI walkthrough](@/getting-started/cli.md): the same workflow from the terminal.

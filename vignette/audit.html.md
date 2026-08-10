@@ -12,8 +12,9 @@ execute:
 This page is implementation detail, beyond what normal use requires.
 :::
 
-Every add is appended to `audit.log.jsonl` in the storage directory. The log is
-append-only and newline-delimited JSON, with one operation per line.
+Every `init` and `add` is appended to `audit.log.jsonl` in the storage
+directory. The log is append-only and newline-delimited JSON, with one operation
+per line.
 
 # Setup
 
@@ -26,15 +27,6 @@ library(dvs)
 library(fs)
 library(here)
 ```
-
-::: {.cell-output .cell-output-stderr}
-
-```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
-```
-
-
-:::
 :::
 
 
@@ -76,7 +68,7 @@ dvs_init(here::here(storage))
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c926e34747_storage staff        
 ```
 
 
@@ -96,8 +88,8 @@ invisible(dvs_add("data/file_3.csv", message = "initial add of file 3"))
 :::
 
 
-Restore a file with `get`. Note that `get` does not append to the audit log;
-only `init` and `add` are recorded.
+Restore a file with `get`. `get` does not append to the audit log; only `init`
+and `add` are recorded.
 
 
 ::: {.cell}
@@ -163,11 +155,11 @@ cat("```json\n")
 cat(lines, sep = "\n")
 ```
 
-{"operation_id":"7c137393-70b8-4807-b26d-373599b682f7","timestamp":1786375425,"user":"elea","action":{"init":{"settings":{"compression":"zstd","metadata_folder_name":null,"backend":{"path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage","group":"staff"}},"project_path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee036c5f6b99_project"}}}
-{"operation_id":"bb2ae161-8c2c-4755-8682-34c68fe4cab3","timestamp":1786375425,"user":"elea","action":{"add":{"file":{"path":"data/file_1.csv","hashes":{"blake3":"716693ea8b20e5a73abf0e5e35247cc232f1ae66c573ed1bc013cab8199f2cae"}},"compression":"zstd"}}}
-{"operation_id":"008b7b6a-b15c-4f0d-b19b-327c6c84d460","timestamp":1786375425,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"59548c554d27252f5f5cf9a11ba5df4de216602831b000a9105c56094c958e88"}},"compression":"zstd"}}}
-{"operation_id":"c0ac3187-bf33-4064-a581-5fe067cf85e2","timestamp":1786375425,"user":"elea","action":{"add":{"file":{"path":"data/file_3.csv","hashes":{"blake3":"2d9855e7f48b07cb280cfba4596893f9fc9b615ff96107d8b83446a12ee0451d"}},"compression":"zstd"}}}
-{"operation_id":"ab323bc6-0a7c-4758-b667-f02b673075ec","timestamp":1786375425,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"db1eb2d8544f2c649b86a8058342273d221f9d9a0134227d03d36c924e9c85f9"}},"compression":"zstd"}}}
+{"operation_id":"36a11dc6-3af1-4d70-91b0-04d8c08d0cb5","timestamp":1786391069,"user":"elea","action":{"init":{"settings":{"compression":"zstd","metadata_folder_name":null,"backend":{"path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c926e34747_storage","group":"staff"}},"project_path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c9135c9a43_project"}}}
+{"operation_id":"4ec573a3-b5ae-4fb1-945d-31f5a7b4a474","timestamp":1786391069,"user":"elea","action":{"add":{"file":{"path":"data/file_1.csv","hashes":{"blake3":"7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242"}},"compression":"zstd"}}}
+{"operation_id":"002b8eb7-0348-4e7b-9ef7-228a76dd27d8","timestamp":1786391069,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd"}},"compression":"zstd"}}}
+{"operation_id":"39505bdd-c96c-4b5c-8077-c41a885dbd18","timestamp":1786391069,"user":"elea","action":{"add":{"file":{"path":"data/file_3.csv","hashes":{"blake3":"f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d"}},"compression":"zstd"}}}
+{"operation_id":"b33801cd-ce8d-4a84-90b5-c57351a96acf","timestamp":1786391070,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d"}},"compression":"zstd"}}}
 
 ```{.r .cell-code}
 cat("\n```\n")
@@ -192,8 +184,8 @@ for (l in lines) {
 ```
 
 {
-  "operation_id": "7c137393-70b8-4807-b26d-373599b682f7",
-  "timestamp": 1786375425,
+  "operation_id": "36a11dc6-3af1-4d70-91b0-04d8c08d0cb5",
+  "timestamp": 1786391069,
   "user": "elea",
   "action": {
     "init": {
@@ -201,24 +193,24 @@ for (l in lines) {
         "compression": "zstd",
         "metadata_folder_name": {},
         "backend": {
-          "path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage",
+          "path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c926e34747_storage",
           "group": "staff"
         }
       },
-      "project_path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee036c5f6b99_project"
+      "project_path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c9135c9a43_project"
     }
   }
 }
 {
-  "operation_id": "bb2ae161-8c2c-4755-8682-34c68fe4cab3",
-  "timestamp": 1786375425,
+  "operation_id": "4ec573a3-b5ae-4fb1-945d-31f5a7b4a474",
+  "timestamp": 1786391069,
   "user": "elea",
   "action": {
     "add": {
       "file": {
         "path": "data/file_1.csv",
         "hashes": {
-          "blake3": "716693ea8b20e5a73abf0e5e35247cc232f1ae66c573ed1bc013cab8199f2cae"
+          "blake3": "7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242"
         }
       },
       "compression": "zstd"
@@ -226,15 +218,15 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "008b7b6a-b15c-4f0d-b19b-327c6c84d460",
-  "timestamp": 1786375425,
+  "operation_id": "002b8eb7-0348-4e7b-9ef7-228a76dd27d8",
+  "timestamp": 1786391069,
   "user": "elea",
   "action": {
     "add": {
       "file": {
         "path": "data/file_2.csv",
         "hashes": {
-          "blake3": "59548c554d27252f5f5cf9a11ba5df4de216602831b000a9105c56094c958e88"
+          "blake3": "855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd"
         }
       },
       "compression": "zstd"
@@ -242,15 +234,15 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "c0ac3187-bf33-4064-a581-5fe067cf85e2",
-  "timestamp": 1786375425,
+  "operation_id": "39505bdd-c96c-4b5c-8077-c41a885dbd18",
+  "timestamp": 1786391069,
   "user": "elea",
   "action": {
     "add": {
       "file": {
         "path": "data/file_3.csv",
         "hashes": {
-          "blake3": "2d9855e7f48b07cb280cfba4596893f9fc9b615ff96107d8b83446a12ee0451d"
+          "blake3": "f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d"
         }
       },
       "compression": "zstd"
@@ -258,15 +250,15 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "ab323bc6-0a7c-4758-b667-f02b673075ec",
-  "timestamp": 1786375425,
+  "operation_id": "b33801cd-ce8d-4a84-90b5-c57351a96acf",
+  "timestamp": 1786391070,
   "user": "elea",
   "action": {
     "add": {
       "file": {
         "path": "data/file_2.csv",
         "hashes": {
-          "blake3": "db1eb2d8544f2c649b86a8058342273d221f9d9a0134227d03d36c924e9c85f9"
+          "blake3": "166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d"
         }
       },
       "compression": "zstd"
@@ -304,9 +296,10 @@ either `"init"` or `"add"` (`get` is not logged). Parse it with `purrr` and
 parse_entry <- function(line) {
   entry <- jsonlite::fromJSON(line)
   cmd   <- names(entry$action)[1]
+  # init records settings and project_path, not a file, so it has no path.
   path  <- switch(cmd,
     add  = entry$action$add$file$path,
-    get  = entry$action$get$file$path,
+    init = NA_character_,
     NA_character_
   )
   list(
@@ -331,11 +324,11 @@ audit_tbl
 # A tibble: 5 × 5
   operation_id                         timestamp           user  command path           
   <chr>                                <dttm>              <chr> <chr>   <chr>          
-1 7c137393-70b8-4807-b26d-373599b682f7 2026-08-10 17:23:45 elea  init    <NA>           
-2 bb2ae161-8c2c-4755-8682-34c68fe4cab3 2026-08-10 17:23:45 elea  add     data/file_1.csv
-3 008b7b6a-b15c-4f0d-b19b-327c6c84d460 2026-08-10 17:23:45 elea  add     data/file_2.csv
-4 c0ac3187-bf33-4064-a581-5fe067cf85e2 2026-08-10 17:23:45 elea  add     data/file_3.csv
-5 ab323bc6-0a7c-4758-b667-f02b673075ec 2026-08-10 17:23:45 elea  add     data/file_2.csv
+1 36a11dc6-3af1-4d70-91b0-04d8c08d0cb5 2026-08-10 21:44:29 elea  init    <NA>           
+2 4ec573a3-b5ae-4fb1-945d-31f5a7b4a474 2026-08-10 21:44:29 elea  add     data/file_1.csv
+3 002b8eb7-0348-4e7b-9ef7-228a76dd27d8 2026-08-10 21:44:29 elea  add     data/file_2.csv
+4 39505bdd-c96c-4b5c-8077-c41a885dbd18 2026-08-10 21:44:29 elea  add     data/file_3.csv
+5 b33801cd-ce8d-4a84-90b5-c57351a96acf 2026-08-10 21:44:30 elea  add     data/file_2.csv
 ```
 
 
@@ -387,10 +380,10 @@ audit_tbl |>
 # A tibble: 4 × 3
   timestamp           command path           
   <dttm>              <chr>   <chr>          
-1 2026-08-10 17:23:45 add     data/file_1.csv
-2 2026-08-10 17:23:45 add     data/file_2.csv
-3 2026-08-10 17:23:45 add     data/file_3.csv
-4 2026-08-10 17:23:45 add     data/file_2.csv
+1 2026-08-10 21:44:29 add     data/file_1.csv
+2 2026-08-10 21:44:29 add     data/file_2.csv
+3 2026-08-10 21:44:29 add     data/file_3.csv
+4 2026-08-10 21:44:30 add     data/file_2.csv
 ```
 
 

@@ -21,6 +21,7 @@ Arguments:
 Options:
       --json               Output results as JSON
   -r, --recursive          Recurse into subdirectories of given directories
+  -g, --glob <GLOB>        Select files by glob pattern
       --current            Include current files
       --absent             Include absent files
       --unsynced           Include unsynced files
@@ -35,6 +36,7 @@ Options:
 |---|---|---|---|
 | `[PATHS]...` | paths | whole project | Files or directories to report. |
 | `-r`, `--recursive` | flag | off | Include files in subdirectories of given directories. |
+| `-g`, `--glob` | pattern | none | Library-expanded glob, literal path separator (use `**` to recurse). |
 | `--current` | flag | off | Include `current` files. |
 | `--absent` | flag | off | Include `absent` files. |
 | `--unsynced` | flag | off | Include `unsynced` files. |
@@ -50,6 +52,7 @@ statuses are shown.
 Add three files, then delete one and edit another so all three states appear.
 
 ```{r}
+#| message: false
 options(width = 1000)
 library(here)
 proj    <- here::here(basename(tempfile(fileext = "_project")))
@@ -103,6 +106,20 @@ dvs status data
 cd "$DVS_PROJECT"
 dvs status data -r
 ```
+
+## `-g`, `--glob`
+
+Report the files matching a library-expanded glob. The path separator is
+literal, so `data/*.csv` stops at `data/`; use `**` to cross directory
+boundaries.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status -g "data/*.csv"
+```
+
+`--recursive` and `--glob` are mutually exclusive; passing both is a usage
+error.
 
 ## Status filters
 

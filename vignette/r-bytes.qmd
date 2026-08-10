@@ -8,9 +8,10 @@ execute:
   freeze: auto
 ---
 
-`new_dvs_bytes()` constructs a `dvs_bytes` vector. The `size` and `stored_size`
-columns returned by [dvs_add()](r-add.html), [dvs_status()](r-status.html), and
-[dvs_get()](r-get.html) are `dvs_bytes` values, so they print as human-readable
+`new_dvs_bytes()` constructs a `dvs_bytes` vector. The `size` column returned by
+[dvs_add()](r-add.html), [dvs_status()](r-status.html), and
+[dvs_get()](r-get.html), and the `stored_size` column returned by
+[dvs_add()](r-add.html), are `dvs_bytes` values, so they print as human-readable
 sizes in a tibble. Values are stored as `double` to represent sizes past 2 GB
 without integer overflow.
 

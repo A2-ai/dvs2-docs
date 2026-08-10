@@ -14,7 +14,7 @@ writes the contents back to their original paths. It is the inverse of
 is not on disk.
 
 ```r
-dvs_get(paths = character(0), glob = NULL, dry_run = NULL)
+dvs_get(paths = character(0), glob = NULL, recursive = NULL, dry_run = NULL)
 ```
 
 ## Parameters
@@ -23,11 +23,11 @@ dvs_get(paths = character(0), glob = NULL, dry_run = NULL)
 |---|---|---|---|
 | `paths` | character | `character(0)` | Files to retrieve. |
 | `glob` | character(1) | `NULL` | Library-expanded glob. Uses a literal path separator (use `**` to recurse). |
+| `recursive` | logical(1) | `NULL` (treated as `FALSE`) | If `TRUE`, walk explicit directory paths recursively (same as the CLI `-r`). |
 | `dry_run` | logical(1) | `NULL` (treated as `FALSE`) | Report what would be retrieved; write nothing. |
 
-A progress bar is shown automatically while files are processed (the wrapper
-creates an internal `progress_callback` handle); it is not a parameter. No bar
-is shown for a dry run.
+In interactive sessions a progress bar is shown while files are processed. It is
+not a parameter, and no bar appears in scripts, rendered documents, or dry runs.
 
 ## Setup
 
@@ -75,6 +75,32 @@ Restore by glob. Use `**` to cross directory boundaries.
 setwd(proj)
 dvs_get(glob = "data/**/*.csv")
 ```
+
+## `recursive`
+
+A directory path restores only the files directly in it. Here the nested
+`data/sub/f3.csv` is left alone.
+
+```{r}
+setwd(proj)
+file.remove("data/f1.csv", "data/f2.csv", "data/sub/f3.csv")
+dvs_get("data")
+```
+
+```{r}
+setwd(proj)
+dvs_status("data/sub/f3.csv")[, c("path", "status")]
+```
+
+With `recursive = TRUE` the whole subtree is restored. Files already back on
+disk are reported as `present` rather than retrieved again.
+
+```{r}
+setwd(proj)
+dvs_get("data", recursive = TRUE)
+```
+
+`glob` and `recursive` are mutually exclusive; passing both raises an error.
 
 ## `dry_run`
 

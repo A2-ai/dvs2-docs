@@ -21,6 +21,7 @@ Arguments:
 
 Options:
   -g, --glob <GLOB>        Select files by glob pattern
+  -r, --recursive          Recurse into subdirectories of directory inputs
       --json               Output results as JSON
       --dry-run            Show what would be retrieved without writing files
       --threads <THREADS>  Threads (0 = auto-detect)
@@ -33,9 +34,13 @@ Options:
 |---|---|---|---|
 | `[PATHS]...` | paths | none | Files to retrieve. |
 | `-g`, `--glob` | pattern | none | Library-expanded glob, literal path separator (use `**` to recurse). |
+| `-r`, `--recursive` | flag | off | Walk subdirectories of directory inputs. Without it, a directory retrieves only its direct children. |
 | `--dry-run` | flag | off | Report what would be retrieved; write nothing. |
 | `--threads` | integer | `0` (auto) | Thread pool size for this command. |
 | `--json` | flag | off | Emit results as JSON. |
+
+`--recursive` and `--glob` are mutually exclusive. At least one path or
+`--glob` is required; `dvs get` with neither is a usage error.
 
 ::: {.callout-note}
 `get` exposes a short `-g` for `--glob`; `add` only has the long `--glob`.
@@ -46,6 +51,7 @@ Options:
 Add three files, then delete them so `get` has something to restore.
 
 ```{r}
+#| message: false
 options(width = 1000)
 library(here)
 proj    <- here::here(basename(tempfile(fileext = "_project")))
@@ -92,6 +98,42 @@ cd "$DVS_PROJECT"
 dvs get -g "data/**/*.csv"
 ```
 
+## `-r`, `--recursive`
+
+A directory argument retrieves only the files directly in it. Here the nested
+`data/sub/f3.csv` is left alone.
+
+```{bash}
+cd "$DVS_PROJECT"
+rm data/f1.csv data/f2.csv data/sub/f3.csv
+dvs get data
+dvs status --absent
+```
+
+With `-r` the rest of the subtree is retrieved.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs get data -r
+```
+
+## Restore the whole project
+
+`get` needs at least one path or a `--glob`, so there is no bare `dvs get` that
+means "everything". Pass the project root as a recursive directory instead: from
+the root, `dvs get . -r` restores every tracked file. A directory argument is
+resolved from where you run it, so the same command in a subdirectory restores
+only that subtree.
+
+```{bash}
+cd "$DVS_PROJECT"
+rm data/f1.csv data/f2.csv data/sub/f3.csv
+dvs get . -r
+```
+
+`dvs get -g '**/*'` does the same thing through the glob surface. Quote the
+pattern so the shell does not expand it first.
+
 ## `--dry-run`
 
 Report what would be retrieved without writing files.
@@ -130,8 +172,8 @@ dvs get data/f1.csv --json
 ## Differences from R
 
 The R function is [dvs_get()](r-get.html). It returns a data frame rather than
-printed lines, has no `--threads` or `--json`, and exposes the progress bar as
-an internal `progress_callback` handle.
+printed lines, has no `--threads` or `--json`, and shows a progress bar only in
+interactive sessions.
 
 ## See also
 

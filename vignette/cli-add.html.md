@@ -46,18 +46,6 @@ Options:
 ```{.r .cell-code}
 options(width = 1000)
 library(here)
-```
-
-::: {.cell-output .cell-output-stderr}
-
-```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
-```
-
-
-:::
-
-```{.r .cell-code}
 proj    <- here::here(basename(tempfile(fileext = "_project")))
 storage <- here::here(basename(tempfile(fileext = "_storage")))
 dir.create(proj)
@@ -87,7 +75,7 @@ dvs init "$DVS_STORAGE"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filed5f97d839b96_project"
+DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file72fa1a822d98_project"
 ```
 
 
@@ -294,9 +282,12 @@ dvs add data/as_json.csv --json
 :::
 
 
-## Partial failure
+## Invalid paths refuse the batch
 
-If any path fails, `add` reports the error per file and exits with code 1.
+Input paths are validated before anything is written. If a path cannot be
+resolved to a file to add, because it is missing, is a directory passed without
+a glob, or lands outside the project root, the whole batch is refused: nothing
+is added, and `add` exits 1.
 
 
 ::: {.cell}
@@ -319,11 +310,15 @@ exit code: 1
 :::
 
 
+A failure in the copy phase of an already valid batch behaves differently.
+Files that can be copied are still added, the failing ones are reported per
+file, and `add` exits 1 all the same.
+
 ## Differences from R
 
 The R function is [dvs_add()](r-add.html). It returns a data frame rather than
-printed lines, has no `--threads` or `--json`, and exposes the progress bar as
-an internal `progress_callback` handle rather than always printing one.
+printed lines, has no `--threads` or `--json`, and shows a progress bar only in
+interactive sessions, rather than always printing one.
 
 ## See also
 

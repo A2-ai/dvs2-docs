@@ -2359,7 +2359,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </section>
 <section id="differences-from-the-cli" class="level2">
 <h2 class="anchored" data-anchor-id="differences-from-the-cli">Differences from the CLI</h2>
-<p>The CLI sets threads per call with <code>--threads &lt;N&gt;</code>, or process-wide with the <code>DVS_NUM_THREADS</code> environment variable. The R setting is process-wide only; see the <code>--threads</code> flag on any <a href="cli-init.html">CLI command</a>.</p>
+<p>The CLI sets threads per call with <code>--threads &lt;N&gt;</code>; the R setting is process-wide. Threads set directly on either surface win. The <code>DVS_NUM_THREADS</code> environment variable applies only when neither the CLI flag nor <code>set_dvs_threads()</code> has set a count. See the <code>--threads</code> flag on any <a href="cli-init.html">CLI command</a>.</p>
 </section>
 <section id="see-also" class="level2">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>

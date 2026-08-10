@@ -15,11 +15,12 @@ This page is implementation detail, beyond what normal use requires.
 # Setup
 
 ```{r}
+#| message: false
 library(dvs)
 library(here)
 
 # Print tibbles wide so all columns appear on one row.
-# options(width = Inf) is rejected by base R (max 10000); 10000 is the ceiling.
+# 10000 is the ceiling base R allows.
 options(width = 10000)
 ```
 
@@ -307,7 +308,7 @@ dvs status present.csv missing.csv
 
 ## Unparseable meta file
 
-If a `.dvs` metadata file is corrupted (non-JSON content), the parse error
+If a `.dvs` meta file is corrupted (non-JSON content), the parse error
 surfaces as a per-file row in the result rather than a top-level abort. The
 rest of the tree still resolves.
 

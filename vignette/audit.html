@@ -2311,7 +2311,7 @@ Note
 <p>This page is implementation detail, beyond what normal use requires.</p>
 </div>
 </div>
-<p>Every add is appended to <code>audit.log.jsonl</code> in the storage directory. The log is append-only and newline-delimited JSON, with one operation per line.</p>
+<p>Every <code>init</code> and <code>add</code> is appended to <code>audit.log.jsonl</code> in the storage directory. The log is append-only and newline-delimited JSON, with one operation per line.</p>
 <section id="setup" class="level1">
 <h1>Setup</h1>
 <div class="cell">
@@ -2319,42 +2319,39 @@ Note
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo</code></pre>
-</div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>storage     <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>))</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>storage     <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_storage&quot;</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>new_project <span class="ot">&lt;-</span> <span class="fu">basename</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;_project&quot;</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Run a sequence of dvs operations to populate the log:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>, <span class="at">size_mb =</span> <span class="dv">2</span>, <span class="at">prefix =</span> <span class="st">&quot;file_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>, <span class="at">size_mb =</span> <span class="dv">2</span>, <span class="at">prefix =</span> <span class="st">&quot;file_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage staff        </code></pre>
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c926e34747_storage staff        </code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;initial add of file 1&quot;</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;initial add of file 2&quot;</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_3.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;initial add of file 3&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Restore a file with <code>get</code>. <code>get</code> does not append to the audit log; only <code>init</code> and <code>add</code> are recorded.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;initial add of file 1&quot;</span>))</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;initial add of file 2&quot;</span>))</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_3.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;initial add of file 3&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Restore a file with <code>get</code>. Note that <code>get</code> does not append to the audit log; only <code>init</code> and <code>add</code> are recorded.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/file_1.csv&quot;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/file_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/file_1.csv&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/file_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   path            outcome    size
@@ -2364,39 +2361,39 @@ Note
 </div>
 <p>Modify <code>file_2.csv</code> and re-add:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;99,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;updated file 2, added row 99&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;99,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/file_2.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;updated file 2, added row 99&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="reading-the-log" class="level1">
 <h1>Reading the log</h1>
 <p>The audit log is a newline-delimited JSON file (<code>audit.log.jsonl</code>) in the storage directory. Each line is one operation:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>audit_path <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="st">&quot;audit.log.jsonl&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>audit_path <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="st">&quot;audit.log.jsonl&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Raw file, one JSON object per line:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(audit_path)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="er">cat(lines,</span> <span class="er">sep</span> <span class="er">=</span> <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span><span class="er">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>{“operation_id”:“7c137393-70b8-4807-b26d-373599b682f7”,“timestamp”:1786375425,“user”:“elea”,“action”:{“init”:{“settings”:{“compression”:“zstd”,“metadata_folder_name”:null,“backend”:{“path”:“/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage”,“group”:“staff”}},“project_path”:“/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee036c5f6b99_project”}}} {“operation_id”:“bb2ae161-8c2c-4755-8682-34c68fe4cab3”,“timestamp”:1786375425,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_1.csv”,“hashes”:{“blake3”:“716693ea8b20e5a73abf0e5e35247cc232f1ae66c573ed1bc013cab8199f2cae”}},“compression”:“zstd”}}} {“operation_id”:“008b7b6a-b15c-4f0d-b19b-327c6c84d460”,“timestamp”:1786375425,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_2.csv”,“hashes”:{“blake3”:“59548c554d27252f5f5cf9a11ba5df4de216602831b000a9105c56094c958e88”}},“compression”:“zstd”}}} {“operation_id”:“c0ac3187-bf33-4064-a581-5fe067cf85e2”,“timestamp”:1786375425,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_3.csv”,“hashes”:{“blake3”:“2d9855e7f48b07cb280cfba4596893f9fc9b615ff96107d8b83446a12ee0451d”}},“compression”:“zstd”}}} {“operation_id”:“ab323bc6-0a7c-4758-b667-f02b673075ec”,“timestamp”:1786375425,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_2.csv”,“hashes”:{“blake3”:“db1eb2d8544f2c649b86a8058342273d221f9d9a0134227d03d36c924e9c85f9”}},“compression”:“zstd”}}}</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(audit_path)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```json</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="er">cat(lines,</span> <span class="er">sep</span> <span class="er">=</span> <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span><span class="er">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>{“operation_id”:“36a11dc6-3af1-4d70-91b0-04d8c08d0cb5”,“timestamp”:1786391069,“user”:“elea”,“action”:{“init”:{“settings”:{“compression”:“zstd”,“metadata_folder_name”:null,“backend”:{“path”:“/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c926e34747_storage”,“group”:“staff”}},“project_path”:“/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c9135c9a43_project”}}} {“operation_id”:“4ec573a3-b5ae-4fb1-945d-31f5a7b4a474”,“timestamp”:1786391069,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_1.csv”,“hashes”:{“blake3”:“7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242”}},“compression”:“zstd”}}} {“operation_id”:“002b8eb7-0348-4e7b-9ef7-228a76dd27d8”,“timestamp”:1786391069,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_2.csv”,“hashes”:{“blake3”:“855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd”}},“compression”:“zstd”}}} {“operation_id”:“39505bdd-c96c-4b5c-8077-c41a885dbd18”,“timestamp”:1786391069,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_3.csv”,“hashes”:{“blake3”:“f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d”}},“compression”:“zstd”}}} {“operation_id”:“b33801cd-ce8d-4a84-90b5-c57351a96acf”,“timestamp”:1786391070,“user”:“elea”,“action”:{“add”:{“file”:{“path”:“data/file_2.csv”,“hashes”:{“blake3”:“166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d”}},“compression”:“zstd”}}}</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <pre><code>
 Same entries, pretty-printed:
 
 
 ```{.r .cell-code}
 cat(&quot;```json\n&quot;)</code></pre>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="er">for</span> <span class="er">(l</span> <span class="er">in</span> <span class="er">lines)</span> <span class="fu">{</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="er">cat(jsonlite</span><span class="fu">:</span><span class="er">:toJSON(jsonlite::fromJSON(l</span><span class="fu">,</span> <span class="er">simplifyVector</span> <span class="er">=</span> <span class="er">FALSE),</span> <span class="er">pretty</span> <span class="er">=</span> <span class="er">TRUE,</span> <span class="er">auto_unbox</span> <span class="er">=</span> <span class="er">TRUE))</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="er">cat(</span><span class="dt">&quot;</span><span class="ch">\n</span><span class="dt">&quot;</span><span class="er">)</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>{ “operation_id”: “7c137393-70b8-4807-b26d-373599b682f7”, “timestamp”: 1786375425, “user”: “elea”, “action”: { “init”: { “settings”: { “compression”: “zstd”, “metadata_folder_name”: {}, “backend”: { “path”: “/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage”, “group”: “staff” } }, “project_path”: “/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee036c5f6b99_project” } } } { “operation_id”: “bb2ae161-8c2c-4755-8682-34c68fe4cab3”, “timestamp”: 1786375425, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_1.csv”, “hashes”: { “blake3”: “716693ea8b20e5a73abf0e5e35247cc232f1ae66c573ed1bc013cab8199f2cae” } }, “compression”: “zstd” } } } { “operation_id”: “008b7b6a-b15c-4f0d-b19b-327c6c84d460”, “timestamp”: 1786375425, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_2.csv”, “hashes”: { “blake3”: “59548c554d27252f5f5cf9a11ba5df4de216602831b000a9105c56094c958e88” } }, “compression”: “zstd” } } } { “operation_id”: “c0ac3187-bf33-4064-a581-5fe067cf85e2”, “timestamp”: 1786375425, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_3.csv”, “hashes”: { “blake3”: “2d9855e7f48b07cb280cfba4596893f9fc9b615ff96107d8b83446a12ee0451d” } }, “compression”: “zstd” } } } { “operation_id”: “ab323bc6-0a7c-4758-b667-f02b673075ec”, “timestamp”: 1786375425, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_2.csv”, “hashes”: { “blake3”: “db1eb2d8544f2c649b86a8058342273d221f9d9a0134227d03d36c924e9c85f9” } }, “compression”: “zstd” } } }</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="er">```</span><span class="fu">{</span><span class="er">.r</span> <span class="er">.cell-code</span><span class="fu">}</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="er">for</span> <span class="er">(l</span> <span class="er">in</span> <span class="er">lines)</span> <span class="fu">{</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="er">cat(jsonlite</span><span class="fu">:</span><span class="er">:toJSON(jsonlite::fromJSON(l</span><span class="fu">,</span> <span class="er">simplifyVector</span> <span class="er">=</span> <span class="er">FALSE),</span> <span class="er">pretty</span> <span class="er">=</span> <span class="er">TRUE,</span> <span class="er">auto_unbox</span> <span class="er">=</span> <span class="er">TRUE))</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="er">cat(</span><span class="dt">&quot;</span><span class="ch">\n</span><span class="dt">&quot;</span><span class="er">)</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>{ “operation_id”: “36a11dc6-3af1-4d70-91b0-04d8c08d0cb5”, “timestamp”: 1786391069, “user”: “elea”, “action”: { “init”: { “settings”: { “compression”: “zstd”, “metadata_folder_name”: {}, “backend”: { “path”: “/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c926e34747_storage”, “group”: “staff” } }, “project_path”: “/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file76c9135c9a43_project” } } } { “operation_id”: “4ec573a3-b5ae-4fb1-945d-31f5a7b4a474”, “timestamp”: 1786391069, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_1.csv”, “hashes”: { “blake3”: “7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242” } }, “compression”: “zstd” } } } { “operation_id”: “002b8eb7-0348-4e7b-9ef7-228a76dd27d8”, “timestamp”: 1786391069, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_2.csv”, “hashes”: { “blake3”: “855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd” } }, “compression”: “zstd” } } } { “operation_id”: “39505bdd-c96c-4b5c-8077-c41a885dbd18”, “timestamp”: 1786391069, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_3.csv”, “hashes”: { “blake3”: “f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d” } }, “compression”: “zstd” } } } { “operation_id”: “b33801cd-ce8d-4a84-90b5-c57351a96acf”, “timestamp”: 1786391070, “user”: “elea”, “action”: { “add”: { “file”: { “path”: “data/file_2.csv”, “hashes”: { “blake3”: “166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d” } }, “compression”: “zstd” } } }</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;```</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <pre><code>
 # Parsing the log
 
@@ -2411,37 +2408,38 @@ Each entry has the shape:
 }</code></pre>
 <p>The <code>action</code> field is a tagged union. The single key is the command name, either <code>&quot;init&quot;</code> or <code>&quot;add&quot;</code> (<code>get</code> is not logged). Parse it with <code>purrr</code> and <code>jsonlite</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>parse_entry <span class="ot">&lt;-</span> <span class="cf">function</span>(line) {</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  entry <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(line)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  cmd   <span class="ot">&lt;-</span> <span class="fu">names</span>(entry<span class="sc">$</span>action)[<span class="dv">1</span>]</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  path  <span class="ot">&lt;-</span> <span class="cf">switch</span>(cmd,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">add  =</span> entry<span class="sc">$</span>action<span class="sc">$</span>add<span class="sc">$</span>file<span class="sc">$</span>path,</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">get  =</span> entry<span class="sc">$</span>action<span class="sc">$</span>get<span class="sc">$</span>file<span class="sc">$</span>path,</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">NA_character_</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">operation_id =</span> entry<span class="sc">$</span>operation_id,</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">timestamp    =</span> <span class="fu">as.POSIXct</span>(entry<span class="sc">$</span>timestamp, <span class="at">origin =</span> <span class="st">&quot;1970-01-01&quot;</span>),</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">user         =</span> entry<span class="sc">$</span>user,</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">command      =</span> cmd,</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">path         =</span> path</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>audit_tbl <span class="ot">&lt;-</span> <span class="fu">readLines</span>(audit_path) <span class="sc">|&gt;</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(parse_entry) <span class="sc">|&gt;</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>()</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>audit_tbl</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>parse_entry <span class="ot">&lt;-</span> <span class="cf">function</span>(line) {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  entry <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(line)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  cmd   <span class="ot">&lt;-</span> <span class="fu">names</span>(entry<span class="sc">$</span>action)[<span class="dv">1</span>]</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># init records settings and project_path, not a file, so it has no path.</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  path  <span class="ot">&lt;-</span> <span class="cf">switch</span>(cmd,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">add  =</span> entry<span class="sc">$</span>action<span class="sc">$</span>add<span class="sc">$</span>file<span class="sc">$</span>path,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">init =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="cn">NA_character_</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">operation_id =</span> entry<span class="sc">$</span>operation_id,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">timestamp    =</span> <span class="fu">as.POSIXct</span>(entry<span class="sc">$</span>timestamp, <span class="at">origin =</span> <span class="st">&quot;1970-01-01&quot;</span>),</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">user         =</span> entry<span class="sc">$</span>user,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">command      =</span> cmd,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">path         =</span> path</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>audit_tbl <span class="ot">&lt;-</span> <span class="fu">readLines</span>(audit_path) <span class="sc">|&gt;</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(parse_entry) <span class="sc">|&gt;</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>()</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>audit_tbl</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 5
   operation_id                         timestamp           user  command path           
   &lt;chr&gt;                                &lt;dttm&gt;              &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          
-1 7c137393-70b8-4807-b26d-373599b682f7 2026-08-10 17:23:45 elea  init    &lt;NA&gt;           
-2 bb2ae161-8c2c-4755-8682-34c68fe4cab3 2026-08-10 17:23:45 elea  add     data/file_1.csv
-3 008b7b6a-b15c-4f0d-b19b-327c6c84d460 2026-08-10 17:23:45 elea  add     data/file_2.csv
-4 c0ac3187-bf33-4064-a581-5fe067cf85e2 2026-08-10 17:23:45 elea  add     data/file_3.csv
-5 ab323bc6-0a7c-4758-b667-f02b673075ec 2026-08-10 17:23:45 elea  add     data/file_2.csv</code></pre>
+1 36a11dc6-3af1-4d70-91b0-04d8c08d0cb5 2026-08-10 21:44:29 elea  init    &lt;NA&gt;           
+2 4ec573a3-b5ae-4fb1-945d-31f5a7b4a474 2026-08-10 21:44:29 elea  add     data/file_1.csv
+3 002b8eb7-0348-4e7b-9ef7-228a76dd27d8 2026-08-10 21:44:29 elea  add     data/file_2.csv
+4 39505bdd-c96c-4b5c-8077-c41a885dbd18 2026-08-10 21:44:29 elea  add     data/file_3.csv
+5 b33801cd-ce8d-4a84-90b5-c57351a96acf 2026-08-10 21:44:30 elea  add     data/file_2.csv</code></pre>
 </div>
 </div>
 </section>
@@ -2449,7 +2447,7 @@ Each entry has the shape:
 <h1>Querying the log</h1>
 <p>Operations by command type:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">count</span>(audit_tbl, command, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">count</span>(audit_tbl, command, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 2
   command     n
@@ -2460,25 +2458,25 @@ Each entry has the shape:
 </div>
 <p>Files touched per operation (excluding <code>init</code>):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>audit_tbl <span class="sc">|&gt;</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(path)) <span class="sc">|&gt;</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(timestamp, command, path) <span class="sc">|&gt;</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(timestamp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>audit_tbl <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(path)) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(timestamp, command, path) <span class="sc">|&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(timestamp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
   timestamp           command path           
   &lt;dttm&gt;              &lt;chr&gt;   &lt;chr&gt;          
-1 2026-08-10 17:23:45 add     data/file_1.csv
-2 2026-08-10 17:23:45 add     data/file_2.csv
-3 2026-08-10 17:23:45 add     data/file_3.csv
-4 2026-08-10 17:23:45 add     data/file_2.csv</code></pre>
+1 2026-08-10 21:44:29 add     data/file_1.csv
+2 2026-08-10 21:44:29 add     data/file_2.csv
+3 2026-08-10 21:44:29 add     data/file_3.csv
+4 2026-08-10 21:44:30 add     data/file_2.csv</code></pre>
 </div>
 </div>
 <p>How many times was each file touched?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>audit_tbl <span class="sc">|&gt;</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(path)) <span class="sc">|&gt;</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(path, command, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>audit_tbl <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(path)) <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(path, command, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
   path            command     n
@@ -2492,8 +2490,8 @@ Each entry has the shape:
 <section id="cleanup" class="level1">
 <h1>Cleanup</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="see-also" class="level2">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>

@@ -25,9 +25,8 @@ dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
 | `glob` | character(1) | `NULL` | Library-expanded glob. Uses a literal path separator (use `**` to recurse). |
 | `dry_run` | logical(1) | `NULL` (treated as `FALSE`) | Report what would be added; write nothing. |
 
-A progress bar is shown automatically while files are processed (the wrapper
-creates an internal `progress_callback` handle); it is not a parameter. No bar
-is shown for a dry run.
+In interactive sessions a progress bar is shown while files are processed. It is
+not a parameter, and no bar appears in scripts, rendered documents, or dry runs.
 
 ## Setup
 
@@ -44,6 +43,7 @@ dir.create(store)
 dir.create(file.path(proj, "data", "sub"), recursive = TRUE)
 write.csv(mtcars[1:8, ],  file.path(proj, "data", "f1.csv"))
 write.csv(mtcars[9:16, ], file.path(proj, "data", "f2.csv"))
+write.csv(mtcars[3:10, ], file.path(proj, "data", "f3.csv"))
 write.csv(iris[1:10, ],   file.path(proj, "data", "g1.csv"), row.names = FALSE)
 write.csv(iris[11:20, ],  file.path(proj, "data", "g2.csv"), row.names = FALSE)
 write.csv(iris[21:30, ],  file.path(proj, "data", "sub", "g3.csv"), row.names = FALSE)
@@ -57,7 +57,7 @@ dvs_init(store)
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                             backend_group
   <chr>       <lgl>                <chr>                                                                                    <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp9Uu9V7/storage_d1e82cc966d7 staff        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmptWEb8k/storage_71f43e168a10 staff        
 ```
 
 
@@ -92,23 +92,24 @@ dvs_add("data/f1.csv")
 :::
 
 
-Add several files in one call:
+`paths` is a character vector, so several files go in one call:
 
 
 ::: {.cell}
 
 ```{.r .cell-code}
 setwd(proj)
-dvs_add(c("data/f2.csv"))
+dvs_add(c("data/f2.csv", "data/f3.csv"))
 ```
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 5
+# A tibble: 2 × 5
   path        outcome hash                                                                size stored_size
   <chr>       <chr>   <chr>                                                            <bytes>     <bytes>
 1 data/f2.csv copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B
+2 data/f3.csv copied  a84f725603d7fd025bb6deb4889fd25465c0d23dfcbd0129f4fc7aa1472ecc2c   488 B       302 B
 ```
 
 
@@ -159,13 +160,14 @@ dvs_add(glob = "data/*.csv")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 4 × 5
+# A tibble: 5 × 5
   path        outcome hash                                                                size stored_size
   <chr>       <chr>   <chr>                                                            <bytes>     <bytes>
 1 data/f1.csv present 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       488 B
 2 data/f2.csv present c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       500 B
-3 data/g1.csv present 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       312 B
-4 data/g2.csv copied  a8eebfc0b894a2818e8c9edffe742df01a934073e3602a978836d622665786f7   312 B       147 B
+3 data/f3.csv present a84f725603d7fd025bb6deb4889fd25465c0d23dfcbd0129f4fc7aa1472ecc2c   488 B       488 B
+4 data/g1.csv present 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       312 B
+5 data/g2.csv copied  a8eebfc0b894a2818e8c9edffe742df01a934073e3602a978836d622665786f7   312 B       147 B
 ```
 
 
@@ -189,14 +191,15 @@ dvs_add(glob = "data/**/*.csv")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 5 × 5
+# A tibble: 6 × 5
   path            outcome hash                                                                size stored_size
   <chr>           <chr>   <chr>                                                            <bytes>     <bytes>
 1 data/f1.csv     present 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       488 B
 2 data/f2.csv     present c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       500 B
-3 data/g1.csv     present 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       312 B
-4 data/g2.csv     present a8eebfc0b894a2818e8c9edffe742df01a934073e3602a978836d622665786f7   312 B       312 B
-5 data/sub/g3.csv copied  6d19965b2ae61ed235114e9739c4e1d1d52994d3be9f95e436ac1b7c69bb4582   310 B       146 B
+3 data/f3.csv     present a84f725603d7fd025bb6deb4889fd25465c0d23dfcbd0129f4fc7aa1472ecc2c   488 B       488 B
+4 data/g1.csv     present 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       312 B
+5 data/g2.csv     present a8eebfc0b894a2818e8c9edffe742df01a934073e3602a978836d622665786f7   312 B       312 B
+6 data/sub/g3.csv copied  6d19965b2ae61ed235114e9739c4e1d1d52994d3be9f95e436ac1b7c69bb4582   310 B       146 B
 ```
 
 
