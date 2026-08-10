@@ -1,6 +1,6 @@
 ---
-title: "Working with many files"
-subtitle: "add single files, whole folders, and globs, including large datasets"
+title: "Introducing dvs"
+subtitle: "version your data files next to your code, without putting them in git"
 format:
   html:
     keep-md: true
@@ -8,25 +8,44 @@ execute:
   freeze: auto
 ---
 
-# Setup
+## The problem
+
+Analysis projects pair code with data, and git is only good at half of that
+pairing. Source files diff cleanly and stay small. Data files do neither: a
+25 MB CSV bloats every clone forever, binary formats produce useless diffs,
+and large files routinely blow past repository size limits. So the data ends
+up outside version control, on a shared drive, named `dataset_final_v2_REAL.csv`,
+and nobody can say which version produced last month's results.
+
+## What dvs does
+
+dvs keeps your data files exactly where your code expects them, inside the
+project tree, but it does not put them in git. Instead:
+
+- the bytes go to a **shared storage directory** (typically an NFS mount),
+  stored once per unique content and compressed with zstd
+- git tracks a **small JSON meta file** per data file, recording the hash,
+  size, who added it, when, and an optional message
+- teammates run one command to **materialize the data** their clone is missing
+
+There are four verbs: `init`, `add`, `status`, and `get`. They are available
+as an R package and as a CLI, and both surfaces operate on the same project
+interchangeably. This page walks the loop once, from R, and shows what ends
+up where. The in-depth pages then take each surface further:
+[the R package](intro-r.html), [the CLI](intro-cli.html), and
+[collaboration](collab.html).
+
+## Setup
+
+A project directory and a sibling storage directory. In real use the storage
+sits on shared infrastructure; a local directory behaves identically for the
+walkthrough.
 
 ```{r}
 options(width = 1000)
 library(dvs)
-library(fs)
 library(here)
 ```
-
-
-# Helpers
-
-```{r}
-source(here::here("R/mkdatasetfiles.R"))
-```
-
-
-See `vignette/random_files.qmd` for a demonstration of this function. 
-
 
 ```{r}
 storage     <- basename(tempfile(fileext = "_storage"))
@@ -35,150 +54,153 @@ dir.create(here::here(storage))
 dir.create(here::here(new_project))
 ```
 
-
-Let us add 1x25MB file (large), 3x1MB (small) and 50x3MB files (individual)
-
-```{r}
-#| warning: false
-setwd(here::here(new_project))
-
-mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> large_file
-mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> small_files
-mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH"))) -> individual_files
-```
-
+The project is a git repository with two data files: a PK concentration
+table and a derived NCA summary.
 
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
+system2("git", c("init", "--quiet", "."))
+dir.create("data/derived", recursive = TRUE)
 
-fs::dir_tree(
-  "data"
+write.csv(Theoph, "data/pk_profiles.csv", row.names = FALSE)
+write.csv(
+  data.frame(ID = 1:12, AUC = round(rnorm(12, 100, 15), 1)),
+  "data/derived/nca_summary.csv",
+  row.names = FALSE
 )
 ```
 
+## Initialize
+
+`dvs_init()` writes a `dvs.toml` at the project root, pointing at the storage
+directory. That file is the whole project configuration, and it belongs in git.
 
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
-
-fs::dir_info(
-  "data",recurse = TRUE, type = "directory",
-)[, c("size", "path", "type")]
-```
-
-False sizes unfortunately;
-
-```{r}
-#| warning: false
-setwd(here::here(new_project))
-
-fs::dir_info(
-  "data",recurse = TRUE, type = "file",
-)[, c("size", "path", "type")] 
-```
-
-
-```{r}
-#| warning: false
-setwd(here::here(new_project))
-
-
-fs::dir_info(
-  "data",recurse = TRUE, type = "file",
-) |> 
-  dplyr::mutate(data_dir = path |> fs::path_dir() |> fs::path_rel("data")) |> 
-  dplyr::select(path, type, size, data_dir) |>
-  dplyr::reframe(size = sum(size), .by = c(data_dir))
-```
-
-Initialize a dvs repository
-
-```{r}
-#| warning: false
-setwd(here::here(new_project))
-
 dvs_init(here::here(storage))
 ```
 
 ```{r}
-cat(
-  readLines(here::here(new_project, "dvs.toml"))
-)
+#| warning: false
+setwd(here::here(new_project))
+cat(readLines("dvs.toml"), sep = "\n")
 ```
 
+## Add
 
-Add the new files in the project to the dvs repository
+`dvs_add()` hashes each file, copies the content to storage, and writes the
+meta file. The `message` travels with the data, like a commit message for a
+dataset. Note `stored_size`: the bytes land in storage compressed.
 
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
-
-# single file
-dvs_add("data/large/large_1.csv", message = "add one large dataset")
-
-# whole folder
-dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "add small corpus datasets")
-
-# glob
-# dvs_add("data/individual", glob = "individiual_*.csv", message = "add individual datasets via glob")
-dvs_add(glob = "data/individual/individual_*.csv", message = "add individual datasets via glob")
+dvs_add(glob = "data/**/*.csv", message = "PK profiles and NCA summary, data cut 2026-06")
 ```
 
+## What git tracks now
 
-Status
+This is the core of the design, so it is worth pausing on. The project tree
+now contains a `.dvs/` folder that mirrors `data/`, holding one small meta
+file per data file:
 
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
+fs::dir_tree(".dvs", all = FALSE)
+```
 
+Each meta file is a few hundred bytes of JSON. This, not the CSV, is what git
+versions:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+cat(readLines(".dvs/data/pk_profiles.csv.dvs"), sep = "\n")
+```
+
+And dvs has already gitignored the data files themselves:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+cat("data/.gitignore:\n")
+cat(readLines("data/.gitignore"), sep = "\n")
+```
+
+So a commit of this project carries `dvs.toml`, `.dvs/`, and the `.gitignore`
+entries: a complete, versioned description of the data, at a size git is
+happy with. The bytes themselves sit in storage, addressed by their hash:
+
+```{r}
+#| warning: false
+fs::dir_tree(here::here(storage))
+```
+
+## Status
+
+`dvs_status()` compares every tracked file against its meta file. Right after
+an add, everything is `current`.
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
 dvs_status()
 ```
 
-
-Let us accidentally delete a few individual files:
-```{r}
-#| warning: false
-setwd(here::here(new_project))
-
-unlink("data/individual/individual_04.csv")
-unlink("data/individual/individual_08.csv")
-unlink("data/individual/individual_15.csv")
-unlink("data/individual/individual_16.csv")
-unlink("data/individual/individual_23.csv")
-```
-
-
-First, what is the status?
+Delete a file, the way a fresh clone arrives without data, and it flips to
+`absent`: still tracked, not on disk.
 
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
-
-dvs_status(status = "absent")
+unlink("data/pk_profiles.csv")
+dvs_status()
 ```
 
+## Get
 
-Or filter manually with `dplyr`:
+`dvs_get()` reads the meta file, pulls the content from storage, and verifies
+the hash on the way in.
 
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
-
-dplyr::filter(dvs_status(), status == "absent")
+dvs_get("data/pk_profiles.csv")
+dvs_status()
 ```
 
+That is the whole loop: add when data changes, get after a clone or checkout,
+status any time you want to know where you stand.
 
+## The same project, from the terminal
 
-Let us restore them:
+The CLI operates on the exact same project; the two surfaces are
+interchangeable. Here is the status of the project we just built, from bash:
 
 ```{r}
-#| warning: false
-setwd(here::here(new_project))
-
-dvs_get(glob = "data/individual/individual_*.csv")
+#| include: false
+Sys.setenv(DVS_INTRO_PROJECT = here::here(new_project))
 ```
 
+```{bash}
+cd "$DVS_INTRO_PROJECT"
+dvs status
+```
+
+## Where to go next
+
+- [The R package in depth](intro-r.html): many files, globs, dry runs,
+  re-adding changed data, recursive scoping, and failure handling.
+- [The CLI in depth](intro-cli.html): the same power from the terminal,
+  plus JSON output and exit codes for pipelines.
+- [Collaboration](collab.html): two users, one storage, and what to commit.
+- Reference, one page per function: [dvs_init()](r-init.html),
+  [dvs_add()](r-add.html), [dvs_status()](r-status.html), [dvs_get()](r-get.html).
+- [Storage and meta files](intro-internals.html): the content-addressed
+  layout, meta file fields, and the audit log.
 
 ## Cleanup
 
@@ -186,10 +208,3 @@ dvs_get(glob = "data/individual/individual_*.csv")
 unlink(here::here(new_project), recursive = TRUE)
 unlink(here::here(storage),     recursive = TRUE)
 ```
-
----
-
-This was the happy path: init, add, status, get. Everything worked as expected.
-
-**Next up**: [CLI](intro-cli.html): the same operations driven from the terminal via the `dvs` binary. After that, [Internals](intro-internals.html) digs into the `.dvs/` folder layout, meta files, and content-addressed blob storage.
-

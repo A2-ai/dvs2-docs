@@ -73,7 +73,10 @@ dvs_init(here::here(storage))
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                     <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage staff        
 ```
 
 
@@ -160,11 +163,11 @@ cat("```json\n")
 cat(lines, sep = "\n")
 ```
 
-{"operation_id":"717644d4-ddf0-4f51-a0e7-30962f17ef91","timestamp":1781628655,"user":"elea","action":{"init":{"settings":{"compression":"zstd","metadata_folder_name":null,"backend":{"path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e15578b4566_storage","group":"staff"}},"project_path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e1578795870_project"}}}
-{"operation_id":"ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7","timestamp":1781628655,"user":"elea","action":{"add":{"file":{"path":"data/file_1.csv","hashes":{"blake3":"7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242"}},"compression":"zstd"}}}
-{"operation_id":"9ee5b98b-9eda-40ab-acfa-bdac95ebbf11","timestamp":1781628655,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd"}},"compression":"zstd"}}}
-{"operation_id":"9b30d94a-7ddb-4907-b689-33a24bc41f2a","timestamp":1781628655,"user":"elea","action":{"add":{"file":{"path":"data/file_3.csv","hashes":{"blake3":"f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d"}},"compression":"zstd"}}}
-{"operation_id":"93f8fb63-ca84-4aa2-ba59-24b3fc703970","timestamp":1781628655,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d"}},"compression":"zstd"}}}
+{"operation_id":"7c137393-70b8-4807-b26d-373599b682f7","timestamp":1786375425,"user":"elea","action":{"init":{"settings":{"compression":"zstd","metadata_folder_name":null,"backend":{"path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage","group":"staff"}},"project_path":"/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee036c5f6b99_project"}}}
+{"operation_id":"bb2ae161-8c2c-4755-8682-34c68fe4cab3","timestamp":1786375425,"user":"elea","action":{"add":{"file":{"path":"data/file_1.csv","hashes":{"blake3":"716693ea8b20e5a73abf0e5e35247cc232f1ae66c573ed1bc013cab8199f2cae"}},"compression":"zstd"}}}
+{"operation_id":"008b7b6a-b15c-4f0d-b19b-327c6c84d460","timestamp":1786375425,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"59548c554d27252f5f5cf9a11ba5df4de216602831b000a9105c56094c958e88"}},"compression":"zstd"}}}
+{"operation_id":"c0ac3187-bf33-4064-a581-5fe067cf85e2","timestamp":1786375425,"user":"elea","action":{"add":{"file":{"path":"data/file_3.csv","hashes":{"blake3":"2d9855e7f48b07cb280cfba4596893f9fc9b615ff96107d8b83446a12ee0451d"}},"compression":"zstd"}}}
+{"operation_id":"ab323bc6-0a7c-4758-b667-f02b673075ec","timestamp":1786375425,"user":"elea","action":{"add":{"file":{"path":"data/file_2.csv","hashes":{"blake3":"db1eb2d8544f2c649b86a8058342273d221f9d9a0134227d03d36c924e9c85f9"}},"compression":"zstd"}}}
 
 ```{.r .cell-code}
 cat("\n```\n")
@@ -189,8 +192,8 @@ for (l in lines) {
 ```
 
 {
-  "operation_id": "717644d4-ddf0-4f51-a0e7-30962f17ef91",
-  "timestamp": 1781628655,
+  "operation_id": "7c137393-70b8-4807-b26d-373599b682f7",
+  "timestamp": 1786375425,
   "user": "elea",
   "action": {
     "init": {
@@ -198,24 +201,24 @@ for (l in lines) {
         "compression": "zstd",
         "metadata_folder_name": {},
         "backend": {
-          "path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e15578b4566_storage",
+          "path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee03632eba40d_storage",
           "group": "staff"
         }
       },
-      "project_path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file4e1578795870_project"
+      "project_path": "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filee036c5f6b99_project"
     }
   }
 }
 {
-  "operation_id": "ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7",
-  "timestamp": 1781628655,
+  "operation_id": "bb2ae161-8c2c-4755-8682-34c68fe4cab3",
+  "timestamp": 1786375425,
   "user": "elea",
   "action": {
     "add": {
       "file": {
         "path": "data/file_1.csv",
         "hashes": {
-          "blake3": "7eccc458c3f4941f01cf32d26b0ac67bde4bb9377f0add92e8b989be7bf2e242"
+          "blake3": "716693ea8b20e5a73abf0e5e35247cc232f1ae66c573ed1bc013cab8199f2cae"
         }
       },
       "compression": "zstd"
@@ -223,15 +226,15 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "9ee5b98b-9eda-40ab-acfa-bdac95ebbf11",
-  "timestamp": 1781628655,
+  "operation_id": "008b7b6a-b15c-4f0d-b19b-327c6c84d460",
+  "timestamp": 1786375425,
   "user": "elea",
   "action": {
     "add": {
       "file": {
         "path": "data/file_2.csv",
         "hashes": {
-          "blake3": "855734680f86ce5ad3352dacd08c78c8041ab94bed7c862a36a0542c2bafb1cd"
+          "blake3": "59548c554d27252f5f5cf9a11ba5df4de216602831b000a9105c56094c958e88"
         }
       },
       "compression": "zstd"
@@ -239,15 +242,15 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "9b30d94a-7ddb-4907-b689-33a24bc41f2a",
-  "timestamp": 1781628655,
+  "operation_id": "c0ac3187-bf33-4064-a581-5fe067cf85e2",
+  "timestamp": 1786375425,
   "user": "elea",
   "action": {
     "add": {
       "file": {
         "path": "data/file_3.csv",
         "hashes": {
-          "blake3": "f409a6bf55091606e5afc101ead8b864820467472f69890f05fdb9fd7392f77d"
+          "blake3": "2d9855e7f48b07cb280cfba4596893f9fc9b615ff96107d8b83446a12ee0451d"
         }
       },
       "compression": "zstd"
@@ -255,15 +258,15 @@ for (l in lines) {
   }
 }
 {
-  "operation_id": "93f8fb63-ca84-4aa2-ba59-24b3fc703970",
-  "timestamp": 1781628655,
+  "operation_id": "ab323bc6-0a7c-4758-b667-f02b673075ec",
+  "timestamp": 1786375425,
   "user": "elea",
   "action": {
     "add": {
       "file": {
         "path": "data/file_2.csv",
         "hashes": {
-          "blake3": "166399740a4c8c9c363523dcbe5548f35c115e891bf3492a66f7930f6cbed09d"
+          "blake3": "db1eb2d8544f2c649b86a8058342273d221f9d9a0134227d03d36c924e9c85f9"
         }
       },
       "compression": "zstd"
@@ -328,11 +331,11 @@ audit_tbl
 # A tibble: 5 × 5
   operation_id                         timestamp           user  command path           
   <chr>                                <dttm>              <chr> <chr>   <chr>          
-1 717644d4-ddf0-4f51-a0e7-30962f17ef91 2026-06-16 18:50:55 elea  init    <NA>           
-2 ef3b2bf8-6ce4-4d0b-bcee-6ab39eba8ae7 2026-06-16 18:50:55 elea  add     data/file_1.csv
-3 9ee5b98b-9eda-40ab-acfa-bdac95ebbf11 2026-06-16 18:50:55 elea  add     data/file_2.csv
-4 9b30d94a-7ddb-4907-b689-33a24bc41f2a 2026-06-16 18:50:55 elea  add     data/file_3.csv
-5 93f8fb63-ca84-4aa2-ba59-24b3fc703970 2026-06-16 18:50:55 elea  add     data/file_2.csv
+1 7c137393-70b8-4807-b26d-373599b682f7 2026-08-10 17:23:45 elea  init    <NA>           
+2 bb2ae161-8c2c-4755-8682-34c68fe4cab3 2026-08-10 17:23:45 elea  add     data/file_1.csv
+3 008b7b6a-b15c-4f0d-b19b-327c6c84d460 2026-08-10 17:23:45 elea  add     data/file_2.csv
+4 c0ac3187-bf33-4064-a581-5fe067cf85e2 2026-08-10 17:23:45 elea  add     data/file_3.csv
+5 ab323bc6-0a7c-4758-b667-f02b673075ec 2026-08-10 17:23:45 elea  add     data/file_2.csv
 ```
 
 
@@ -384,10 +387,10 @@ audit_tbl |>
 # A tibble: 4 × 3
   timestamp           command path           
   <dttm>              <chr>   <chr>          
-1 2026-06-16 18:50:55 add     data/file_1.csv
-2 2026-06-16 18:50:55 add     data/file_2.csv
-3 2026-06-16 18:50:55 add     data/file_3.csv
-4 2026-06-16 18:50:55 add     data/file_2.csv
+1 2026-08-10 17:23:45 add     data/file_1.csv
+2 2026-08-10 17:23:45 add     data/file_2.csv
+3 2026-08-10 17:23:45 add     data/file_3.csv
+4 2026-08-10 17:23:45 add     data/file_2.csv
 ```
 
 

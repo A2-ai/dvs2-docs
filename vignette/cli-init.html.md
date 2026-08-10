@@ -77,11 +77,11 @@ cat dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp7tyHHP/dvs_init_2bb36528fd15/basic/proj"
+DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/basic/proj"
 compression = "zstd"
 
 [backend]
-path = "../store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/basic/store"
 group = "staff"
 ```
 
@@ -138,7 +138,7 @@ ls -a
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp7tyHHP/dvs_init_2bb36528fd15/meta/proj"
+DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/meta/proj"
 .
 ..
 .meta
@@ -194,11 +194,11 @@ cat dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp7tyHHP/dvs_init_2bb36528fd15/nocomp/proj"
+DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/nocomp/proj"
 compression = "none"
 
 [backend]
-path = "../store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/nocomp/store"
 group = "staff"
 ```
 
@@ -230,7 +230,7 @@ dvs init ../store --threads 2
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp7tyHHP/dvs_init_2bb36528fd15/threads/proj"
+DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/threads/proj"
 ```
 
 

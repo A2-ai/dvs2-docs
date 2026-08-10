@@ -336,11 +336,11 @@ dvs status --with-metadata
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
 | path            | status   | size  | hash                                                             | created_by | add_time                    | compression | message |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/f1.csv     | unsynced | 488 B | 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 | elea       | 2026-06-16T16:36:11.887408Z | zstd        |         |
+| data/f1.csv     | unsynced | 488 B | 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 | elea       | 2026-08-10T15:22:38.358648Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/f2.csv     | absent   | 500 B | c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 | elea       | 2026-06-16T16:36:11.887448Z | zstd        |         |
+| data/f2.csv     | absent   | 500 B | c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 | elea       | 2026-08-10T15:22:38.3586Z   | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/sub/f3.csv | current  | 312 B | 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce | elea       | 2026-06-16T16:36:11.887349Z | zstd        |         |
+| data/sub/f3.csv | current  | 312 B | 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce | elea       | 2026-08-10T15:22:38.358562Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
 ```
 
@@ -397,7 +397,7 @@ dvs status --json
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[{"path":"data/f1.csv","status":"unsynced","metadata":{"hashes":{"blake3":"5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65"},"size":488,"created_by":"elea","add_time":"2026-06-16T16:36:11.887408Z","compression":"zstd"}},{"path":"data/f2.csv","status":"absent","metadata":{"hashes":{"blake3":"c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871"},"size":500,"created_by":"elea","add_time":"2026-06-16T16:36:11.887448Z","compression":"zstd"}},{"path":"data/sub/f3.csv","status":"current","metadata":{"hashes":{"blake3":"881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce"},"size":312,"created_by":"elea","add_time":"2026-06-16T16:36:11.887349Z","compression":"zstd"}}]
+[{"path":"data/f1.csv","status":"unsynced","metadata":{"hashes":{"blake3":"5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65"},"size":488,"created_by":"elea","add_time":"2026-08-10T15:22:38.358648Z","compression":"zstd"}},{"path":"data/f2.csv","status":"absent","metadata":{"hashes":{"blake3":"c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871"},"size":500,"created_by":"elea","add_time":"2026-08-10T15:22:38.3586Z","compression":"zstd"}},{"path":"data/sub/f3.csv","status":"current","metadata":{"hashes":{"blake3":"881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce"},"size":312,"created_by":"elea","add_time":"2026-08-10T15:22:38.358562Z","compression":"zstd"}}]
 ```
 
 

@@ -10,6 +10,10 @@ _freeze/
 .DS_Store
 rv/library/
 .alexandria-cli/
+# dvs CLI installed from .dvs2 via `cargo install --path .dvs2/dvs-cli --root .`
+bin/
+.crates.toml
+.crates2.json
 
 /.quarto/
 **/*.quarto_ipynb

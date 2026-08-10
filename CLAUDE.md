@@ -6,76 +6,71 @@ Documentation and demo repo for [dvs2](https://github.com/A2-ai/dvs2). Two roles
   vignettes) build into a Zola site on GitHub Pages
   (https://a2-ai.github.io/dvs2-docs/, public) via `just site-build`, and are
   also published to alx via `just publish`. One page per R function / CLI command.
-- **Demo** — the original demonstration vignettes (`intro`, `intro-cli`,
-  `lifecycle`, `collab`, `random_files`) stay in `vignette/` for reference. They
-  are NOT on the docs site, NOT in the `site-build` MAP, and NOT published; their
-  content is folded into the reference chapters.
+- **Demos** — narrative demo vignettes, published to alx but NOT on the Zola
+  site (not in the `site-build` MAP): `intro` (lightweight quickstart
+  introduction), then the in-depth `intro-r`, `intro-cli`, and `collab`.
+  The older demos (lifecycle, random_files) were folded into these in 2026-08.
 
 ## Layout
 
 - `vignette/` — quarto `.qmd` sources; each renders to `.html` + `.html.md` (keep-md: true)
-- `R/` — helper scripts used by vignettes
+- `R/` — helper scripts used by vignettes (`mkdatasetfiles.R` test-data generator)
+- `bin/` — dvs CLI installed from `.dvs2` via `just install-cli` (gitignored;
+  the justfile prepends it to PATH for every recipe, so rendered bash chunks
+  use the same build as the R package)
 - `.alx/` — Alexandria config (project ID `22c331d9-0bd0-4e36-b5fd-df81a841a628`, remote https://alx.dev.a2-ai.cloud/api)
-- `rproject.toml` — rv config; dvs R package installed from source
+- `rproject.toml` — rv config; dvs R package installed from source at `.dvs2/dvs-rpkg`
 
 ## Key workflows
 
 ```bash
-just render        # render all vignettes
-just render-one NAME  # e.g. just render-one error
-just publish       # publish all to alx (includes .html.md as -I artifact)
-just sync          # rv sync
+just render         # render the site chapters + splash deck
+just render-demos   # render the demo vignettes (intro, intro-r, intro-cli, collab)
+just render-one NAME
+just publish        # publish demos + chapters to alx (includes .html.md as -I artifact)
+just sync           # rv sync
 ```
 
-## Dev: testing a dvs2 branch
+**Rendering and rv sync need R 4.5 on PATH** (the machine default 4.6 has no
+PRISM binaries and old packages fail to compile under it):
 
-Point rproject.toml at the local worktree — do not push and clone:
+```bash
+export PATH="/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/bin:$PATH"
+```
+
+## Updating .dvs2 (the local dvs2 clone)
+
+`.dvs2/` is the dvs2 source clone used for local builds of both the R package
+and the CLI. It is **not** tracked by git (`.dvs2/.gitignore` contains `*`).
+
+```bash
+just update-dvs    # pull latest main + re-vendor dvs-rpkg (required!)
+just install-cli   # cargo install --path .dvs2/dvs-cli --root .  ->  ./bin/dvs
+just sync          # rebuild the R package from .dvs2/dvs-rpkg (R 4.5 on PATH)
+```
+
+The vendor step matters: dvs-rpkg depends on the in-repo core crate by
+workspace path, which does not resolve when rv copies `dvs-rpkg/` to a temp
+dir for the build. `just update-dvs` runs `.dvs2`'s own `vendor` recipe
+(cargo-revendor) to seal the core crate into `dvs-rpkg/vendor/`. If sync
+fails with `failed to load manifest for dependency 'dvs'`, the vendor step
+was skipped.
+
+The canonical `rproject.toml` entry is:
 
 ```toml
-{ name = "dvs", path = "/path/to/dvs2-worktrees/<branch>/dvs-rpkg" }
+{ name = "dvs", path = ".dvs2/dvs-rpkg" }
 ```
 
-Install the CLI from the same worktree:
-
-```bash
-cd /path/to/dvs2-worktrees/<branch> && just install-cli
-```
-
-Then clear the freeze cache and re-render:
-
-```bash
-rm -rf _freeze/vignette/<name>
-just render-one <name>
-```
-
-## Updating .dvs (the local dvs2 clone)
-
-`.dvs/` is the dvs2 source clone used for local R package builds. It is **not** tracked by git (`.dvs/.gitignore` contains `*`).
-
-To switch it back to main and pull latest:
-
-```bash
-git -C .dvs checkout main
-git -C .dvs pull --rebase
-```
-
-After changing the branch/path in `rproject.toml`, always run `rv sync` before rendering — otherwise the stale compiled package is used.
-
-Install the CLI from the same `.dvs` clone after pulling:
-
-```bash
-just install-cli   # runs: cargo install --profile dev-cli --force --locked --path=.dvs/dvs-cli
-```
-
-The canonical `rproject.toml` entry for the main-branch local clone is:
-
-```toml
-{ name = "dvs", path = ".dvs/dvs-rpkg" }
-```
+To test a dvs2 branch instead, point `rproject.toml` at a worktree of that
+branch, run its vendor step, `rv sync`, reinstall the CLI from the same
+worktree, then clear the freeze cache (`rm -rf _freeze/vignette/<name>`) and
+re-render.
 
 ## Adding a new vignette
 
 1. Write `vignette/<name>.qmd` with `keep-md: true` and `freeze: auto`
-2. Add `quarto render vignette/<name>.qmd` to the `render` recipe in `justfile`
+2. Add it to `render` (site chapters, plus the `site-build` MAP) or
+   `render-demos` (demos) in the `justfile`
 3. Add an `alx publish` line to the `publish` recipe in `justfile`
 4. Run `just render-one <name>` then `just publish`

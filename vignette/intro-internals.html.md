@@ -91,7 +91,10 @@ dvs_init(here::here(storage), compression = "none")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                     <chr>        
+1 none        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filedcf91c5ad80f_storage staff        
 ```
 
 
@@ -107,7 +110,7 @@ dvs_add("data/large/large_1.csv", message = "add one large dataset")
 # A tibble: 1 × 5
   path                   outcome hash                                                                size stored_size
   <chr>                  <chr>   <chr>                                                            <bytes>     <bytes>
-1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     25.0 MB
+1 data/large/large_1.csv copied  45c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def 25.0 MB     25.0 MB
 ```
 
 
@@ -177,7 +180,8 @@ fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 .dvs
 ├── .cache
-│   └── dvs.db
+│   ├── dvs.db
+│   └── dvs.db-journal
 └── data
     ├── individual
     │   ├── individual_01.csv.dvs
@@ -257,20 +261,20 @@ fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 55 × 3
+# A tibble: 56 × 3
           size path                                       type 
    <fs::bytes> <fs::path>                                 <fct>
  1         20K .dvs/.cache/dvs.db                         file 
- 2         264 .dvs/data/individual/individual_01.csv.dvs file 
- 3         264 .dvs/data/individual/individual_02.csv.dvs file 
- 4         263 .dvs/data/individual/individual_03.csv.dvs file 
- 5         264 .dvs/data/individual/individual_04.csv.dvs file 
- 6         263 .dvs/data/individual/individual_05.csv.dvs file 
- 7         264 .dvs/data/individual/individual_06.csv.dvs file 
- 8         264 .dvs/data/individual/individual_07.csv.dvs file 
- 9         264 .dvs/data/individual/individual_08.csv.dvs file 
-10         264 .dvs/data/individual/individual_09.csv.dvs file 
-# ℹ 45 more rows
+ 2           0 .dvs/.cache/dvs.db-journal                 file 
+ 3         264 .dvs/data/individual/individual_01.csv.dvs file 
+ 4         264 .dvs/data/individual/individual_02.csv.dvs file 
+ 5         264 .dvs/data/individual/individual_03.csv.dvs file 
+ 6         263 .dvs/data/individual/individual_04.csv.dvs file 
+ 7         264 .dvs/data/individual/individual_05.csv.dvs file 
+ 8         264 .dvs/data/individual/individual_06.csv.dvs file 
+ 9         264 .dvs/data/individual/individual_07.csv.dvs file 
+10         264 .dvs/data/individual/individual_08.csv.dvs file 
+# ℹ 46 more rows
 ```
 
 
@@ -296,9 +300,9 @@ fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
 # A tibble: 4 × 3
   subdir          n_files        size
   <fs::path>        <int> <fs::bytes>
-1 .cache                1         20K
+1 .cache                2         20K
 2 data/individual      50       12.9K
-3 data/large            1         253
+3 data/large            1         254
 4 data/small            3         771
 ```
 
@@ -373,11 +377,11 @@ cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta, simplifyVector = FALSE), pre
 
 {
   "hashes": {
-    "blake3": "3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838"
+    "blake3": "45c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def"
   },
-  "size": 26214390,
+  "size": 26214383,
   "created_by": "elea",
-  "add_time": "2026-06-16T17:06:53.00164Z",
+  "add_time": "2026-08-10T15:23:33.689314Z",
   "compression": "none",
   "message": "add one large dataset"
 }
@@ -399,7 +403,7 @@ fs::dir_tree(here::here(storage), all = TRUE, regexp = "\\.git", invert = TRUE)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file891962380109_storage
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filedcf91c5ad80f_storage
 ├── 0d
 │   └── bb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92
 ├── 15
@@ -421,14 +425,13 @@ fs::dir_tree(here::here(storage), all = TRUE, regexp = "\\.git", invert = TRUE)
 │   └── fd92ee0ed3122e814c275ba2d4bcf83e749ea0a4fda462d56afbd0f62fea8a
 ├── 38
 │   └── 8c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee
-├── 3c
-│   └── 77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838
 ├── 3e
 │   └── 5fb7f5dab7515086635a93328785b2b703922b6b7499cf3de2d6f4e954e98c
 ├── 44
 │   └── 3b0aad3af092b510e3624d737d71f60cf771b5bf387c1f7126e0cd712cc8cf
 ├── 45
-│   └── 6eaf1e596ccf2e8cc982c9ca3192f996efa0638d9dbd96a03f90fc35a34c51
+│   ├── 6eaf1e596ccf2e8cc982c9ca3192f996efa0638d9dbd96a03f90fc35a34c51
+│   └── c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def
 ├── 48
 │   └── dff588f909e9720dff2a675afef20a44add218cb55e7883736326938917b73
 ├── 49
@@ -524,7 +527,7 @@ fs::dir_info(here::here(storage), recurse = TRUE, all = TRUE, type = "file") |>
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 50 × 3
+# A tibble: 49 × 3
    subdir     n_files        size
    <fs::path>   <int> <fs::bytes>
  1 0d               1          3M
@@ -537,7 +540,7 @@ fs::dir_info(here::here(storage), recurse = TRUE, all = TRUE, type = "file") |>
  8 31               1          3M
  9 34               1          3M
 10 38               1          3M
-# ℹ 40 more rows
+# ℹ 39 more rows
 ```
 
 
@@ -564,17 +567,17 @@ meta
 ```
 $hashes
 $hashes$blake3
-[1] "3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838"
+[1] "45c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def"
 
 
 $size
-[1] 26214390
+[1] 26214383
 
 $created_by
 [1] "elea"
 
 $add_time
-[1] "2026-06-16T17:06:53.00164Z"
+[1] "2026-08-10T15:23:33.689314Z"
 
 $compression
 [1] "none"
@@ -594,7 +597,7 @@ hash
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] "3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838"
+[1] "45c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def"
 ```
 
 
@@ -615,7 +618,7 @@ large_blob
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file891962380109_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838"
+[1] "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filedcf91c5ad80f_storage/45/c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def"
 ```
 
 
@@ -628,7 +631,7 @@ fs::file_exists(large_blob)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file891962380109_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filedcf91c5ad80f_storage/45/c0c1e3556e047bb0bae58cb37b83749f6a44bfd853765c61f6ec8a9d488def 
                                                                                                                                        TRUE 
 ```
 
@@ -649,7 +652,7 @@ readLines(large_blob, n = 5)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] "weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10" "42,0,1,1,835,744,435,780,819,845,933,348,470,634"                                    "51,2,1,1,678,501,383,179,313,256,607,120,393,638"                                    "59,4,1,1,128,687,923,696,798,190,506,122,254,584"                                    "64,6,1,1,929,315,597,366,830,800,287,457,774,403"                                   
+[1] "weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10" "42,0,1,1,835,475,571,523,358,220,987,778,49,882"                                     "51,2,1,1,678,484,390,482,440,326,359,709,87,838"                                     "59,4,1,1,128,618,870,811,46,28,575,121,948,206"                                      "64,6,1,1,929,499,656,663,418,947,790,505,833,625"                                   
 ```
 
 
@@ -669,7 +672,7 @@ readLines(
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] "weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10" "42,0,1,1,835,744,435,780,819,845,933,348,470,634"                                    "51,2,1,1,678,501,383,179,313,256,607,120,393,638"                                    "59,4,1,1,128,687,923,696,798,190,506,122,254,584"                                    "64,6,1,1,929,315,597,366,830,800,287,457,774,403"                                   
+[1] "weight,Time,Chick,Diet,rand1,rand2,rand3,rand4,rand5,rand6,rand7,rand8,rand9,rand10" "42,0,1,1,835,475,571,523,358,220,987,778,49,882"                                     "51,2,1,1,678,484,390,482,440,326,359,709,87,838"                                     "59,4,1,1,128,618,870,811,46,28,575,121,948,206"                                      "64,6,1,1,929,499,656,663,418,947,790,505,833,625"                                   
 ```
 
 
@@ -774,7 +777,8 @@ fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 .dvs
 ├── .cache
-│   └── dvs.db
+│   ├── dvs.db
+│   └── dvs.db-journal
 └── data
     ├── individual
     │   ├── individual_01.csv.dvs

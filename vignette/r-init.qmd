@@ -127,8 +127,10 @@ There is no `no_compression` argument. The CLI flag `--no-compression` maps to
 
 ## Return value
 
-`dvs_init()` returns a list with a single `status` element and prints a
-confirmation line. It is called for its side effect of creating the project.
+`dvs_init()` returns a one-row tibble describing the resulting configuration:
+the compression mode, the metadata folder name (`NA` when the default `.dvs`
+is used), and the backend path and group. It is still called primarily for its
+side effect of creating the project.
 
 ```{r}
 proj  <- file.path(base, "ret")

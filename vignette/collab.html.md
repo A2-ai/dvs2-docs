@@ -1,6 +1,6 @@
 ---
-title: "dvs collaboration"
-subtitle: "sharing data across projects and users through a common storage directory"
+title: "Collaboration"
+subtitle: "two users, one storage: sharing data through git plus a shared drive"
 format:
   html:
     keep-md: true
@@ -8,26 +8,26 @@ execute:
   freeze: auto
 ---
 
-# Overview
+## How teams share data with dvs
 
-dvs separates *code* (tracked by git) from *data* (tracked by dvs). The
-intended team workflow is:
+dvs splits a project into two halves that travel differently: code and
+metadata move through git, data bytes move through a shared storage
+directory. The team workflow is:
 
-1. **User A** adds data files → dvs copies blobs to **shared storage**, writes
-   meta files under `.dvs/`
-2. **User A** commits `dvs.toml` and the entire `.dvs/` tree to git (the meta
-   files are small and text-based)
-3. **User B** clones the repo. They get `dvs.toml` and `.dvs/` but *not* the
-   data files (those are gitignored)
-4. **User B** runs `dvs_get()` → dvs reads the meta files, locates blobs in
-   shared storage, and writes the data files locally
+1. User A adds data files. dvs copies the bytes to shared storage and writes
+   one small meta file per data file under `.dvs/`.
+2. User A commits `dvs.toml` and the `.dvs/` tree. The data files themselves
+   are gitignored (dvs wrote those entries during the add).
+3. User B clones the repo and gets the metadata but no data.
+4. User B runs `dvs_get()`. dvs reads each meta file, finds the blob in
+   shared storage by its hash, and materializes the file.
 
-The storage directory lives on shared infrastructure: a network mount,
-an NFS/CIFS share, or any path your OS exposes as a local filesystem. In
-this demo both users are simulated with separate temp dirs on the same
-machine pointing at the same storage path.
+The storage directory lives on infrastructure both users can reach, typically
+an NFS mount. This demo simulates the two users with two project directories
+on one machine, pointing at the same storage path; nothing else about the
+flow changes.
 
-# Setup
+## Setup
 
 
 ::: {.cell}
@@ -42,7 +42,7 @@ library(here)
 ::: {.cell-output .cell-output-stderr}
 
 ```
-here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo
+here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo
 ```
 
 
@@ -64,8 +64,8 @@ source(here::here("R/mkdatasetfiles.R"))
 
 ```{.r .cell-code}
 shared_storage <- basename(tempfile(fileext = "_storage"))
-project_a      <- basename(tempfile(fileext = "_project_a"))
-project_b      <- basename(tempfile(fileext = "_project_b"))
+project_a      <- basename(tempfile(fileext = "_project"))
+project_b      <- basename(tempfile(fileext = "_project"))
 dir.create(here::here(shared_storage))
 dir.create(here::here(project_a))
 dir.create(here::here(project_b))
@@ -73,49 +73,43 @@ dir.create(here::here(project_b))
 :::
 
 
-# User A: add data
+## User A: init, add, commit
 
 
 ::: {.cell}
 
 ```{.r .cell-code}
 setwd(here::here(project_a))
-mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-```
-:::
+mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data", show_progress = FALSE)
 
-
-
-::: {.cell}
-
-```{.r .cell-code}
-setwd(here::here(project_a))
 dvs_init(here::here(shared_storage))
 ```
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                               backend_group
+  <chr>       <lgl>                <chr>                                                                      <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file113f9657e8f63_storage staff        
 ```
 
 
 :::
 
 ```{.r .cell-code}
-invisible(dvs_add(paths = fs::dir_ls("data", type = "file"), message = "add small corpus v1"))
-dvs_status()
+dvs_add(paths = fs::dir_ls("data", type = "file"), message = "small corpus v1")
 ```
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 3 × 8
-  path             status  hash                                                                  size created_by compression message             add_time           
-  <chr>            <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>               <dttm>             
-1 data/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
-2 data/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
-3 data/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
+# A tibble: 3 × 5
+  path             outcome hash                                                                  size stored_size
+  <chr>            <chr>   <chr>                                                              <bytes>     <bytes>
+1 data/small_1.csv copied  3c70d1ec43fe236cdd09f4682b9622ef05138036e850660ca3659f4e6f871a4c 1024.0 KB    428.0 KB
+2 data/small_2.csv copied  6c66237fd385388fd55fbcf06ae607685f9afa1dc3e5bb1a3602a6e6e2f211f4 1024.0 KB    427.9 KB
+3 data/small_3.csv copied  57961075255ecb34289fa5b34370d678496ecd40b774688a708f4315ecca00ba 1024.0 KB    427.9 KB
 ```
 
 
@@ -123,22 +117,21 @@ dvs_status()
 :::
 
 
-The `.dvs/` tree and `dvs.toml` are what user A would commit to git:
+What user A now commits to git is the configuration plus the meta tree, a
+few hundred bytes per tracked file:
 
 
 ::: {.cell}
 
 ```{.r .cell-code}
 setwd(here::here(project_a))
-fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
+fs::dir_tree(".dvs")
 ```
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
 .dvs
-├── .cache
-│   └── dvs.db
 └── data
     ├── small_1.csv.dvs
     ├── small_2.csv.dvs
@@ -163,7 +156,7 @@ cat(readLines(here::here(project_a, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/Users/elea/Documents/a2ai_github/dvs2-demo/filed83d8b62b99_storage"
+path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file113f9657e8f63_storage"
 group = "staff"
 ```
 
@@ -172,10 +165,11 @@ group = "staff"
 :::
 
 
-# Simulate a git clone (User B)
+## User B: clone, then get
 
-When user B clones the repo they receive `dvs.toml` and the `.dvs/` meta tree,
-but `data/` is gitignored so the CSV files are absent:
+Copying `dvs.toml` and `.dvs/` into the second project directory stands in
+for `git clone`; the data files are gitignored, so a real clone would not
+carry them either:
 
 
 ::: {.cell}
@@ -187,7 +181,7 @@ fs::dir_copy( here::here(project_a, ".dvs"),     here::here(project_b, ".dvs"))
 :::
 
 
-User B's project shows all files as `absent`:
+User B's status: everything tracked, nothing on disk.
 
 
 ::: {.cell}
@@ -201,11 +195,11 @@ dvs_status()
 
 ```
 # A tibble: 3 × 8
-  path             status hash                                                                  size created_by compression message             add_time           
-  <chr>            <chr>  <chr>                                                              <bytes> <chr>      <chr>       <chr>               <dttm>             
-1 data/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
-2 data/small_2.csv absent 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
-3 data/small_3.csv absent 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
+  path             status hash                                                                  size created_by compression message         add_time           
+  <chr>            <chr>  <chr>                                                              <bytes> <chr>      <chr>       <chr>           <dttm>             
+1 data/small_1.csv absent 3c70d1ec43fe236cdd09f4682b9622ef05138036e850660ca3659f4e6f871a4c 1024.0 KB elea       zstd        small corpus v1 2026-08-10 15:28:11
+2 data/small_2.csv absent 6c66237fd385388fd55fbcf06ae607685f9afa1dc3e5bb1a3602a6e6e2f211f4 1024.0 KB elea       zstd        small corpus v1 2026-08-10 15:28:11
+3 data/small_3.csv absent 57961075255ecb34289fa5b34370d678496ecd40b774688a708f4315ecca00ba 1024.0 KB elea       zstd        small corpus v1 2026-08-10 15:28:11
 ```
 
 
@@ -213,7 +207,7 @@ dvs_status()
 :::
 
 
-# User B: get data
+One call materializes the project:
 
 
 ::: {.cell}
@@ -236,16 +230,8 @@ dvs_get(glob = "data/*.csv")
 
 
 :::
-:::
-
-
-All files are now `current`:
-
-
-::: {.cell}
 
 ```{.r .cell-code}
-setwd(here::here(project_b))
 dvs_status()
 ```
 
@@ -253,11 +239,11 @@ dvs_status()
 
 ```
 # A tibble: 3 × 8
-  path             status  hash                                                                  size created_by compression message             add_time           
-  <chr>            <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>               <dttm>             
-1 data/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
-2 data/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
-3 data/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        add small corpus v1 2026-04-24 12:59:19
+  path             status  hash                                                                  size created_by compression message         add_time           
+  <chr>            <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>           <dttm>             
+1 data/small_1.csv current 3c70d1ec43fe236cdd09f4682b9622ef05138036e850660ca3659f4e6f871a4c 1024.0 KB elea       zstd        small corpus v1 2026-08-10 15:28:11
+2 data/small_2.csv current 6c66237fd385388fd55fbcf06ae607685f9afa1dc3e5bb1a3602a6e6e2f211f4 1024.0 KB elea       zstd        small corpus v1 2026-08-10 15:28:11
+3 data/small_3.csv current 57961075255ecb34289fa5b34370d678496ecd40b774688a708f4315ecca00ba 1024.0 KB elea       zstd        small corpus v1 2026-08-10 15:28:11
 ```
 
 
@@ -265,25 +251,23 @@ dvs_status()
 :::
 
 
-Verify the content is byte-for-byte identical to what user A added:
+And the content is byte-for-byte what user A added, verified by hash during
+retrieval:
 
 
 ::: {.cell}
 
 ```{.r .cell-code}
-files_a <- sort(fs::dir_ls(here::here(project_a, "data"), type = "file"))
-files_b <- sort(fs::dir_ls(here::here(project_b, "data"), type = "file"))
-
 identical(
-  lapply(files_a, read.csv),
-  lapply(files_b, read.csv)
+  unname(lapply(sort(fs::dir_ls(here::here(project_a, "data"), type = "file")), read.csv)),
+  unname(lapply(sort(fs::dir_ls(here::here(project_b, "data"), type = "file")), read.csv))
 )
 ```
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] FALSE
+[1] TRUE
 ```
 
 
@@ -291,24 +275,76 @@ identical(
 :::
 
 
-# What belongs in git
+## Deduplication comes free
 
-| Path | Commit? | Notes |
-|------|:-------:|-------|
-| `dvs.toml` | ✅ | points to shared storage |
-| `.dvs/**/*.dvs` | ✅ | meta files, the version ledger |
-| `data/` | ❌ gitignore | large files live in dvs storage |
-| `rv/library/` | ❌ gitignore | cached R packages rebuild from `rproject.toml` |
-| `rv/scripts/` | ✅ | rv bootstrap helpers belong in the repo |
+Storage is content-addressed: the blob's name is its hash, so identical
+content stored from anywhere on the team lands in the same place exactly
+once. Both projects above reference the same three blobs; adding the same
+file from a third project would move zero bytes.
 
-Minimal additions to `.gitignore`:
 
-```text
-data/
-rv/library/
+::: {.cell}
+
+```{.r .cell-code}
+fs::dir_tree(here::here(shared_storage))
 ```
 
-# Cleanup
+::: {.cell-output .cell-output-stdout}
+
+```
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file113f9657e8f63_storage
+├── 3c
+│   └── 70d1ec43fe236cdd09f4682b9622ef05138036e850660ca3659f4e6f871a4c
+├── 57
+│   └── 961075255ecb34289fa5b34370d678496ecd40b774688a708f4315ecca00ba
+├── 6c
+│   └── 66237fd385388fd55fbcf06ae607685f9afa1dc3e5bb1a3602a6e6e2f211f4
+└── audit.log.jsonl
+```
+
+
+:::
+:::
+
+
+## The audit trail
+
+The storage directory keeps an append-only log, `audit.log.jsonl`, recording
+every `init` and `add` that touched it: who, when, which file, which hash.
+On a shared drive this is the team's answer to "where did this dataset come
+from":
+
+
+::: {.cell}
+
+```{.r .cell-code}
+log_lines <- readLines(here::here(shared_storage, "audit.log.jsonl"))
+cat(tail(log_lines, 2), sep = "\n\n")
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+{"operation_id":"18aca83e-494b-4e06-be53-813335ba9d4c","timestamp":1786375691,"user":"elea","action":{"add":{"file":{"path":"data/small_2.csv","hashes":{"blake3":"6c66237fd385388fd55fbcf06ae607685f9afa1dc3e5bb1a3602a6e6e2f211f4"}},"compression":"zstd"}}}
+
+{"operation_id":"18aca83e-494b-4e06-be53-813335ba9d4c","timestamp":1786375691,"user":"elea","action":{"add":{"file":{"path":"data/small_3.csv","hashes":{"blake3":"57961075255ecb34289fa5b34370d678496ecd40b774688a708f4315ecca00ba"}},"compression":"zstd"}}}
+```
+
+
+:::
+:::
+
+
+## What belongs in git
+
+| Path | Commit? | Why |
+|------|:-------:|-----|
+| `dvs.toml` | yes | points every clone at the shared storage |
+| `.dvs/**/*.dvs` | yes | the version ledger, one meta file per data file |
+| `.gitignore` entries | yes | written by dvs during add, keep data out of git |
+| `data/` | no | the bytes live in dvs storage |
+
+## Cleanup
 
 
 ::: {.cell}
@@ -321,6 +357,9 @@ unlink(here::here(shared_storage), recursive = TRUE)
 :::
 
 
----
+## Where to go next
 
-**Next up**: [Configuration](config.html): `dvs.toml` fields, compression tradeoffs, threads, and custom metadata folder names.
+- [Introducing dvs](intro.html): the short version of everything above.
+- [The R package in depth](intro-r.html) and [the CLI in depth](intro-cli.html).
+- [The audit log](audit.html): every field in `audit.log.jsonl`, explained.
+- [Storage and meta files](intro-internals.html): the content-addressed layout.

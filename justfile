@@ -1,3 +1,8 @@
+# The dvs CLI is installed into ./bin from the local .dvs2 clone (see
+# install-cli). Prepending it here means every recipe (and the bash chunks in
+# rendered vignettes) uses the same build the R package was compiled from.
+export PATH := justfile_directory() / "bin:" + env_var('PATH')
+
 default:
     @just --list
 
@@ -131,6 +136,14 @@ site-serve: site-r site-build
 
 # === Vignettes ===
 
+# Render the demo vignettes (published to alx, not on the Zola site):
+# intro (lightweight quickstart), then the in-depth R / CLI intros and collab
+render-demos:
+    quarto render vignette/intro.qmd
+    quarto render vignette/intro-r.qmd
+    quarto render vignette/intro-cli.qmd
+    quarto render vignette/collab.qmd
+
 # Render all vignettes that feed the site (one per MAP entry), plus the deck
 render:
     quarto render vignette/getting-started.qmd
@@ -162,12 +175,16 @@ render-one NAME:
 preview NAME:
     quarto preview vignette/{{NAME}}.qmd
 
-# Open all rendered HTMLs
+# Open the rendered demo HTMLs
 open:
-    open vignette/intro.html vignette/intro-cli.html vignette/intro-internals.html vignette/lifecycle.html vignette/collab.html vignette/config.html vignette/audit.html vignette/error.html vignette/random_files.html vignette/splash.html
+    open vignette/intro.html vignette/intro-r.html vignette/intro-cli.html vignette/collab.html
 
 # Publish all rendered vignettes to alx.dev.a2-ai.cloud (dvs2-demo project)
 publish:
+    alx publish vignette/intro.html                -S vignette/intro.qmd                                   -I vignette/intro.html.md                -t intro                --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro-r.html              -S vignette/intro-r.qmd         -S R/mkdatasetfiles.R   -I vignette/intro-r.html.md              -t intro-r              --overwrite --skip-warnings --no-prompt
+    alx publish vignette/intro-cli.html            -S vignette/intro-cli.qmd       -S R/mkdatasetfiles.R   -I vignette/intro-cli.html.md            -t intro-cli            --overwrite --skip-warnings --no-prompt
+    alx publish vignette/collab.html               -S vignette/collab.qmd          -S R/mkdatasetfiles.R   -I vignette/collab.html.md               -t collab               --overwrite --skip-warnings --no-prompt
     alx publish vignette/getting-started.html      -S vignette/getting-started.qmd                         -I vignette/getting-started.html.md      -t getting-started      --overwrite --skip-warnings --no-prompt
     alx publish vignette/getting-started-cli.html  -S vignette/getting-started-cli.qmd                     -I vignette/getting-started-cli.html.md  -t getting-started-cli  --overwrite --skip-warnings --no-prompt
     alx publish vignette/r-init.html               -S vignette/r-init.qmd                                  -I vignette/r-init.html.md               -t r-init               --overwrite --skip-warnings --no-prompt
@@ -195,7 +212,7 @@ publish:
 rv-init:
     rv init
 
-# rv add the dvs package from a local clone at .dvs/dvs-rpkg
+# rv add the dvs package from a local clone at .dvs2/dvs-rpkg
 add-dvs:
     rv add dvs --git https://github.com/a2-ai/dvs2 --directory dvs-rpkg --branch main
 
@@ -209,14 +226,21 @@ sync:
 
 # === dvs source repo ===
 
-# Clone dvs2 into .dvs (required to build dvs-rpkg from source via rv)
+# Clone dvs2 into .dvs2 (required to build dvs-rpkg from source via rv)
 clone-dvs:
-    gh repo clone A2-ai/dvs2 .dvs -- --single-branch --depth=1
-    echo '*' > .dvs/.gitignore
+    gh repo clone A2-ai/dvs2 .dvs2 -- --single-branch --depth=1
+    echo '*' > .dvs2/.gitignore
 
-# Pull the latest dvs2 source
+# Pull the latest dvs2 source, then re-vendor dvs-rpkg so rv can build it
+# from a copied temp dir (the rpkg's core-crate dep is a workspace path that
+# only resolves via the vendor/ tree outside the dvs2 checkout).
 update-dvs:
-    git -C .dvs pull --rebase
+    git -C .dvs2 checkout -- . && git -C .dvs2 pull --rebase
+    just --justfile .dvs2/justfile --working-directory .dvs2 vendor
+
+# Install the dvs CLI from the local clone into ./bin (kept on PATH above)
+install-cli:
+    cargo install --locked --force --path .dvs2/dvs-cli --root .
 
 # Install the cargo-revendor build helper
 install-cargo-revendor:

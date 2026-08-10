@@ -67,7 +67,10 @@ dvs_init(store, root_dir = proj)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                                          backend_group
+  <chr>       <lgl>                <chr>                                                                                                 <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/basic-store staff        
 ```
 
 
@@ -90,7 +93,7 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpP5AuC2/dvs_init_1a0b333ff86a/basic-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/basic-store"
 group = "staff"
 ```
 
@@ -144,7 +147,10 @@ dvs_init(store, root_dir = proj, metadata_folder_name = ".meta")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                                         backend_group
+  <chr>       <chr>                <chr>                                                                                                <chr>        
+1 zstd        .meta                /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/meta-store staff        
 ```
 
 
@@ -192,15 +198,6 @@ mk("zstd-proj", "zstd")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
-```
-
-
-:::
-
-::: {.cell-output .cell-output-stdout}
-
-```
 # A tibble: 1 × 5
   path     outcome hash                                                                size stored_size
   <chr>    <chr>   <chr>                                                            <bytes>     <bytes>
@@ -213,15 +210,6 @@ DVS Initialized
 ```{.r .cell-code}
 mk("none-proj", "none")
 ```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-DVS Initialized
-```
-
-
-:::
 
 ::: {.cell-output .cell-output-stdout}
 
@@ -244,8 +232,10 @@ There is no `no_compression` argument. The CLI flag `--no-compression` maps to
 
 ## Return value
 
-`dvs_init()` returns a list with a single `status` element and prints a
-confirmation line. It is called for its side effect of creating the project.
+`dvs_init()` returns a one-row tibble describing the resulting configuration:
+the compression mode, the metadata folder name (`NA` when the default `.dvs`
+is used), and the backend path and group. It is still called primarily for its
+side effect of creating the project.
 
 
 ::: {.cell}
@@ -256,26 +246,17 @@ store <- file.path(base, "ret-store")
 dir.create(proj)
 dir.create(store)
 res <- dvs_init(store, root_dir = proj)
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-DVS Initialized
-```
-
-
-:::
-
-```{.r .cell-code}
 str(res)
 ```
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-List of 1
- $ status: chr "initialized"
+tibble [1 × 4] (S3: tbl_df/tbl/data.frame)
+ $ compression         : chr "zstd"
+ $ metadata_folder_name: logi NA
+ $ backend_path        : chr "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/ret-store"
+ $ backend_group       : chr "staff"
 ```
 
 

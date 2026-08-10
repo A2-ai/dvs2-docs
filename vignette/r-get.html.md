@@ -54,7 +54,10 @@ dvs_init(store)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                            backend_group
+  <chr>       <lgl>                <chr>                                                                                   <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpMutGJ4/storage_d42bf068f7d staff        
 ```
 
 

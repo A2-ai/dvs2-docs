@@ -2377,7 +2377,10 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(store)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(store, <span class="at">root_dir =</span> proj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized</code></pre>
+<pre><code># A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                                          backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                 &lt;chr&gt;        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/basic-store staff        </code></pre>
 </div>
 </div>
 <p><code>dvs.toml</code> is written in <code>root_dir</code> and records the storage path:</p>
@@ -2387,7 +2390,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code>compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpP5AuC2/dvs_init_1a0b333ff86a/basic-store&quot;
+path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/basic-store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2416,7 +2419,10 @@ group = &quot;staff&quot;</code></pre>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(store)</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(store, <span class="at">root_dir =</span> proj, <span class="at">metadata_folder_name =</span> <span class="st">&quot;.meta&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized</code></pre>
+<pre><code># A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                                         backend_group
+  &lt;chr&gt;       &lt;chr&gt;                &lt;chr&gt;                                                                                                &lt;chr&gt;        
+1 zstd        .meta                /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/meta-store staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(proj, <span class="at">all.files =</span> <span class="cn">TRUE</span>, <span class="at">no.. =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2441,18 +2447,12 @@ group = &quot;staff&quot;</code></pre>
 <span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="fu">mk</span>(<span class="st">&quot;zstd-proj&quot;</span>, <span class="st">&quot;zstd&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 5
   path     outcome hash                                                                size stored_size
   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
 1 cars.csv copied  5920946da5cfd6b4b32cf7b2fb866d926637dadb1b38d3d943bf8db3b9ebdb63  1.7 KB       905 B</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mk</span>(<span class="st">&quot;none-proj&quot;</span>, <span class="st">&quot;none&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mk</span>(<span class="st">&quot;none-proj&quot;</span>, <span class="st">&quot;none&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 5
   path     outcome hash                                                                size stored_size
@@ -2476,20 +2476,20 @@ Note
 </section>
 <section id="return-value" class="level2">
 <h2 class="anchored" data-anchor-id="return-value">Return value</h2>
-<p><code>dvs_init()</code> returns a list with a single <code>status</code> element and prints a confirmation line. It is called for its side effect of creating the project.</p>
+<p><code>dvs_init()</code> returns a one-row tibble describing the resulting configuration: the compression mode, the metadata folder name (<code>NA</code> when the default <code>.dvs</code> is used), and the backend path and group. It is still called primarily for its side effect of creating the project.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>proj  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(base, <span class="st">&quot;ret&quot;</span>)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>store <span class="ot">&lt;-</span> <span class="fu">file.path</span>(base, <span class="st">&quot;ret-store&quot;</span>)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(proj)</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(store)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">dvs_init</span>(store, <span class="at">root_dir =</span> proj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>proj  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(base, <span class="st">&quot;ret&quot;</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>store <span class="ot">&lt;-</span> <span class="fu">file.path</span>(base, <span class="st">&quot;ret-store&quot;</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(proj)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(store)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">dvs_init</span>(store, <span class="at">root_dir =</span> proj)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(res)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(res)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>List of 1
- $ status: chr &quot;initialized&quot;</code></pre>
+<pre><code>tibble [1 × 4] (S3: tbl_df/tbl/data.frame)
+ $ compression         : chr &quot;zstd&quot;
+ $ metadata_folder_name: logi NA
+ $ backend_path        : chr &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmp0oQgN3/dvs_init_d13e1444c8b2/ret-store&quot;
+ $ backend_group       : chr &quot;staff&quot;</code></pre>
 </div>
 </div>
 </section>

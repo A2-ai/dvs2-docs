@@ -1,6 +1,6 @@
 ---
-title: "dvs collaboration"
-subtitle: "sharing data across projects and users through a common storage directory"
+title: "Collaboration"
+subtitle: "two users, one storage: sharing data through git plus a shared drive"
 format:
   html:
     keep-md: true
@@ -8,26 +8,26 @@ execute:
   freeze: auto
 ---
 
-# Overview
+## How teams share data with dvs
 
-dvs separates *code* (tracked by git) from *data* (tracked by dvs). The
-intended team workflow is:
+dvs splits a project into two halves that travel differently: code and
+metadata move through git, data bytes move through a shared storage
+directory. The team workflow is:
 
-1. **User A** adds data files → dvs copies blobs to **shared storage**, writes
-   meta files under `.dvs/`
-2. **User A** commits `dvs.toml` and the entire `.dvs/` tree to git (the meta
-   files are small and text-based)
-3. **User B** clones the repo. They get `dvs.toml` and `.dvs/` but *not* the
-   data files (those are gitignored)
-4. **User B** runs `dvs_get()` → dvs reads the meta files, locates blobs in
-   shared storage, and writes the data files locally
+1. User A adds data files. dvs copies the bytes to shared storage and writes
+   one small meta file per data file under `.dvs/`.
+2. User A commits `dvs.toml` and the `.dvs/` tree. The data files themselves
+   are gitignored (dvs wrote those entries during the add).
+3. User B clones the repo and gets the metadata but no data.
+4. User B runs `dvs_get()`. dvs reads each meta file, finds the blob in
+   shared storage by its hash, and materializes the file.
 
-The storage directory lives on shared infrastructure: a network mount,
-an NFS/CIFS share, or any path your OS exposes as a local filesystem. In
-this demo both users are simulated with separate temp dirs on the same
-machine pointing at the same storage path.
+The storage directory lives on infrastructure both users can reach, typically
+an NFS mount. This demo simulates the two users with two project directories
+on one machine, pointing at the same storage path; nothing else about the
+flow changes.
 
-# Setup
+## Setup
 
 ```{r}
 options(width = 1000)
@@ -42,45 +42,42 @@ source(here::here("R/mkdatasetfiles.R"))
 
 ```{r}
 shared_storage <- basename(tempfile(fileext = "_storage"))
-project_a      <- basename(tempfile(fileext = "_project_a"))
-project_b      <- basename(tempfile(fileext = "_project_b"))
+project_a      <- basename(tempfile(fileext = "_project"))
+project_b      <- basename(tempfile(fileext = "_project"))
 dir.create(here::here(shared_storage))
 dir.create(here::here(project_a))
 dir.create(here::here(project_b))
 ```
 
-# User A: add data
+## User A: init, add, commit
 
 ```{r}
 #| warning: false
 setwd(here::here(project_a))
-mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-```
+mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data", show_progress = FALSE)
 
-```{r}
-#| warning: false
-setwd(here::here(project_a))
 dvs_init(here::here(shared_storage))
-invisible(dvs_add(paths = fs::dir_ls("data", type = "file"), message = "add small corpus v1"))
-dvs_status()
+dvs_add(paths = fs::dir_ls("data", type = "file"), message = "small corpus v1")
 ```
 
-The `.dvs/` tree and `dvs.toml` are what user A would commit to git:
+What user A now commits to git is the configuration plus the meta tree, a
+few hundred bytes per tracked file:
 
 ```{r}
 #| warning: false
 setwd(here::here(project_a))
-fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
+fs::dir_tree(".dvs")
 ```
 
 ```{r}
 cat(readLines(here::here(project_a, "dvs.toml")), sep = "\n")
 ```
 
-# Simulate a git clone (User B)
+## User B: clone, then get
 
-When user B clones the repo they receive `dvs.toml` and the `.dvs/` meta tree,
-but `data/` is gitignored so the CSV files are absent:
+Copying `dvs.toml` and `.dvs/` into the second project directory stands in
+for `git clone`; the data files are gitignored, so a real clone would not
+carry them either:
 
 ```{r}
 #| warning: false
@@ -88,7 +85,7 @@ fs::file_copy(here::here(project_a, "dvs.toml"), here::here(project_b, "dvs.toml
 fs::dir_copy( here::here(project_a, ".dvs"),     here::here(project_b, ".dvs"))
 ```
 
-User B's project shows all files as `absent`:
+User B's status: everything tracked, nothing on disk.
 
 ```{r}
 #| warning: false
@@ -96,53 +93,61 @@ setwd(here::here(project_b))
 dvs_status()
 ```
 
-# User B: get data
+One call materializes the project:
 
 ```{r}
 #| warning: false
 setwd(here::here(project_b))
 dvs_get(glob = "data/*.csv")
-```
-
-All files are now `current`:
-
-```{r}
-#| warning: false
-setwd(here::here(project_b))
 dvs_status()
 ```
 
-Verify the content is byte-for-byte identical to what user A added:
+And the content is byte-for-byte what user A added, verified by hash during
+retrieval:
 
 ```{r}
 #| warning: false
-files_a <- sort(fs::dir_ls(here::here(project_a, "data"), type = "file"))
-files_b <- sort(fs::dir_ls(here::here(project_b, "data"), type = "file"))
-
 identical(
-  lapply(files_a, read.csv),
-  lapply(files_b, read.csv)
+  unname(lapply(sort(fs::dir_ls(here::here(project_a, "data"), type = "file")), read.csv)),
+  unname(lapply(sort(fs::dir_ls(here::here(project_b, "data"), type = "file")), read.csv))
 )
 ```
 
-# What belongs in git
+## Deduplication comes free
 
-| Path | Commit? | Notes |
-|------|:-------:|-------|
-| `dvs.toml` | ✅ | points to shared storage |
-| `.dvs/**/*.dvs` | ✅ | meta files, the version ledger |
-| `data/` | ❌ gitignore | large files live in dvs storage |
-| `rv/library/` | ❌ gitignore | cached R packages rebuild from `rproject.toml` |
-| `rv/scripts/` | ✅ | rv bootstrap helpers belong in the repo |
+Storage is content-addressed: the blob's name is its hash, so identical
+content stored from anywhere on the team lands in the same place exactly
+once. Both projects above reference the same three blobs; adding the same
+file from a third project would move zero bytes.
 
-Minimal additions to `.gitignore`:
-
-```text
-data/
-rv/library/
+```{r}
+#| warning: false
+fs::dir_tree(here::here(shared_storage))
 ```
 
-# Cleanup
+## The audit trail
+
+The storage directory keeps an append-only log, `audit.log.jsonl`, recording
+every `init` and `add` that touched it: who, when, which file, which hash.
+On a shared drive this is the team's answer to "where did this dataset come
+from":
+
+```{r}
+#| warning: false
+log_lines <- readLines(here::here(shared_storage, "audit.log.jsonl"))
+cat(tail(log_lines, 2), sep = "\n\n")
+```
+
+## What belongs in git
+
+| Path | Commit? | Why |
+|------|:-------:|-----|
+| `dvs.toml` | yes | points every clone at the shared storage |
+| `.dvs/**/*.dvs` | yes | the version ledger, one meta file per data file |
+| `.gitignore` entries | yes | written by dvs during add, keep data out of git |
+| `data/` | no | the bytes live in dvs storage |
+
+## Cleanup
 
 ```{r}
 unlink(here::here(project_a),      recursive = TRUE)
@@ -150,6 +155,9 @@ unlink(here::here(project_b),      recursive = TRUE)
 unlink(here::here(shared_storage), recursive = TRUE)
 ```
 
----
+## Where to go next
 
-**Next up**: [Configuration](config.html): `dvs.toml` fields, compression tradeoffs, threads, and custom metadata folder names.
+- [Introducing dvs](intro.html): the short version of everything above.
+- [The R package in depth](intro-r.html) and [the CLI in depth](intro-cli.html).
+- [The audit log](audit.html): every field in `audit.log.jsonl`, explained.
+- [Storage and meta files](intro-internals.html): the content-addressed layout.

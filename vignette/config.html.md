@@ -48,7 +48,10 @@ dvs_init(store, root_dir = proj)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                                                     <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/default-store staff        
 ```
 
 
@@ -64,7 +67,7 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp2njh1C/dvs_config_8a6ed47685c/default-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/default-store"
 group = "staff"
 ```
 
@@ -99,7 +102,10 @@ dvs_init(store, root_dir = proj, metadata_folder_name = ".datalock", compression
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                                             backend_group
+  <chr>       <chr>                <chr>                                                                                                    <chr>        
+1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/custom-store staff        
 ```
 
 
@@ -116,7 +122,7 @@ compression = "none"
 metadata_folder_name = ".datalock"
 
 [backend]
-path = "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmp2njh1C/dvs_config_8a6ed47685c/custom-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/custom-store"
 group = "staff"
 ```
 
@@ -147,7 +153,10 @@ dvs_init(file.path(base, "repo-store"), root_dir = root)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                                           backend_group
+  <chr>       <lgl>                <chr>                                                                                                  <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/repo-store staff        
 ```
 
 
@@ -160,7 +169,10 @@ dvs_init(file.path(base, "sub-store"), root_dir = sub)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                                                          backend_group
+  <chr>       <lgl>                <chr>                                                                                                 <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/sub-store staff        
 ```
 
 

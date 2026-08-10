@@ -1,6 +1,6 @@
 ---
 title: "The CLI in depth"
-subtitle: "globs, dry runs, JSON output, metadata, and thread control"
+subtitle: "globs, dry runs, tables, JSON, recursive retrieval, and exit codes"
 format:
   html:
     keep-md: true
@@ -8,15 +8,19 @@ execute:
   freeze: auto
 ---
 
-# Setup
+[Introducing dvs](intro.html) showed that the CLI and the R package operate on
+the same project interchangeably. This page is the terminal side of the story:
+the same verbs, plus the things a shell wants that an R session does not,
+table output for humans, JSON for pipelines, and exit codes that scripts can
+branch on. The R equivalent is [the R package in depth](intro-r.html).
 
-R creates the sandbox directories and data files; all dvs operations below run
-via the `dvs` CLI binary.
+## Setup
+
+R generates the sandbox directories and data files; every dvs operation below
+runs through the `dvs` binary.
 
 ```{r}
 options(width = 1000)
-library(dvs)
-library(fs)
 library(here)
 ```
 
@@ -25,27 +29,21 @@ source(here::here("R/mkdatasetfiles.R"))
 ```
 
 ```{r}
+#| warning: false
 storage     <- basename(tempfile(fileext = "_storage"))
 new_project <- basename(tempfile(fileext = "_project"))
 dir.create(here::here(storage))
 dir.create(here::here(new_project))
-```
 
-```{r}
-#| warning: false
 setwd(here::here(new_project))
-mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = !nzchar(Sys.getenv("QUARTO_DOCUMENT_PATH")))
-```
+mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = FALSE)
+mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = FALSE)
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = FALSE)
 
-Pass the paths to the shell so bash chunks can use them:
-
-```{r}
 Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(storage))
 ```
 
-# `dvs init`
+## dvs init
 
 ```{bash}
 cd "$DVS_PROJECT"
@@ -53,140 +51,170 @@ dvs init "$DVS_STORAGE"
 cat dvs.toml
 ```
 
-# `dvs add`
+`dvs.toml` is the entire project configuration. Commit it.
 
-Add a single file with a message:
+## dvs add
+
+A single file, with a message worth reading later:
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs add data/large/large_1.csv -m "add one large dataset"
+dvs add data/large/large_1.csv -m "one large dataset"
 ```
 
-Add a directory of files via glob:
+Each line reports the size on disk, the compressed size that landed in
+storage, and the content hash.
+
+Many files at once, with a glob. Quote it: the glob is resolved by dvs, not
+the shell, so it behaves identically to `glob =` in the R package:
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs add --glob "data/small/*.csv" -m "add small corpus datasets"
+dvs add --glob "data/small/*.csv" -m "small corpus"
+dvs add --glob "data/individual/individual_*.csv" -m "individual datasets" | tail -3
 ```
 
-Add 50 files at once:
+### Dry runs
+
+`--dry-run` prints what would be added without writing anything. The output
+is deliberately identical to a real run, so read it before you trust it, and
+note that nothing below says "added":
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs add --glob "data/individual/individual_*.csv" -m "add individual datasets"
-```
-
-## `--dry-run`
-
-Preview what *would* be added without writing anything:
-
-```{bash}
-cd "$DVS_PROJECT"
+echo "1,2,3" > data/small/new_file.csv
 dvs add --glob "data/small/*.csv" --dry-run
 ```
 
-## Meta file
+### The meta file
 
-Each tracked file gets a `.dvs` meta file that records its hash:
+Every tracked file has a JSON sidecar under `.dvs/`, and that sidecar is what
+git versions:
 
 ```{bash}
 cd "$DVS_PROJECT"
 cat .dvs/data/large/large_1.csv.dvs
 ```
 
-# `dvs status`
+## dvs status
 
-Default, show all tracked files:
-
-```{bash}
-cd "$DVS_PROJECT"
-dvs status
-```
-
-Filter by status:
+Human-readable by default, one row per tracked file:
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs status --current
+rm data/small/new_file.csv
+dvs status data/large data/small
 ```
 
-Show extended metadata columns with `--with-metadata`:
-
-```{bash}
-cd "$DVS_PROJECT"
-dvs status --with-metadata
-```
-
-In the R package these metadata columns (`hash`, `created_by`, `add_time`,
-`compression`, `message`) are returned by default. They are already computed
-when resolving status, so `dvs_status()` surfaces them without an extra flag.
-
-Delete a few files to produce `absent` entries:
+Make some work for it: delete three files and modify one.
 
 ```{bash}
 cd "$DVS_PROJECT"
 rm data/individual/individual_04.csv data/individual/individual_08.csv data/individual/individual_15.csv
-dvs status --absent
+echo "99,0,0,0,0,0" >> data/large/large_1.csv
 ```
 
-Modify a file to produce an `unsynced` entry:
+The `--absent` and `--unsynced` flags filter; without flags you get all
+states:
 
 ```{bash}
 cd "$DVS_PROJECT"
-echo "99,0,0,0,0,0" >> data/large/large_1.csv
+dvs status --absent
 dvs status --unsynced
 ```
 
-## JSON output
+`--with-metadata` widens the table with the hash, author, timestamp,
+compression, and message:
 
-Every command accepts `--json` for machine-readable output:
-
-```{r}
-#| results: asis
-#| warning: false
-setwd(here::here(new_project))
-out <- system2("dvs", c("status", "--absent", "--json"), stdout = TRUE)
-cat("```json\n")
-cat(jsonlite::toJSON(jsonlite::fromJSON(paste(out, collapse = "\n"),
-                                        simplifyVector = FALSE),
-                     pretty = TRUE, auto_unbox = TRUE))
-cat("\n```\n")
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --unsynced --with-metadata
 ```
 
-# `dvs get`
+### JSON output
 
-Restore absent files by glob:
+Every command takes `--json`. The result is machine-readable and stable,
+which makes the CLI scriptable from anything:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --absent --json | python3 -m json.tool | head -20
+```
+
+## dvs get
+
+Restore the absent files by glob:
 
 ```{bash}
 cd "$DVS_PROJECT"
 dvs get --glob "data/individual/individual_*.csv"
+```
+
+Re-add the modified file to bring the project back to all `current`:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add data/large/large_1.csv -m "append row 99"
+```
+
+### Directory scoping and --recursive
+
+`get` and `status` accept directory paths, which cover their direct children
+only. `-r/--recursive` walks the whole subtree. With no paths at all, `get`
+scopes to the current directory, so at the project root `dvs get -r` means
+"restore everything":
+
+```{bash}
+cd "$DVS_PROJECT"
+rm -r data
+dvs get -r | tail -3
 dvs status --absent
 ```
 
-## `--dry-run`
+Nothing absent: the whole `data/` tree came back from storage.
+
+## Exit codes
+
+The CLI is built for pipelines, so failures are visible to the shell. A
+request naming an untracked path is refused as a whole (nothing happens) and
+exits nonzero:
 
 ```{bash}
 cd "$DVS_PROJECT"
-rm data/individual/individual_01.csv
-dvs get --glob "data/individual/individual_*.csv" --dry-run
+dvs get data/no_such_file.csv || echo "exit code: $?"
 ```
 
-# `--threads`
-
-Override the auto-detected thread count for any command:
+`status` treats unknown paths more gently, because "show me what matches" is
+a question, not an instruction: unmatched paths are dropped and the command
+still exits 0:
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs status --threads 2
+dvs status data/large data/no_such_dir && echo "exit code: 0"
 ```
 
-# Cleanup
+## Threads
+
+`add`, `get`, and `status` hash and copy in parallel. `--threads` overrides
+the auto-detected pool for one invocation; the `DVS_NUM_THREADS` environment
+variable does it globally:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs status --threads 2 | tail -3
+```
+
+## Cleanup
 
 ```{r}
 unlink(here::here(new_project), recursive = TRUE)
 unlink(here::here(storage),     recursive = TRUE)
 ```
 
----
+## Where to go next
 
-**Next up**: [Internals](intro-internals.html): how dvs organises meta files and blob storage.
+- [Collaboration](collab.html): two users, one storage, and what to commit.
+- Reference, one page per command: [dvs init](cli-init.html),
+  [dvs add](cli-add.html), [dvs status](cli-status.html), [dvs get](cli-get.html).
+- [Storage and meta files](intro-internals.html): what is actually in `.dvs/`
+  and the storage directory.

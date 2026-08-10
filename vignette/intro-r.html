@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.36">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>dvs lifecycle</title>
+<title>The R package in depth</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2280,8 +2280,8 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">dvs lifecycle</h1>
-<p class="subtitle lead">modify, re-add, dry-run, and storage integrity failures</p>
+<h1 class="title">The R package in depth</h1>
+<p class="subtitle lead">many files, globs, dry runs, changing data, scoped retrieval, and failure handling</p>
 </div>
 
 
@@ -2298,17 +2298,19 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
-<section id="setup" class="level1">
-<h1>Setup</h1>
+<p><a href="intro.html">Introducing dvs</a> walked the four verbs once. This page works the R package the way a real project does: dozens of files at different sizes, data that changes after it was added, previews before writes, retrieval scoped to subdirectories, and the failure modes you will eventually meet.</p>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width =</span> <span class="dv">1000</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo</code></pre>
+<pre><code>here() starts at /Users/elea/Documents/a2ai_github/dvs2-demo-repo</code></pre>
 </div>
 </div>
+<p>The demo needs files worth versioning. <code>mkdatasetfiles()</code> is a small test-data generator used throughout these demos (it is not part of dvs); it writes CSV files of a chosen size and count. Its source is in the <a href="#appendix-the-test-data-generator">appendix</a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/mkdatasetfiles.R&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -2318,303 +2320,333 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>One large file, a small corpus, and fifty individual datasets, mirroring the shape of a typical modeling project:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>, <span class="at">size_mb =</span> <span class="dv">25</span>, <span class="at">prefix =</span> <span class="st">&quot;large_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/large&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>, <span class="at">size_mb =</span> <span class="dv">1</span>,  <span class="at">prefix =</span> <span class="st">&quot;small_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/small&quot;</span>, <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>,  <span class="at">size_mb =</span> <span class="dv">25</span>, <span class="at">prefix =</span> <span class="st">&quot;large_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/large&quot;</span>,      <span class="at">show_progress =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">3</span>,  <span class="at">size_mb =</span> <span class="dv">1</span>,  <span class="at">prefix =</span> <span class="st">&quot;small_&quot;</span>,      <span class="at">dir =</span> <span class="st">&quot;data/small&quot;</span>,      <span class="at">show_progress =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">50</span>, <span class="at">size_mb =</span> <span class="dv">3</span>,  <span class="at">prefix =</span> <span class="st">&quot;individual_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/individual&quot;</span>, <span class="at">show_progress =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;data&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">dir =</span> fs<span class="sc">::</span><span class="fu">path_dir</span>(path)) <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">files =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">size =</span> <span class="fu">sum</span>(size), <span class="at">.by =</span> dir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized</code></pre>
+<pre><code># A tibble: 3 × 3
+  dir             files        size
+  &lt;chr&gt;           &lt;int&gt; &lt;fs::bytes&gt;
+1 data/individual    50        150M
+2 data/large          1         25M
+3 data/small          3          3M</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>,</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">message =</span> <span class="st">&quot;initial add of large file&quot;</span>))</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>),</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">message =</span> <span class="st">&quot;initial add of small files&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>All files are <code>current</code>:</p>
+<p>About 180 MB that git should never see.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 8
-  path                   status  hash                                                                  size created_by compression message                    add_time           
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                      &lt;dttm&gt;             
-1 data/large/large_1.csv current 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838   25.0 MB elea       zstd        initial add of large file  2026-04-24 12:59:15
-2 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-3 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-4 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15</code></pre>
+<pre><code># A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                              backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filefb1413109d64_storage staff        </code></pre>
 </div>
 </div>
 </section>
-<section id="modify-a-tracked-file" class="level1">
-<h1>Modify a tracked file</h1>
-<p>Append a row to <code>large_1.csv</code> — the file now differs from the hash dvs recorded:</p>
+<section id="adding-files-three-ways" class="level2">
+<h2 class="anchored" data-anchor-id="adding-files-three-ways">Adding files three ways</h2>
+<p>A single path, a vector of paths, and a glob. The <code>message</code> is recorded in each meta file, so make it earn its keep.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;one large dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  path                   outcome hash                                                                size stored_size
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
+1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     10.5 MB</code></pre>
+</div>
+</div>
+<p>The result is a tibble, one row per file. <code>size</code> is the file on disk; <code>stored_size</code> is what actually landed in storage after zstd compression.</p>
+<p>A vector of paths, straight from <code>fs::dir_ls()</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;99,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>), <span class="at">message =</span> <span class="st">&quot;small corpus&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  path                   outcome hash                                                                  size stored_size
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt;     &lt;bytes&gt;
+1 data/small/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB
+2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB
+3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB</code></pre>
 </div>
-<p><code>dvs_status()</code> reports the hash mismatch as <code>unsynced</code>:</p>
+</div>
+<p>And a glob, resolved by dvs itself (not the shell), which keeps behavior identical between R and the CLI:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/individual/individual_*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;individual datasets&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 50 × 5
+   path                              outcome hash                                                                size stored_size
+   &lt;chr&gt;                             &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
+ 1 data/individual/individual_01.csv copied  57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB      1.3 MB
+ 2 data/individual/individual_02.csv copied  85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB      1.3 MB
+ 3 data/individual/individual_03.csv copied  cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB      1.3 MB
+ 4 data/individual/individual_04.csv copied  388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB      1.3 MB
+ 5 data/individual/individual_05.csv copied  0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB      1.3 MB
+ 6 data/individual/individual_06.csv copied  e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB      1.3 MB
+ 7 data/individual/individual_07.csv copied  e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB      1.3 MB
+ 8 data/individual/individual_08.csv copied  93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB      1.3 MB
+ 9 data/individual/individual_09.csv copied  26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB      1.3 MB
+10 data/individual/individual_10.csv copied  804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB      1.3 MB
+# ℹ 40 more rows</code></pre>
+</div>
+</div>
+<p>Adding a file that has not changed is a no-op. The outcome says <code>present</code> and the meta file is left alone:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;this message is not written&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  path                   outcome hash                                                                size stored_size
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
+1 data/large/large_1.csv present 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     25.0 MB</code></pre>
+</div>
+</div>
+</section>
+<section id="status-is-a-data-frame" class="level2">
+<h2 class="anchored" data-anchor-id="status-is-a-data-frame">Status is a data frame</h2>
+<p><code>dvs_status()</code> returns a tibble with the full metadata: hash, size, who added it, when, the compression mode, and the message. Filter it with the <code>status</code> argument or with ordinary dplyr.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 54 × 8
+   path                              status  hash                                                                size created_by compression message             add_time           
+   &lt;chr&gt;                             &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;               &lt;dttm&gt;             
+ 1 data/individual/individual_01.csv current 57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+ 2 data/individual/individual_02.csv current 85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+ 3 data/individual/individual_03.csv current cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+ 4 data/individual/individual_04.csv current 388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+ 5 data/individual/individual_05.csv current 0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+ 6 data/individual/individual_06.csv current e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+ 7 data/individual/individual_07.csv current e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+ 8 data/individual/individual_08.csv current 93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+ 9 data/individual/individual_09.csv current 26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+10 data/individual/individual_10.csv current 804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+# ℹ 44 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;current&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 54</code></pre>
+</div>
+</div>
+</section>
+<section id="when-data-changes" class="level2">
+<h2 class="anchored" data-anchor-id="when-data-changes">When data changes</h2>
+<p>Append a row to the large file. Its hash no longer matches the meta file, so its status flips to <code>unsynced</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;99,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 8
-  path                   status   hash                                                                size created_by compression message                   add_time           
-  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                     &lt;dttm&gt;             
-1 data/large/large_1.csv unsynced 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB elea       zstd        initial add of large file 2026-04-24 12:59:15</code></pre>
+  path                   status   hash                                                                size created_by compression message           add_time           
+  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;             &lt;dttm&gt;             
+1 data/large/large_1.csv unsynced 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB elea       zstd        one large dataset 2026-08-10 15:26:45</code></pre>
 </div>
 </div>
-<p>Re-add with a new message. dvs writes a new blob and overwrites the meta file:</p>
+<p>Re-add it with a message that says why. dvs writes the new content to storage as a new blob and updates the meta file; the old blob stays, so clones pinned to the old meta file still resolve.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add row 99 — corrected dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;append row 99, corrected dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 5
   path                   outcome hash                                                                size stored_size
   &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
 1 data/large/large_1.csv copied  5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB     10.5 MB</code></pre>
 </div>
-</div>
-<p>Back to <code>current</code>:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;current&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 8
-  path                   status  hash                                                                  size created_by compression message                        add_time           
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                          &lt;dttm&gt;             
-1 data/large/large_1.csv current 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c   25.0 MB elea       zstd        add row 99 — corrected dataset 2026-04-24 12:59:15
-2 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
-3 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
-4 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15</code></pre>
+<pre><code># A tibble: 0 × 0</code></pre>
 </div>
 </div>
 </section>
-<section id="dry_run" class="level1">
-<h1><code>dry_run</code></h1>
-<p><code>dry_run = TRUE</code> reports what <em>would</em> happen without writing anything.</p>
-<p>Modify the file again:</p>
+<section id="dry-runs" class="level2">
+<h2 class="anchored" data-anchor-id="dry-runs">Dry runs</h2>
+<p><code>dry_run = TRUE</code> reports what would happen without writing anything. The output has the same shape as the real call, so the only way to know nothing happened is that nothing happened:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;100,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Preview <code>dvs_add</code> without committing:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;dry run preview&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;100,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;preview only&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 5
   path                   outcome hash                                                                size stored_size
   &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
 1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     25.0 MB</code></pre>
 </div>
-</div>
-<p>Status is still <code>unsynced</code> — nothing was written:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 8
-  path                   status   hash                                                                size created_by compression message                        add_time           
-  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                          &lt;dttm&gt;             
-1 data/large/large_1.csv unsynced 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB elea       zstd        add row 99 — corrected dataset 2026-04-24 12:59:15</code></pre>
+  path                   status   hash                                                                size created_by compression message                          add_time           
+  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                            &lt;dttm&gt;             
+1 data/large/large_1.csv unsynced 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB elea       zstd        append row 99, corrected dataset 2026-08-10 15:26:45</code></pre>
 </div>
 </div>
-<p>Delete a file, then preview <code>dvs_get</code> without restoring:</p>
+<p>Still <code>unsynced</code>: no blob was written, no meta file updated. The same works for retrieval:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;append row 100&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  path                   outcome hash                                                                size stored_size
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
+1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     10.5 MB</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   path                   outcome      size
   &lt;chr&gt;                  &lt;chr&gt;     &lt;bytes&gt;
 1 data/small/small_1.csv copied  1024.0 KB</code></pre>
 </div>
-</div>
-<p>Status still shows <code>absent</code>:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 8
-  path                   status hash                                                                  size created_by compression message                    add_time           
-  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                      &lt;dttm&gt;             
-1 data/small/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15</code></pre>
+  path                   status hash                                                                  size created_by compression message      add_time           
+  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
+1 data/small/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
 </div>
 </div>
-<p>Restore for real:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   path                   outcome      size
   &lt;chr&gt;                  &lt;chr&gt;     &lt;bytes&gt;
 1 data/small/small_1.csv copied  1024.0 KB</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 8
-  path                   status   hash                                                                  size created_by compression message                        add_time           
-  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                          &lt;dttm&gt;             
-1 data/large/large_1.csv unsynced 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c   25.0 MB elea       zstd        add row 99 — corrected dataset 2026-04-24 12:59:15
-2 data/small/small_1.csv current  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
-3 data/small/small_2.csv current  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15
-4 data/small/small_3.csv current  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files     2026-04-24 12:59:15</code></pre>
+<pre><code># A tibble: 0 × 0</code></pre>
 </div>
 </div>
 </section>
-<section id="scoped-status-and-retrieval" class="level1">
-<h1>Scoped status and retrieval</h1>
-<p><code>dvs_status()</code> and <code>dvs_get()</code> both scope to direct children of a directory by default. Pass <code>recursive = TRUE</code> to include all descendants.</p>
-<p>Add a file nested one level deeper so the contrast is visible:</p>
+<section id="scoped-status-and-retrieval" class="level2">
+<h2 class="anchored" data-anchor-id="scoped-status-and-retrieval">Scoped status and retrieval</h2>
+<p>Both <code>dvs_status()</code> and <code>dvs_get()</code> take directory paths and, by default, consider only their direct children. <code>recursive = TRUE</code> includes every descendant. Add a nested file so the difference is visible:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;data/small/nested&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>, <span class="at">size_mb =</span> <span class="dv">1</span>, <span class="at">prefix =</span> <span class="st">&quot;nested_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/small/nested&quot;</span>,</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">show_progress =</span> <span class="sc">!</span><span class="fu">nzchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">&quot;QUARTO_DOCUMENT_PATH&quot;</span>)))</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/small/nested/nested_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;add nested file&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdatasetfiles</span>(<span class="at">n_files =</span> <span class="dv">1</span>, <span class="at">size_mb =</span> <span class="dv">1</span>, <span class="at">prefix =</span> <span class="st">&quot;nested_&quot;</span>, <span class="at">dir =</span> <span class="st">&quot;data/small/nested&quot;</span>, <span class="at">show_progress =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;data/small/nested/nested_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;nested file&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>dvs_status(&quot;data/small&quot;)</code> shows only the three files directly in <code>data/small/</code>, not the nested one:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 8
-  path                   status  hash                                                                  size created_by compression message                    add_time           
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                      &lt;dttm&gt;             
-1 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-2 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-3 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15</code></pre>
+  path                   status  hash                                                                  size created_by compression message      add_time           
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
+1 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
+2 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
+3 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
 </div>
 </div>
-<p><code>dvs_status(&quot;data/small&quot;, recursive = TRUE)</code> includes all descendants:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 8
-  path                           status  hash                                                                  size created_by compression message                    add_time           
-  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                      &lt;dttm&gt;             
-1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        add nested file            2026-04-24 12:59:15
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15</code></pre>
+  path                           status  hash                                                                  size created_by compression message      add_time           
+  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
+1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  2026-08-10 15:26:46
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
 </div>
 </div>
-<p>Delete all four files so retrieval can be demonstrated:</p>
+<p>Retrieval scopes the same way. Delete everything under <code>data/small</code>, then restore only the direct children:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_3.csv&quot;</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/nested/nested_1.csv&quot;</span>)</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>))</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  path                   outcome      size
+  &lt;chr&gt;                  &lt;chr&gt;     &lt;bytes&gt;
+1 data/small/small_1.csv copied  1024.0 KB
+2 data/small/small_2.csv copied  1024.0 KB
+3 data/small/small_3.csv copied  1024.0 KB</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 8
-  path                           status hash                                                                  size created_by compression message                    add_time           
-  &lt;chr&gt;                          &lt;chr&gt;  &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                      &lt;dttm&gt;             
-1 data/small/nested/nested_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        add nested file            2026-04-24 12:59:15
-2 data/small/small_1.csv         absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-3 data/small/small_2.csv         absent 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-4 data/small/small_3.csv         absent 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15</code></pre>
+  path                           status  hash                                                                  size created_by compression message      add_time           
+  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
+1 data/small/nested/nested_1.csv absent  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  2026-08-10 15:26:46
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
 </div>
 </div>
-<p><code>dvs_get(&quot;data/small&quot;)</code> restores only the three direct children — the nested file remains absent:</p>
+<p>The nested file is still <code>absent</code>; a recursive get brings it back:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
   path                           outcome      size
   &lt;chr&gt;                          &lt;chr&gt;     &lt;bytes&gt;
 1 data/small/nested/nested_1.csv copied  1024.0 KB
-2 data/small/small_1.csv         copied  1024.0 KB
-3 data/small/small_2.csv         copied  1024.0 KB
-4 data/small/small_3.csv         copied  1024.0 KB</code></pre>
+2 data/small/small_1.csv         present 1024.0 KB
+3 data/small/small_2.csv         present 1024.0 KB
+4 data/small/small_3.csv         present 1024.0 KB</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 8
-  path                           status  hash                                                                  size created_by compression message                    add_time           
-  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                      &lt;dttm&gt;             
-1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        add nested file            2026-04-24 12:59:15
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15</code></pre>
-</div>
-</div>
-<p>Restore the nested file explicitly by path:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/nested/nested_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 3
-  path                           outcome      size
-  &lt;chr&gt;                          &lt;chr&gt;     &lt;bytes&gt;
-1 data/small/nested/nested_1.csv present 1024.0 KB</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 8
-  path                           status  hash                                                                  size created_by compression message                    add_time           
-  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                      &lt;dttm&gt;             
-1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        add nested file            2026-04-24 12:59:15
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15</code></pre>
+  path                           status  hash                                                                  size created_by compression message      add_time           
+  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
+1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  2026-08-10 15:26:46
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
 </div>
 </div>
 </section>
-<section id="integrity-failure-missing-storage-blob" class="level1">
-<h1>Integrity failure: missing storage blob</h1>
-<p>dvs blobs are content-addressed — the hash in the meta file is the key. If a blob is missing from storage (e.g. accidental deletion), <code>dvs_get</code> returns an <code>error</code> column describing the failure rather than restoring the file.</p>
-<p>Locate and delete the blob for <code>small_2.csv</code>:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>meta_path <span class="ot">&lt;-</span> <span class="fu">grep</span>(</span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;small_2&quot;</span>,</span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;.dvs&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">glob =</span> <span class="st">&quot;*.dvs&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>),</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="cn">TRUE</span></span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>meta  <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(meta_path)</span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>hash  <span class="ot">&lt;-</span> meta<span class="sc">$</span>hashes<span class="sc">$</span>blake3</span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>blob  <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="fu">substr</span>(hash, <span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">substr</span>(hash, <span class="dv">3</span>, <span class="fu">nchar</span>(hash)))</span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;blob:&quot;</span>, <span class="fu">as.character</span>(blob), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>blob: /Users/elea/Documents/a2ai_github/dvs2-demo/filed7a55797c959_storage/15/74af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;exists:&quot;</span>, fs<span class="sc">::</span><span class="fu">file_exists</span>(blob), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>exists: TRUE </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_delete</span>(blob)</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;exists after delete:&quot;</span>, fs<span class="sc">::</span><span class="fu">file_exists</span>(blob), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>exists after delete: FALSE </code></pre>
-</div>
-</div>
-<p>Remove the local copy so a restore is needed:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 8
-  path                   status hash                                                                  size created_by compression message                    add_time           
-  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                      &lt;dttm&gt;             
-1 data/small/small_2.csv absent 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        initial add of small files 2026-04-24 12:59:15</code></pre>
-</div>
-</div>
-<p><code>dvs_get</code> returns normally but with a non-empty <code>error</code> column — the blob is gone so the file cannot be restored:</p>
+<section id="when-things-fail" class="level2">
+<h2 class="anchored" data-anchor-id="when-things-fail">When things fail</h2>
+<p>dvs collects per-file failures instead of aborting the batch. A file that fails after the batch starts becomes a row with its <code>error</code> column set, sitting next to the rows that succeeded.</p>
+<p>The classic failure: a blob missing from storage. Simulate it by deleting one blob directly (the meta file knows the hash, and the hash is the storage address):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(<span class="st">&quot;.dvs/data/small/small_2.csv.dvs&quot;</span>)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>hash <span class="ot">&lt;-</span> meta<span class="sc">$</span>hashes<span class="sc">$</span>blake3</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>blob <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(storage, <span class="fu">substr</span>(hash, <span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">substr</span>(hash, <span class="dv">3</span>, <span class="fu">nchar</span>(hash)))</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_delete</span>(blob)</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 2
   path                   error                                                                                                         
@@ -2622,22 +2654,173 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 1 data/small/small_2.csv Storage file missing for hash: Hashes(blake3=1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04)</code></pre>
 </div>
 </div>
+<p>The get returns normally, reports the failure in <code>error</code>, and leaves everything else intact. Note what it did not do: write a corrupt file. Retrieval verifies the hash before the file is moved into place.</p>
+<p>Batch validation is stricter up front: if any requested path is not tracked at all (a typo, say), the whole request is refused before anything is retrieved, and <code>dvs_get()</code> raises an error.</p>
 </section>
-<section id="untracking-files" class="level1">
-<h1>Untracking files</h1>
-<p>There is <strong>no <code>dvs_remove</code> in the current release</strong>. To stop tracking a file, delete its meta file under <code>.dvs/</code> manually:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dvs will no longer track large_1.csv after its meta file is removed</span></span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_delete</span>(<span class="st">&quot;.dvs/data/large/large_1.csv.dvs&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>After the meta file is gone <code>dvs_status()</code> no longer reports on that file.</p>
-</section>
-<section id="cleanup" class="level1">
-<h1>Cleanup</h1>
+<section id="untracking-a-file" class="level2">
+<h2 class="anchored" data-anchor-id="untracking-a-file">Untracking a file</h2>
+<p>There is no <code>dvs_remove()</code>. To stop tracking a file, delete its meta file:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">file_delete</span>(<span class="st">&quot;.dvs/data/large/large_1.csv.dvs&quot;</span>)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>() <span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 54</code></pre>
 </div>
-<hr>
-<p><strong>Next up</strong>: <a href="collab.html">Collaboration</a> — two projects sharing one storage directory; what to commit to git and what to gitignore.</p>
+</div>
+<p>The data file stays on disk; dvs simply no longer has an opinion about it. Its blobs remain in storage (other projects may reference them).</p>
+</section>
+<section id="cleanup" class="level2">
+<h2 class="anchored" data-anchor-id="cleanup">Cleanup</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(here<span class="sc">::</span><span class="fu">here</span>(storage),     <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="where-to-go-next" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-go-next">Where to go next</h2>
+<ul>
+<li><a href="intro-cli.html">The CLI in depth</a>: the same operations from the terminal, plus JSON output and exit codes.</li>
+<li><a href="collab.html">Collaboration</a>: sharing one storage across projects and users.</li>
+<li>Reference: <a href="r-add.html">dvs_add()</a>, <a href="r-status.html">dvs_status()</a>, <a href="r-get.html">dvs_get()</a>, <a href="r-init.html">dvs_init()</a>.</li>
+</ul>
+</section>
+<section id="appendix-the-test-data-generator" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-the-test-data-generator">Appendix: the test data generator</h2>
+<p><code>mkdatasetfiles()</code> writes <code>n_files</code> CSVs of roughly <code>size_mb</code> each into <code>dir</code>, naming them <code>&lt;prefix&gt;1.csv</code>, <code>&lt;prefix&gt;2.csv</code>, and so on. Each file gets its own seed, so files in a batch are the same size but not identical (identical content would share a single blob in storage, which is exactly what you want in production and exactly what you do not want in a demo about many files).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>mkdatasetfiles <span class="ot">&lt;-</span> <span class="cf">function</span>(n_files,</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>                           dir,</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>                           size_mb,</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">prefix =</span> <span class="st">&quot;file_&quot;</span>,</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">dataset =</span> datasets<span class="sc">::</span>ChickWeight,</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">extra_cols =</span> <span class="dv">10</span>L,</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">max_int =</span> <span class="dv">1000</span>L,</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">chunk_size_mb =</span> <span class="dv">8</span>,</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>                           <span class="at">chunk_rows =</span> <span class="cn">NULL</span>,</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>                           <span class="at">show_progress =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(</span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(n_files) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">is.numeric</span>(n_files), n_files <span class="sc">&gt;=</span> <span class="dv">1</span>, n_files <span class="sc">==</span> <span class="fu">as.integer</span>(n_files),</span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(dir) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">nzchar</span>(dir),</span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(size_mb) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">is.numeric</span>(size_mb), size_mb <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(prefix) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">nzchar</span>(prefix),</span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.data.frame</span>(dataset),</span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(extra_cols) <span class="sc">==</span> <span class="dv">1</span>L, extra_cols <span class="sc">&gt;=</span> <span class="dv">0</span>, extra_cols <span class="sc">==</span> <span class="fu">as.integer</span>(extra_cols),</span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(max_int) <span class="sc">==</span> <span class="dv">1</span>L, max_int <span class="sc">&gt;=</span> <span class="dv">1</span>, max_int <span class="sc">==</span> <span class="fu">as.integer</span>(max_int),</span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(chunk_size_mb) <span class="sc">==</span> <span class="dv">1</span>L, <span class="fu">is.numeric</span>(chunk_size_mb), chunk_size_mb <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.null</span>(chunk_rows) <span class="sc">||</span></span>
+<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a>      (<span class="fu">length</span>(chunk_rows) <span class="sc">==</span> <span class="dv">1</span>L <span class="sc">&amp;&amp;</span> chunk_rows <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">&amp;&amp;</span> chunk_rows <span class="sc">==</span> <span class="fu">as.integer</span>(chunk_rows)),</span>
+<span id="cb59-22"><a href="#cb59-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.logical</span>(show_progress), <span class="fu">length</span>(show_progress) <span class="sc">==</span> <span class="dv">1</span>L</span>
+<span id="cb59-23"><a href="#cb59-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb59-24"><a href="#cb59-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-25"><a href="#cb59-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb59-26"><a href="#cb59-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-27"><a href="#cb59-27" aria-hidden="true" tabindex="-1"></a>  target_bytes <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(size_mb) <span class="sc">*</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb59-28"><a href="#cb59-28" aria-hidden="true" tabindex="-1"></a>  chunk_target_bytes <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">as.numeric</span>(chunk_size_mb) <span class="sc">*</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">2</span>, target_bytes)</span>
+<span id="cb59-29"><a href="#cb59-29" aria-hidden="true" tabindex="-1"></a>  width <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>L, <span class="fu">nchar</span>(<span class="fu">as.character</span>(n_files)))</span>
+<span id="cb59-30"><a href="#cb59-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-31"><a href="#cb59-31" aria-hidden="true" tabindex="-1"></a>  dataset[] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(dataset, as.character)</span>
+<span id="cb59-32"><a href="#cb59-32" aria-hidden="true" tabindex="-1"></a>  n_base <span class="ot">&lt;-</span> <span class="fu">nrow</span>(dataset)</span>
+<span id="cb59-33"><a href="#cb59-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (n_base <span class="sc">==</span> <span class="dv">0</span>L) <span class="fu">stop</span>(<span class="st">&quot;`dataset` must have at least one row.&quot;</span>)</span>
+<span id="cb59-34"><a href="#cb59-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-35"><a href="#cb59-35" aria-hidden="true" tabindex="-1"></a>  base_names <span class="ot">&lt;-</span> <span class="fu">names</span>(dataset)</span>
+<span id="cb59-36"><a href="#cb59-36" aria-hidden="true" tabindex="-1"></a>  extra_names <span class="ot">&lt;-</span> <span class="cf">if</span> (extra_cols <span class="sc">&gt;</span> <span class="dv">0</span>L) <span class="fu">paste0</span>(<span class="st">&quot;rand&quot;</span>, <span class="fu">seq_len</span>(extra_cols)) <span class="cf">else</span> <span class="fu">character</span>(<span class="dv">0</span>)</span>
+<span id="cb59-37"><a href="#cb59-37" aria-hidden="true" tabindex="-1"></a>  header_raw <span class="ot">&lt;-</span> <span class="fu">charToRaw</span>(<span class="fu">paste0</span>(<span class="fu">paste</span>(<span class="fu">c</span>(base_names, extra_names), <span class="at">collapse =</span> <span class="st">&quot;,&quot;</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>))</span>
+<span id="cb59-38"><a href="#cb59-38" aria-hidden="true" tabindex="-1"></a>  base_row_lines <span class="ot">&lt;-</span> <span class="fu">do.call</span>(paste, <span class="fu">c</span>(dataset, <span class="fu">list</span>(<span class="at">sep =</span> <span class="st">&quot;,&quot;</span>)))</span>
+<span id="cb59-39"><a href="#cb59-39" aria-hidden="true" tabindex="-1"></a>  rand_lut <span class="ot">&lt;-</span> <span class="cf">if</span> (extra_cols <span class="sc">&gt;</span> <span class="dv">0</span>L) <span class="fu">as.character</span>(<span class="dv">0</span><span class="sc">:</span>(max_int <span class="sc">-</span> <span class="dv">1</span>L)) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb59-40"><a href="#cb59-40" aria-hidden="true" tabindex="-1"></a>  out_files <span class="ot">&lt;-</span> <span class="fu">character</span>(n_files)</span>
+<span id="cb59-41"><a href="#cb59-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-42"><a href="#cb59-42" aria-hidden="true" tabindex="-1"></a>  make_chunk_lines <span class="ot">&lt;-</span> <span class="cf">if</span> (extra_cols <span class="sc">&gt;</span> <span class="dv">0</span>L) {</span>
+<span id="cb59-43"><a href="#cb59-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(start_row, n_rows) {</span>
+<span id="cb59-44"><a href="#cb59-44" aria-hidden="true" tabindex="-1"></a>      idx <span class="ot">&lt;-</span> ((<span class="fu">seq.int</span>(start_row, <span class="at">length.out =</span> n_rows) <span class="sc">-</span> <span class="dv">1</span>L) <span class="sc">%%</span> n_base) <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb59-45"><a href="#cb59-45" aria-hidden="true" tabindex="-1"></a>      rand_chr <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb59-46"><a href="#cb59-46" aria-hidden="true" tabindex="-1"></a>        rand_lut[<span class="fu">sample.int</span>(max_int, n_rows <span class="sc">*</span> extra_cols, <span class="at">replace =</span> <span class="cn">TRUE</span>)],</span>
+<span id="cb59-47"><a href="#cb59-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">nrow =</span> n_rows,</span>
+<span id="cb59-48"><a href="#cb59-48" aria-hidden="true" tabindex="-1"></a>        <span class="at">ncol =</span> extra_cols</span>
+<span id="cb59-49"><a href="#cb59-49" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb59-50"><a href="#cb59-50" aria-hidden="true" tabindex="-1"></a>      rand_lines <span class="ot">&lt;-</span> <span class="fu">do.call</span>(</span>
+<span id="cb59-51"><a href="#cb59-51" aria-hidden="true" tabindex="-1"></a>        paste,</span>
+<span id="cb59-52"><a href="#cb59-52" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="fu">as.data.frame</span>(rand_chr, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>), <span class="fu">list</span>(<span class="at">sep =</span> <span class="st">&quot;,&quot;</span>))</span>
+<span id="cb59-53"><a href="#cb59-53" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb59-54"><a href="#cb59-54" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(base_row_lines[idx], <span class="st">&quot;,&quot;</span>, rand_lines)</span>
+<span id="cb59-55"><a href="#cb59-55" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb59-56"><a href="#cb59-56" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb59-57"><a href="#cb59-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(start_row, n_rows) {</span>
+<span id="cb59-58"><a href="#cb59-58" aria-hidden="true" tabindex="-1"></a>      idx <span class="ot">&lt;-</span> ((<span class="fu">seq.int</span>(start_row, <span class="at">length.out =</span> n_rows) <span class="sc">-</span> <span class="dv">1</span>L) <span class="sc">%%</span> n_base) <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb59-59"><a href="#cb59-59" aria-hidden="true" tabindex="-1"></a>      base_row_lines[idx]</span>
+<span id="cb59-60"><a href="#cb59-60" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb59-61"><a href="#cb59-61" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb59-62"><a href="#cb59-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-63"><a href="#cb59-63" aria-hidden="true" tabindex="-1"></a>  chunk_rows <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(chunk_rows)) {</span>
+<span id="cb59-64"><a href="#cb59-64" aria-hidden="true" tabindex="-1"></a>    sample_n <span class="ot">&lt;-</span> <span class="fu">min</span>(n_base, <span class="dv">1000</span>L)</span>
+<span id="cb59-65"><a href="#cb59-65" aria-hidden="true" tabindex="-1"></a>    sample_lines <span class="ot">&lt;-</span> <span class="fu">make_chunk_lines</span>(<span class="dv">1</span>L, sample_n)</span>
+<span id="cb59-66"><a href="#cb59-66" aria-hidden="true" tabindex="-1"></a>    sample_bytes <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(utils<span class="sc">::</span><span class="fu">object.size</span>(sample_lines))</span>
+<span id="cb59-67"><a href="#cb59-67" aria-hidden="true" tabindex="-1"></a>    bytes_per_row <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, <span class="fu">ceiling</span>(sample_bytes <span class="sc">/</span> sample_n))</span>
+<span id="cb59-68"><a href="#cb59-68" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(<span class="dv">1</span>L, <span class="fu">as.integer</span>(<span class="fu">floor</span>(chunk_target_bytes <span class="sc">/</span> bytes_per_row)))</span>
+<span id="cb59-69"><a href="#cb59-69" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb59-70"><a href="#cb59-70" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.integer</span>(chunk_rows)</span>
+<span id="cb59-71"><a href="#cb59-71" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb59-72"><a href="#cb59-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-73"><a href="#cb59-73" aria-hidden="true" tabindex="-1"></a>  pb <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb59-74"><a href="#cb59-74" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (show_progress) {</span>
+<span id="cb59-75"><a href="#cb59-75" aria-hidden="true" tabindex="-1"></a>    pb <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">txtProgressBar</span>(<span class="at">min =</span> <span class="dv">0</span>L, <span class="at">max =</span> n_files, <span class="at">style =</span> <span class="dv">3</span>)</span>
+<span id="cb59-76"><a href="#cb59-76" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(pb)) <span class="fu">close</span>(pb), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb59-77"><a href="#cb59-77" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb59-78"><a href="#cb59-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-79"><a href="#cb59-79" aria-hidden="true" tabindex="-1"></a>  had_seed <span class="ot">&lt;-</span> <span class="fu">exists</span>(<span class="st">&quot;.Random.seed&quot;</span>, <span class="at">envir =</span> <span class="fu">globalenv</span>(), <span class="at">inherits =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb59-80"><a href="#cb59-80" aria-hidden="true" tabindex="-1"></a>  saved_seed <span class="ot">&lt;-</span> <span class="cf">if</span> (had_seed) <span class="fu">get</span>(<span class="st">&quot;.Random.seed&quot;</span>, <span class="at">envir =</span> <span class="fu">globalenv</span>(), <span class="at">inherits =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb59-81"><a href="#cb59-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">on.exit</span>({</span>
+<span id="cb59-82"><a href="#cb59-82" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (had_seed) {</span>
+<span id="cb59-83"><a href="#cb59-83" aria-hidden="true" tabindex="-1"></a>      <span class="fu">assign</span>(<span class="st">&quot;.Random.seed&quot;</span>, saved_seed, <span class="at">envir =</span> <span class="fu">globalenv</span>())</span>
+<span id="cb59-84"><a href="#cb59-84" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;.Random.seed&quot;</span>, <span class="at">envir =</span> <span class="fu">globalenv</span>(), <span class="at">inherits =</span> <span class="cn">FALSE</span>)) {</span>
+<span id="cb59-85"><a href="#cb59-85" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rm</span>(<span class="st">&quot;.Random.seed&quot;</span>, <span class="at">envir =</span> <span class="fu">globalenv</span>())</span>
+<span id="cb59-86"><a href="#cb59-86" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb59-87"><a href="#cb59-87" aria-hidden="true" tabindex="-1"></a>  }, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb59-88"><a href="#cb59-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-89"><a href="#cb59-89" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(n_files)) {</span>
+<span id="cb59-90"><a href="#cb59-90" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set.seed</span>(i)</span>
+<span id="cb59-91"><a href="#cb59-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-92"><a href="#cb59-92" aria-hidden="true" tabindex="-1"></a>    out_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, <span class="fu">sprintf</span>(<span class="st">&quot;%s%0*d.csv&quot;</span>, prefix, width, i))</span>
+<span id="cb59-93"><a href="#cb59-93" aria-hidden="true" tabindex="-1"></a>    out_files[i] <span class="ot">&lt;-</span> out_path</span>
+<span id="cb59-94"><a href="#cb59-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-95"><a href="#cb59-95" aria-hidden="true" tabindex="-1"></a>    file_con <span class="ot">&lt;-</span> <span class="fu">file</span>(out_path, <span class="at">open =</span> <span class="st">&quot;wb&quot;</span>)</span>
+<span id="cb59-96"><a href="#cb59-96" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="fu">close</span>(file_con), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb59-97"><a href="#cb59-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-98"><a href="#cb59-98" aria-hidden="true" tabindex="-1"></a>    <span class="fu">writeBin</span>(header_raw, file_con)</span>
+<span id="cb59-99"><a href="#cb59-99" aria-hidden="true" tabindex="-1"></a>    bytes_written <span class="ot">&lt;-</span> <span class="fu">length</span>(header_raw)</span>
+<span id="cb59-100"><a href="#cb59-100" aria-hidden="true" tabindex="-1"></a>    start_row <span class="ot">&lt;-</span> <span class="dv">1</span>L</span>
+<span id="cb59-101"><a href="#cb59-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-102"><a href="#cb59-102" aria-hidden="true" tabindex="-1"></a>    <span class="cf">repeat</span> {</span>
+<span id="cb59-103"><a href="#cb59-103" aria-hidden="true" tabindex="-1"></a>      remaining_bytes <span class="ot">&lt;-</span> target_bytes <span class="sc">-</span> bytes_written</span>
+<span id="cb59-104"><a href="#cb59-104" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (remaining_bytes <span class="sc">&lt;=</span> <span class="dv">0</span>L) <span class="cf">break</span></span>
+<span id="cb59-105"><a href="#cb59-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-106"><a href="#cb59-106" aria-hidden="true" tabindex="-1"></a>      lines <span class="ot">&lt;-</span> <span class="fu">make_chunk_lines</span>(start_row, chunk_rows)</span>
+<span id="cb59-107"><a href="#cb59-107" aria-hidden="true" tabindex="-1"></a>      line_bytes <span class="ot">&lt;-</span> <span class="fu">nchar</span>(lines, <span class="at">type =</span> <span class="st">&quot;bytes&quot;</span>) <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb59-108"><a href="#cb59-108" aria-hidden="true" tabindex="-1"></a>      keep_n <span class="ot">&lt;-</span> <span class="fu">findInterval</span>(remaining_bytes, <span class="fu">cumsum</span>(line_bytes))</span>
+<span id="cb59-109"><a href="#cb59-109" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (keep_n <span class="sc">==</span> <span class="dv">0</span>L) <span class="cf">break</span></span>
+<span id="cb59-110"><a href="#cb59-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-111"><a href="#cb59-111" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (keep_n <span class="sc">&lt;</span> <span class="fu">length</span>(lines)) {</span>
+<span id="cb59-112"><a href="#cb59-112" aria-hidden="true" tabindex="-1"></a>        lines <span class="ot">&lt;-</span> lines[<span class="fu">seq_len</span>(keep_n)]</span>
+<span id="cb59-113"><a href="#cb59-113" aria-hidden="true" tabindex="-1"></a>        line_bytes <span class="ot">&lt;-</span> line_bytes[<span class="fu">seq_len</span>(keep_n)]</span>
+<span id="cb59-114"><a href="#cb59-114" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb59-115"><a href="#cb59-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-116"><a href="#cb59-116" aria-hidden="true" tabindex="-1"></a>      <span class="fu">writeChar</span>(<span class="fu">paste</span>(lines, <span class="at">collapse =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>), file_con, <span class="at">eos =</span> <span class="cn">NULL</span>, <span class="at">useBytes =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb59-117"><a href="#cb59-117" aria-hidden="true" tabindex="-1"></a>      <span class="fu">writeBin</span>(<span class="fu">as.raw</span>(<span class="dv">10</span>L), file_con)</span>
+<span id="cb59-118"><a href="#cb59-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-119"><a href="#cb59-119" aria-hidden="true" tabindex="-1"></a>      bytes_written <span class="ot">&lt;-</span> bytes_written <span class="sc">+</span> <span class="fu">sum</span>(line_bytes)</span>
+<span id="cb59-120"><a href="#cb59-120" aria-hidden="true" tabindex="-1"></a>      start_row <span class="ot">&lt;-</span> ((start_row <span class="sc">+</span> <span class="fu">length</span>(lines) <span class="sc">-</span> <span class="dv">1</span>L) <span class="sc">%%</span> n_base) <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb59-121"><a href="#cb59-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-122"><a href="#cb59-122" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(lines) <span class="sc">&lt;</span> chunk_rows) <span class="cf">break</span></span>
+<span id="cb59-123"><a href="#cb59-123" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb59-124"><a href="#cb59-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-125"><a href="#cb59-125" aria-hidden="true" tabindex="-1"></a>    <span class="fu">close</span>(file_con)</span>
+<span id="cb59-126"><a href="#cb59-126" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="cn">NULL</span>, <span class="at">add =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb59-127"><a href="#cb59-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-128"><a href="#cb59-128" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (show_progress) utils<span class="sc">::</span><span class="fu">setTxtProgressBar</span>(pb, i)</span>
+<span id="cb59-129"><a href="#cb59-129" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb59-130"><a href="#cb59-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-131"><a href="#cb59-131" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">file.path</span>(<span class="fu">normalizePath</span>(dir, <span class="at">winslash =</span> <span class="st">&quot;/&quot;</span>, <span class="at">mustWork =</span> <span class="cn">FALSE</span>), <span class="fu">basename</span>(out_files)))</span>
+<span id="cb59-132"><a href="#cb59-132" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 
 </main>

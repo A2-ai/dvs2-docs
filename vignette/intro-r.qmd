@@ -1,0 +1,316 @@
+---
+title: "The R package in depth"
+subtitle: "many files, globs, dry runs, changing data, scoped retrieval, and failure handling"
+format:
+  html:
+    keep-md: true
+execute:
+  freeze: auto
+---
+
+[Introducing dvs](intro.html) walked the four verbs once. This page works the
+R package the way a real project does: dozens of files at different sizes,
+data that changes after it was added, previews before writes, retrieval
+scoped to subdirectories, and the failure modes you will eventually meet.
+
+## Setup
+
+```{r}
+options(width = 1000)
+library(dvs)
+library(fs)
+library(here)
+```
+
+The demo needs files worth versioning. `mkdatasetfiles()` is a small test-data
+generator used throughout these demos (it is not part of dvs); it writes CSV
+files of a chosen size and count. Its source is in the
+[appendix](#appendix-the-test-data-generator).
+
+```{r}
+source(here::here("R/mkdatasetfiles.R"))
+```
+
+```{r}
+storage     <- basename(tempfile(fileext = "_storage"))
+new_project <- basename(tempfile(fileext = "_project"))
+dir.create(here::here(storage))
+dir.create(here::here(new_project))
+```
+
+One large file, a small corpus, and fifty individual datasets, mirroring the
+shape of a typical modeling project:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+mkdatasetfiles(n_files = 1,  size_mb = 25, prefix = "large_",      dir = "data/large",      show_progress = FALSE)
+mkdatasetfiles(n_files = 3,  size_mb = 1,  prefix = "small_",      dir = "data/small",      show_progress = FALSE)
+mkdatasetfiles(n_files = 50, size_mb = 3,  prefix = "individual_", dir = "data/individual", show_progress = FALSE)
+
+fs::dir_info("data", recurse = TRUE, type = "file") |>
+  dplyr::mutate(dir = fs::path_dir(path)) |>
+  dplyr::summarise(files = dplyr::n(), size = sum(size), .by = dir)
+```
+
+About 180 MB that git should never see.
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+dvs_init(here::here(storage))
+```
+
+## Adding files three ways
+
+A single path, a vector of paths, and a glob. The `message` is recorded in
+each meta file, so make it earn its keep.
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_add("data/large/large_1.csv", message = "one large dataset")
+```
+
+The result is a tibble, one row per file. `size` is the file on disk;
+`stored_size` is what actually landed in storage after zstd compression.
+
+A vector of paths, straight from `fs::dir_ls()`:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "small corpus")
+```
+
+And a glob, resolved by dvs itself (not the shell), which keeps behavior
+identical between R and the CLI:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_add(glob = "data/individual/individual_*.csv", message = "individual datasets")
+```
+
+Adding a file that has not changed is a no-op. The outcome says `present`
+and the meta file is left alone:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_add("data/large/large_1.csv", message = "this message is not written")
+```
+
+## Status is a data frame
+
+`dvs_status()` returns a tibble with the full metadata: hash, size, who added
+it, when, the compression mode, and the message. Filter it with the `status`
+argument or with ordinary dplyr.
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_status()
+```
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_status(status = "current") |> nrow()
+```
+
+## When data changes
+
+Append a row to the large file. Its hash no longer matches the meta file, so
+its status flips to `unsynced`:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+cat("99,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
+dvs_status(status = "unsynced")
+```
+
+Re-add it with a message that says why. dvs writes the new content to storage
+as a new blob and updates the meta file; the old blob stays, so clones pinned
+to the old meta file still resolve.
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_add("data/large/large_1.csv", message = "append row 99, corrected dataset")
+dvs_status(status = "unsynced")
+```
+
+## Dry runs
+
+`dry_run = TRUE` reports what would happen without writing anything. The
+output has the same shape as the real call, so the only way to know nothing
+happened is that nothing happened:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+cat("100,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
+dvs_add("data/large/large_1.csv", message = "preview only", dry_run = TRUE)
+dvs_status(status = "unsynced")
+```
+
+Still `unsynced`: no blob was written, no meta file updated. The same works
+for retrieval:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_add("data/large/large_1.csv", message = "append row 100")
+unlink("data/small/small_1.csv")
+dvs_get("data/small/small_1.csv", dry_run = TRUE)
+dvs_status(status = "absent")
+```
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_get("data/small/small_1.csv")
+dvs_status(status = "absent")
+```
+
+## Scoped status and retrieval
+
+Both `dvs_status()` and `dvs_get()` take directory paths and, by default,
+consider only their direct children. `recursive = TRUE` includes every
+descendant. Add a nested file so the difference is visible:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+mkdatasetfiles(n_files = 1, size_mb = 1, prefix = "nested_", dir = "data/small/nested", show_progress = FALSE)
+invisible(dvs_add("data/small/nested/nested_1.csv", message = "nested file"))
+```
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_status("data/small")
+```
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_status("data/small", recursive = TRUE)
+```
+
+Retrieval scopes the same way. Delete everything under `data/small`, then
+restore only the direct children:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+unlink(fs::dir_ls("data/small", recurse = TRUE, type = "file"))
+dvs_get("data/small")
+dvs_status("data/small", recursive = TRUE)
+```
+
+The nested file is still `absent`; a recursive get brings it back:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+dvs_get("data/small", recursive = TRUE)
+dvs_status("data/small", recursive = TRUE)
+```
+
+## When things fail
+
+dvs collects per-file failures instead of aborting the batch. A file that
+fails after the batch starts becomes a row with its `error` column set,
+sitting next to the rows that succeeded.
+
+The classic failure: a blob missing from storage. Simulate it by deleting
+one blob directly (the meta file knows the hash, and the hash is the storage
+address):
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+meta <- jsonlite::fromJSON(".dvs/data/small/small_2.csv.dvs")
+hash <- meta$hashes$blake3
+blob <- here::here(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
+fs::file_delete(blob)
+
+unlink("data/small/small_2.csv")
+dvs_get("data/small/small_2.csv")
+```
+
+The get returns normally, reports the failure in `error`, and leaves
+everything else intact. Note what it did not do: write a corrupt file.
+Retrieval verifies the hash before the file is moved into place.
+
+Batch validation is stricter up front: if any requested path is not tracked
+at all (a typo, say), the whole request is refused before anything is
+retrieved, and `dvs_get()` raises an error.
+
+## Untracking a file
+
+There is no `dvs_remove()`. To stop tracking a file, delete its meta file:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+fs::file_delete(".dvs/data/large/large_1.csv.dvs")
+dvs_status() |> nrow()
+```
+
+The data file stays on disk; dvs simply no longer has an opinion about it.
+Its blobs remain in storage (other projects may reference them).
+
+## Cleanup
+
+```{r}
+unlink(here::here(new_project), recursive = TRUE)
+unlink(here::here(storage),     recursive = TRUE)
+```
+
+## Where to go next
+
+- [The CLI in depth](intro-cli.html): the same operations from the terminal,
+  plus JSON output and exit codes.
+- [Collaboration](collab.html): sharing one storage across projects and users.
+- Reference: [dvs_add()](r-add.html), [dvs_status()](r-status.html),
+  [dvs_get()](r-get.html), [dvs_init()](r-init.html).
+
+## Appendix: the test data generator
+
+`mkdatasetfiles()` writes `n_files` CSVs of roughly `size_mb` each into `dir`,
+naming them `<prefix>1.csv`, `<prefix>2.csv`, and so on. Each file gets its
+own seed, so files in a batch are the same size but not identical (identical
+content would share a single blob in storage, which is exactly what you want
+in production and exactly what you do not want in a demo about many files).
+
+```{r}
+#| echo: false
+#| results: asis
+cat("```r\n",
+    paste(readLines(here::here("R/mkdatasetfiles.R")), collapse = "\n"),
+    "\n```\n",
+    sep = "")
+```
