@@ -123,7 +123,10 @@ dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                               backend_group
+  <chr>       <lgl>                <chr>                                                                      <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad313f11c09_storage staff        
 ```
 
 
@@ -190,7 +193,10 @@ dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_proje
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                               backend_group
+  <chr>       <lgl>                <chr>                                                                      <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad36acccfae_storage staff        
 ```
 
 
@@ -308,7 +314,7 @@ Error: Not in a DVS repository
 ## No files to add: empty glob
 
 A glob pattern that matches no files raises in the R package; the CLI prints
-`No files to add` and exits 0.
+`Error: No files to add` and exits 1, so pipelines see the failure too.
 
 
 ::: {.cell}
@@ -397,9 +403,10 @@ Error: Path not found: nonexistent_file.csv
 
 ## Path resolves to a directory (no glob)
 
-Passing a bare directory name with no glob matches no files. The R package
-raises, the CLI prints `No files to add` and exits 0: mild surface
-divergence.
+Passing a bare directory name with no glob is an invalid input, not an empty
+match. Both surfaces refuse the batch with the same message (`path is a
+directory`); the CLI exits 1. Directories only make sense combined with a
+glob, or via `--recursive` on `status` and `get`.
 
 
 ::: {.cell}
@@ -414,7 +421,8 @@ dvs_add(paths = "mydir")
 
 ```
 Error in `dvs_add_impl()`:
-! No files to add
+! Refusing to add, the following paths are invalid:
+  mydir: path is a directory
 ```
 
 
@@ -435,7 +443,8 @@ dvs add mydir
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: No files to add
+Error: Refusing to add, the following paths are invalid:
+  mydir: path is a directory
 ```
 
 
@@ -446,8 +455,10 @@ Error: No files to add
 ## Path is outside the project root
 
 You're inside the project but ask dvs to track a file that lives elsewhere on
-disk, by absolute path. R returns a 2-column tibble (`path` plus `error`) with
-the failure recorded as a row rather than an R-level condition.
+disk, by absolute path. This is an invalid input: the whole batch is refused
+before anything is written, and the R package raises the same way it does for
+a missing path. (Earlier releases recorded this as an `error` row in the
+result instead; 0.4.0 moved it to batch validation.)
 
 
 ::: {.cell}
@@ -456,66 +467,15 @@ the failure recorded as a row rather than an R-level condition.
 setwd(here::here(new_project))
 outside_file <- tempfile(fileext = ".csv")
 writeLines("a,b,c", outside_file)
-res <- dvs_add(paths = outside_file)
-res |> print(width = Inf, n = Inf)
+dvs_add(paths = outside_file)
 ```
 
-::: {.cell-output .cell-output-stdout}
+::: {.cell-output .cell-output-error}
 
 ```
-# A tibble: 1 × 2
-  path                                                                              error                  
-  <chr>                                                                             <chr>                  
-1 /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv path is outside project
-```
-
-
-:::
-:::
-
-
-Inspect the result columns directly. `path` is the offending path, `error`
-is a plain character string:
-
-
-::: {.cell}
-
-```{.r .cell-code}
-str(res)
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-tibble [1 × 2] (S3: tbl_df/tbl/data.frame)
- $ path : chr "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv"
- $ error: chr "path is outside project"
-```
-
-
-:::
-
-```{.r .cell-code}
-res$path
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-[1] "/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpiKyJLV/file49061a2d6f1f.csv"
-```
-
-
-:::
-
-```{.r .cell-code}
-res$error
-```
-
-::: {.cell-output .cell-output-stdout}
-
-```
-[1] "path is outside project"
+Error in `dvs_add_impl()`:
+! Refusing to add, the following paths are invalid:
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpSPdVmW/file13ad32591136d.csv: path is outside project
 ```
 
 
@@ -538,8 +498,8 @@ rm -f "$OUTSIDE_FILE"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error adding /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.FVdtIn7aaM.csv: path is outside project
-Error: Some files failed to add
+Error: Refusing to add, the following paths are invalid:
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.qAm1v8rOWr.csv: path is outside project
 ```
 
 
@@ -732,7 +692,7 @@ dvs_status(paths = c("present.csv", "missing.csv")) |>
 # A tibble: 1 × 7
   path        status  hash                                                                size created_by compression add_time           
   <chr>       <chr>   <chr>                                                            <bytes> <chr>      <chr>       <dttm>             
-1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-06-16 16:50:04
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-08-10 17:58:41
 ```
 
 
@@ -787,7 +747,10 @@ dvs_init(storage_path = here::here(ump_storage), root_dir = here::here(ump_proje
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                     <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad3e84be8c_storage staff        
 ```
 
 
@@ -968,7 +931,8 @@ dvs_get(paths = "untracked.csv")
 
 ```
 Error in `dvs_get_impl()`:
-! No files to get
+! The following paths are not tracked by DVS:
+  untracked.csv
 ```
 
 
@@ -989,7 +953,8 @@ dvs get untracked.csv
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: No files to get
+Error: The following paths are not tracked by DVS:
+  untracked.csv
 ```
 
 
@@ -1013,7 +978,8 @@ dvs_get(paths = "ghost.csv")
 
 ```
 Error in `dvs_get_impl()`:
-! No files to get
+! The following paths are not tracked by DVS:
+  ghost.csv
 ```
 
 
@@ -1033,7 +999,8 @@ dvs get ghost.csv
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: No files to get
+Error: The following paths are not tracked by DVS:
+  ghost.csv
 ```
 
 
@@ -1064,7 +1031,10 @@ dvs_init(storage_path = here::here(bm_storage), root_dir = here::here(bm_project
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                     <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad32ea88e9_storage staff        
 ```
 
 
@@ -1170,7 +1140,10 @@ dvs_init(storage_path = here::here(hm_storage), root_dir = here::here(hm_project
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized
+# A tibble: 1 × 4
+  compression metadata_folder_name backend_path                                                               backend_group
+  <chr>       <lgl>                <chr>                                                                      <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file13ad310f8c830_storage staff        
 ```
 
 

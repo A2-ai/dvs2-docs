@@ -142,7 +142,7 @@ rm -rf "$OUTSIDE"
 ## No files to add: empty glob
 
 A glob pattern that matches no files raises in the R package; the CLI prints
-`No files to add` and exits 0.
+`Error: No files to add` and exits 1, so pipelines see the failure too.
 
 ```{r}
 #| error: true
@@ -175,9 +175,10 @@ dvs add nonexistent_file.csv
 
 ## Path resolves to a directory (no glob)
 
-Passing a bare directory name with no glob matches no files. The R package
-raises, the CLI prints `No files to add` and exits 0: mild surface
-divergence.
+Passing a bare directory name with no glob is an invalid input, not an empty
+match. Both surfaces refuse the batch with the same message (`path is a
+directory`); the CLI exits 1. Directories only make sense combined with a
+glob, or via `--recursive` on `status` and `get`.
 
 ```{r}
 #| error: true
@@ -196,25 +197,17 @@ dvs add mydir
 ## Path is outside the project root
 
 You're inside the project but ask dvs to track a file that lives elsewhere on
-disk, by absolute path. R returns a 2-column tibble (`path` plus `error`) with
-the failure recorded as a row rather than an R-level condition.
+disk, by absolute path. This is an invalid input: the whole batch is refused
+before anything is written, and the R package raises the same way it does for
+a missing path. (Earlier releases recorded this as an `error` row in the
+result instead; 0.4.0 moved it to batch validation.)
 
 ```{r}
 #| error: true
 setwd(here::here(new_project))
 outside_file <- tempfile(fileext = ".csv")
 writeLines("a,b,c", outside_file)
-res <- dvs_add(paths = outside_file)
-res |> print(width = Inf, n = Inf)
-```
-
-Inspect the result columns directly. `path` is the offending path, `error`
-is a plain character string:
-
-```{r}
-str(res)
-res$path
-res$error
+dvs_add(paths = outside_file)
 ```
 
 ```{bash}

@@ -4,8 +4,9 @@ format:
     theme: [default, splash.scss]
     embed-resources: true
     slide-number: false
-    controls: false
-    progress: false
+    controls: true
+    progress: true
+    code-line-numbers: false
     transition: fade
     background-transition: fade
     center: true
@@ -46,23 +47,22 @@ git tracks code · dvs tracks data
 
 | | git | dvs |
 |---|---|---|
-| Source code | ✅ | n/a |
-| Config files | ✅ | n/a |
-| Data files (MBs to GBs) | ❌ slow / bloats history | ✅ |
-| Reproducible restores | partial | ✅ content-addressed |
+| Source code | [✓]{.yes} | n/a |
+| Config files | [✓]{.yes} | n/a |
+| Data files (MBs to GBs) | [✗]{.no} slow / bloats history | [✓]{.yes} |
+| Reproducible restores | partial | [✓]{.yes} content-addressed |
 | Team sharing | via remote | via shared mount |
 
 ## Agenda
 
 | | Vignette |
 |---|---|
-| 1 | **intro**: R API: init, add, status, get |
-| 2 | **intro-cli**: same operations from the terminal |
-| 3 | **intro-internals**: `.dvs/` layout, blobs, audit log |
-| 4 | **lifecycle**: modify, unsynced, dry-run, integrity failures |
-| 5 | **collab**: sharing data across projects |
-| 6 | **config**: dvs.toml, compression, threads |
-| 7 | **audit**: querying the audit log |
+| 1 | [**intro**](intro.html): what dvs is, the four verbs |
+| 2 | [**intro-r**](intro-r.html): the R package in depth |
+| 3 | [**intro-cli**](intro-cli.html): the CLI in depth |
+| 4 | [**collab**](collab.html): sharing data across projects |
+| 5 | [**internals**](intro-internals.html): `.dvs/` layout, blobs, audit log |
+| 6 | [**config**](config.html) and [**audit**](audit.html): dvs.toml, compression, the audit log |
 
 ## How to read these
 
@@ -81,3 +81,13 @@ dvs add data/file.csv -m "v1"
 
 **project** = your R project (meta files committed, data files gitignored)
 :::
+
+## Where everything lives
+
+[Start with the intro](intro.html), then the in-depth pages from the agenda.
+
+Full reference, one page per function and command:
+
+[a2-ai.github.io/dvs2-docs](https://a2-ai.github.io/dvs2-docs/)
+
+Source: [github.com/A2-ai/dvs2](https://github.com/A2-ai/dvs2)

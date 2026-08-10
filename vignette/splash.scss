@@ -50,3 +50,13 @@ img.splash-logo {
   color: #888;
   margin-top: 0.3rem;
 }
+
+/* Text check/cross marks for the git-vs-dvs table. Plain glyphs styled with
+   CSS render at the cell's line height on every platform, unlike color emoji,
+   which draw from a separate font and get clipped by the table row. */
+.yes, .no {
+  font-weight: 700;
+  line-height: 1;
+}
+.yes { color: #2f9e44; }
+.no  { color: #d64545; }
