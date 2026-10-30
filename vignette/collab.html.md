@@ -89,9 +89,9 @@ dvs_init(here::here(shared_storage))
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                              backend_group
-  <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file884f659a64ce_storage staff        
+  compression metadata_folder_name backend_path                                                               backend_group
+  <chr>       <lgl>                <chr>                                                                      <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file102e22ad9c105_storage staff        
 ```
 
 
@@ -107,9 +107,9 @@ dvs_add(paths = fs::dir_ls("data", type = "file"), message = "small corpus v1")
 # A tibble: 3 × 6
   path             outcome hash                                                                  size stored_size duration_ms
   <chr>            <chr>   <chr>                                                              <bytes>     <bytes>       <dbl>
-1 data/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB           7
-2 data/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB           7
-3 data/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB           6
+1 data/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB          21
+2 data/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB          23
+3 data/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB          23
 ```
 
 
@@ -156,7 +156,7 @@ cat(readLines(here::here(project_a, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file884f659a64ce_storage"
+path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file102e22ad9c105_storage"
 group = "staff"
 ```
 
@@ -197,9 +197,9 @@ dvs_status()
 # A tibble: 3 × 10
   path             status hash                                                                  size created_by compression message         code  error add_time           
   <chr>            <chr>  <chr>                                                              <bytes> <chr>      <chr>       <chr>           <chr> <chr> <dttm>             
-1 data/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 11:12:04
-2 data/small_2.csv absent 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 11:12:04
-3 data/small_3.csv absent 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 11:12:04
+1 data/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 18:44:02
+2 data/small_2.csv absent 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 18:44:02
+3 data/small_3.csv absent 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 18:44:02
 ```
 
 
@@ -224,9 +224,9 @@ dvs_get(glob = "data/*.csv")
 # A tibble: 3 × 13
   path             local_path       before action   satisfied      size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * <chr>            <chr>            <chr>  <chr>    <lgl>       <bytes> <chr>                                                            <chr>      <chr>       <chr> <chr>   <chr>       <dbl>
-1 data/small_1.csv data/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>       <NA>        <NA>  <NA>    <NA>            3
-2 data/small_2.csv data/small_2.csv absent restored TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 <NA>       <NA>        <NA>  <NA>    <NA>            3
-3 data/small_3.csv data/small_3.csv absent restored TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a <NA>       <NA>        <NA>  <NA>    <NA>            3
+1 data/small_1.csv data/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>       <NA>        <NA>  <NA>    <NA>           36
+2 data/small_2.csv data/small_2.csv absent restored TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 <NA>       <NA>        <NA>  <NA>    <NA>           28
+3 data/small_3.csv data/small_3.csv absent restored TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a <NA>       <NA>        <NA>  <NA>    <NA>           38
 ```
 
 
@@ -242,9 +242,9 @@ dvs_status()
 # A tibble: 3 × 10
   path             status  hash                                                                  size created_by compression message         code  error add_time           
   <chr>            <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>           <chr> <chr> <dttm>             
-1 data/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 11:12:04
-2 data/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 11:12:04
-3 data/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 11:12:04
+1 data/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 18:44:02
+2 data/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 18:44:02
+3 data/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus v1 <NA>  <NA>  2026-10-30 18:44:02
 ```
 
 
@@ -293,7 +293,7 @@ fs::dir_tree(here::here(shared_storage))
 ::: {.cell-output .cell-output-stdout}
 
 ```
-/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file884f659a64ce_storage
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file102e22ad9c105_storage
 ├── 15
 │   └── 74af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04
 ├── 9d
@@ -326,9 +326,9 @@ cat(tail(log_lines, 2), sep = "\n\n")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-{"operation_id":"e109dbae-d214-48af-b369-601942e01277","timestamp":1793358724,"user":"elea","action":{"add":{"file":{"path":"data/small_3.csv","hashes":{"blake3":"9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a"}},"compression":"zstd","message":"small corpus v1"}}}
+{"operation_id":"5a0721e2-c63c-42a2-9cb2-79d8dd870862","timestamp":1793385842,"user":"elea","action":{"add":{"file":{"path":"data/small_2.csv","hashes":{"blake3":"1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04"}},"compression":"zstd","message":"small corpus v1"}}}
 
-{"operation_id":"e109dbae-d214-48af-b369-601942e01277","timestamp":1793358724,"user":"elea","action":{"add":{"file":{"path":"data/small_2.csv","hashes":{"blake3":"1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04"}},"compression":"zstd","message":"small corpus v1"}}}
+{"operation_id":"5a0721e2-c63c-42a2-9cb2-79d8dd870862","timestamp":1793385842,"user":"elea","action":{"add":{"file":{"path":"data/small_3.csv","hashes":{"blake3":"9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a"}},"compression":"zstd","message":"small corpus v1"}}}
 ```
 
 

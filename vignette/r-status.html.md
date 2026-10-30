@@ -68,9 +68,9 @@ dvs_init(store)
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                             backend_group
-  <chr>       <lgl>                <chr>                                                                                    <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpIpkU5p/storage_5c4420359080 staff        
+  compression metadata_folder_name backend_path                                                                            backend_group
+  <chr>       <lgl>                <chr>                                                                                   <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpmPC2w0/storage_d2ab254e8f1 staff        
 ```
 
 
@@ -86,9 +86,9 @@ dvs_add(c("data/f1.csv", "data/f2.csv", "data/sub/f3.csv"), message = "initial a
 # A tibble: 3 × 6
   path            outcome hash                                                                size stored_size duration_ms
   <chr>           <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           0
-2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           0
-3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B           0
+1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           1
+2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           1
+3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B           1
 ```
 
 
@@ -131,9 +131,9 @@ dvs_status()
 # A tibble: 3 × 10
   path            status   hash                                                                size created_by compression message     code  error add_time           
   <chr>           <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
-1 data/f1.csv     modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
-2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
-3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+1 data/f1.csv     modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
+2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
+3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
 ```
 
 
@@ -159,7 +159,7 @@ dvs_status("data/sub/f3.csv")
 # A tibble: 1 × 10
   path            status  hash                                                                size created_by compression message     code  error add_time           
   <chr>           <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
-1 data/sub/f3.csv current 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+1 data/sub/f3.csv current 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
 ```
 
 
@@ -186,8 +186,8 @@ dvs_status("data")
 # A tibble: 2 × 10
   path        status   hash                                                                size created_by compression message     code  error add_time           
   <chr>       <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
-1 data/f1.csv modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
-2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+1 data/f1.csv modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
+2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
 ```
 
 
@@ -209,9 +209,9 @@ dvs_status("data", recursive = TRUE)
 # A tibble: 3 × 10
   path            status   hash                                                                size created_by compression message     code  error add_time           
   <chr>           <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
-1 data/f1.csv     modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
-2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
-3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+1 data/f1.csv     modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
+2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
+3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
 ```
 
 
@@ -238,7 +238,7 @@ dvs_status(status = "absent")
 # A tibble: 1 × 10
   path        status hash                                                                size created_by compression message     code  error add_time           
   <chr>       <chr>  <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
-1 data/f2.csv absent c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+1 data/f2.csv absent c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
 ```
 
 
@@ -260,8 +260,8 @@ dvs_status(status = c("absent", "modified"))
 # A tibble: 2 × 10
   path        status   hash                                                                size created_by compression message     code  error add_time           
   <chr>       <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
-1 data/f1.csv modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
-2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+1 data/f1.csv modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
+2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 18:40:52
 ```
 
 
@@ -313,9 +313,9 @@ dvs_status() |> select(path, status, message, add_time)
 # A tibble: 3 × 4
   path            status   message     add_time           
   <chr>           <chr>    <chr>       <dttm>             
-1 data/f1.csv     modified initial add 2026-10-30 11:10:00
-2 data/f2.csv     absent   initial add 2026-10-30 11:10:00
-3 data/sub/f3.csv current  initial add 2026-10-30 11:10:00
+1 data/f1.csv     modified initial add 2026-10-30 18:40:52
+2 data/f2.csv     absent   initial add 2026-10-30 18:40:52
+3 data/sub/f3.csv current  initial add 2026-10-30 18:40:52
 ```
 
 

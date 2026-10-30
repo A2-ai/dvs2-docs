@@ -112,7 +112,7 @@ dvs_init(here::here(storage))
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file85bf7e2104ac_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef2513083abf8_storage staff        
 ```
 
 
@@ -140,7 +140,7 @@ dvs_add("data/large/large_1.csv", message = "one large dataset")
 # A tibble: 1 × 6
   path                   outcome hash                                                                size stored_size duration_ms
   <chr>                  <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     10.5 MB         149
+1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     10.5 MB         346
 ```
 
 
@@ -168,9 +168,9 @@ dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "small corpus
 # A tibble: 3 × 6
   path                   outcome hash                                                                  size stored_size duration_ms
   <chr>                  <chr>   <chr>                                                              <bytes>     <bytes>       <dbl>
-1 data/small/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB           7
-2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB           7
-3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB           7
+1 data/small/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB          24
+2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB          25
+3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB          24
 ```
 
 
@@ -196,16 +196,16 @@ dvs_add(glob = "data/individual/individual_*.csv", message = "individual dataset
 # A tibble: 50 × 6
    path                              outcome hash                                                                size stored_size duration_ms
    <chr>                             <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
- 1 data/individual/individual_01.csv copied  57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB      1.3 MB          48
- 2 data/individual/individual_02.csv copied  85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB      1.3 MB          47
- 3 data/individual/individual_03.csv copied  cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB      1.3 MB          60
- 4 data/individual/individual_04.csv copied  388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB      1.3 MB          47
- 5 data/individual/individual_05.csv copied  0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB      1.3 MB          38
- 6 data/individual/individual_06.csv copied  e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB      1.3 MB          47
- 7 data/individual/individual_07.csv copied  e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB      1.3 MB          43
- 8 data/individual/individual_08.csv copied  93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB      1.3 MB          54
- 9 data/individual/individual_09.csv copied  26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB      1.3 MB          52
-10 data/individual/individual_10.csv copied  804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB      1.3 MB          58
+ 1 data/individual/individual_01.csv copied  57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB      1.3 MB         154
+ 2 data/individual/individual_02.csv copied  85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB      1.3 MB         141
+ 3 data/individual/individual_03.csv copied  cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB      1.3 MB         147
+ 4 data/individual/individual_04.csv copied  388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB      1.3 MB         161
+ 5 data/individual/individual_05.csv copied  0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB      1.3 MB         152
+ 6 data/individual/individual_06.csv copied  e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB      1.3 MB         161
+ 7 data/individual/individual_07.csv copied  e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB      1.3 MB         177
+ 8 data/individual/individual_08.csv copied  93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB      1.3 MB         150
+ 9 data/individual/individual_09.csv copied  26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB      1.3 MB         155
+10 data/individual/individual_10.csv copied  804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB      1.3 MB         169
 # ℹ 40 more rows
 ```
 
@@ -261,16 +261,16 @@ dvs_status()
 # A tibble: 54 × 10
    path                              status  hash                                                                size created_by compression message             code  error add_time           
    <chr>                             <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>               <chr> <chr> <dttm>             
- 1 data/individual/individual_01.csv current 57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
- 2 data/individual/individual_02.csv current 85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
- 3 data/individual/individual_03.csv current cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
- 4 data/individual/individual_04.csv current 388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
- 5 data/individual/individual_05.csv current 0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
- 6 data/individual/individual_06.csv current e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
- 7 data/individual/individual_07.csv current e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
- 8 data/individual/individual_08.csv current 93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
- 9 data/individual/individual_09.csv current 26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
-10 data/individual/individual_10.csv current 804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 11:11:41
+ 1 data/individual/individual_01.csv current 57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+ 2 data/individual/individual_02.csv current 85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+ 3 data/individual/individual_03.csv current cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+ 4 data/individual/individual_04.csv current 388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+ 5 data/individual/individual_05.csv current 0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+ 6 data/individual/individual_06.csv current e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+ 7 data/individual/individual_07.csv current e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+ 8 data/individual/individual_08.csv current 93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+ 9 data/individual/individual_09.csv current 26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
+10 data/individual/individual_10.csv current 804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB elea       zstd        individual datasets <NA>  <NA>  2026-10-30 18:43:17
 # ℹ 44 more rows
 ```
 
@@ -320,7 +320,7 @@ dvs_status(status = "modified")
 # A tibble: 1 × 10
   path                   status   hash                                                                size created_by compression message           code  error add_time           
   <chr>                  <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>             <chr> <chr> <dttm>             
-1 data/large/large_1.csv modified 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB elea       zstd        one large dataset <NA>  <NA>  2026-10-30 11:11:41
+1 data/large/large_1.csv modified 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB elea       zstd        one large dataset <NA>  <NA>  2026-10-30 18:43:17
 ```
 
 
@@ -347,7 +347,7 @@ dvs_add("data/large/large_1.csv", message = "append row 99, corrected dataset")
 # A tibble: 1 × 6
   path                   outcome hash                                                                size stored_size duration_ms
   <chr>                  <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/large/large_1.csv copied  5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB     10.5 MB         138
+1 data/large/large_1.csv copied  5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB     10.5 MB         344
 ```
 
 
@@ -391,7 +391,7 @@ dvs_add("data/large/large_1.csv", message = "preview only", dry_run = TRUE)
 # A tibble: 1 × 6
   path                   outcome hash                                                                size stored_size duration_ms
   <chr>                  <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     25.0 MB          14
+1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     25.0 MB          27
 ```
 
 
@@ -407,7 +407,7 @@ dvs_status(status = "modified")
 # A tibble: 1 × 10
   path                   status   hash                                                                size created_by compression message                          code  error add_time           
   <chr>                  <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>                            <chr> <chr> <dttm>             
-1 data/large/large_1.csv modified 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB elea       zstd        append row 99, corrected dataset <NA>  <NA>  2026-10-30 11:11:41
+1 data/large/large_1.csv modified 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB elea       zstd        append row 99, corrected dataset <NA>  <NA>  2026-10-30 18:43:18
 ```
 
 
@@ -433,7 +433,7 @@ dvs_add("data/large/large_1.csv", message = "append row 100")
 # A tibble: 1 × 6
   path                   outcome hash                                                                size stored_size duration_ms
   <chr>                  <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     10.5 MB         132
+1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     10.5 MB         367
 ```
 
 
@@ -467,7 +467,7 @@ dvs_status(status = "absent")
 # A tibble: 1 × 10
   path                   status hash                                                                  size created_by compression message      code  error add_time           
   <chr>                  <chr>  <chr>                                                              <bytes> <chr>      <chr>       <chr>        <chr> <chr> <dttm>             
-1 data/small/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
+1 data/small/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
 ```
 
 
@@ -491,7 +491,7 @@ dvs_get("data/small/small_1.csv")
 # A tibble: 1 × 13
   path                   local_path             before action   satisfied      size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * <chr>                  <chr>                  <chr>  <chr>    <lgl>       <bytes> <chr>                                                            <chr>      <chr>       <chr> <chr>   <chr>       <dbl>
-1 data/small/small_1.csv data/small/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>       <NA>        <NA>  <NA>    <NA>            4
+1 data/small/small_1.csv data/small/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>       <NA>        <NA>  <NA>    <NA>           16
 ```
 
 
@@ -546,9 +546,9 @@ dvs_status("data/small")
 # A tibble: 3 × 10
   path                   status  hash                                                                  size created_by compression message      code  error add_time           
   <chr>                  <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>        <chr> <chr> <dttm>             
-1 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
-2 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
-3 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
+1 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
+2 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
+3 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
 ```
 
 
@@ -571,10 +571,10 @@ dvs_status("data/small", recursive = TRUE)
 # A tibble: 4 × 10
   path                           status  hash                                                                  size created_by compression message      code  error add_time           
   <chr>                          <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>        <chr> <chr> <dttm>             
-1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  <NA>  <NA>  2026-10-30 11:11:42
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
+1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  <NA>  <NA>  2026-10-30 18:43:19
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
 ```
 
 
@@ -602,9 +602,9 @@ dvs_get("data/small")
 # A tibble: 3 × 13
   path                   local_path             before action   satisfied      size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * <chr>                  <chr>                  <chr>  <chr>    <lgl>       <bytes> <chr>                                                            <chr>      <chr>       <chr> <chr>   <chr>       <dbl>
-1 data/small/small_1.csv data/small/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>       <NA>        <NA>  <NA>    <NA>            6
-2 data/small/small_2.csv data/small/small_2.csv absent restored TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 <NA>       <NA>        <NA>  <NA>    <NA>            5
-3 data/small/small_3.csv data/small/small_3.csv absent restored TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a <NA>       <NA>        <NA>  <NA>    <NA>            5
+1 data/small/small_1.csv data/small/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>       <NA>        <NA>  <NA>    <NA>           29
+2 data/small/small_2.csv data/small/small_2.csv absent restored TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 <NA>       <NA>        <NA>  <NA>    <NA>           28
+3 data/small/small_3.csv data/small/small_3.csv absent restored TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a <NA>       <NA>        <NA>  <NA>    <NA>           28
 ```
 
 
@@ -620,10 +620,10 @@ dvs_status("data/small", recursive = TRUE)
 # A tibble: 4 × 10
   path                           status  hash                                                                  size created_by compression message      code  error add_time           
   <chr>                          <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>        <chr> <chr> <dttm>             
-1 data/small/nested/nested_1.csv absent  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  <NA>  <NA>  2026-10-30 11:11:42
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
+1 data/small/nested/nested_1.csv absent  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  <NA>  <NA>  2026-10-30 18:43:19
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
 ```
 
 
@@ -649,10 +649,10 @@ dvs_get("data/small", recursive = TRUE)
 # A tibble: 4 × 13
   path                           local_path                     before  action    satisfied      size target_hash                                                      local_hash                                                       stored_copy code  message hint  duration_ms
 * <chr>                          <chr>                          <chr>   <chr>     <lgl>       <bytes> <chr>                                                            <chr>                                                            <chr>       <chr> <chr>   <chr>       <dbl>
-1 data/small/nested/nested_1.csv data/small/nested/nested_1.csv absent  restored  TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>                                                             <NA>        <NA>  <NA>    <NA>            3
-2 data/small/small_1.csv         data/small/small_1.csv         current unchanged TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>        <NA>  <NA>    <NA>            0
-3 data/small/small_2.csv         data/small/small_2.csv         current unchanged TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 <NA>        <NA>  <NA>    <NA>            0
-4 data/small/small_3.csv         data/small/small_3.csv         current unchanged TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a <NA>        <NA>  <NA>    <NA>            0
+1 data/small/nested/nested_1.csv data/small/nested/nested_1.csv absent  restored  TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>                                                             <NA>        <NA>  <NA>    <NA>           12
+2 data/small/small_1.csv         data/small/small_1.csv         current unchanged TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 <NA>        <NA>  <NA>    <NA>            1
+3 data/small/small_2.csv         data/small/small_2.csv         current unchanged TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 <NA>        <NA>  <NA>    <NA>            1
+4 data/small/small_3.csv         data/small/small_3.csv         current unchanged TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a <NA>        <NA>  <NA>    <NA>            1
 ```
 
 
@@ -668,10 +668,10 @@ dvs_status("data/small", recursive = TRUE)
 # A tibble: 4 × 10
   path                           status  hash                                                                  size created_by compression message      code  error add_time           
   <chr>                          <chr>   <chr>                                                              <bytes> <chr>      <chr>       <chr>        <chr> <chr> <dttm>             
-1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  <NA>  <NA>  2026-10-30 11:11:42
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 11:11:41
+1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  <NA>  <NA>  2026-10-30 18:43:19
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus <NA>  <NA>  2026-10-30 18:43:17
 ```
 
 

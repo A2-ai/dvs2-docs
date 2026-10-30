@@ -10,6 +10,13 @@ pagefind: true
 
 Hashes and copies the specified files into DVS storage.
 
+## Details
+
+In an interactive session, `dvs_add()` shows a progress bar while it
+copies files. It shows none in a dry run or in a non-interactive session,
+such as `Rscript`. The cli options for progress bars, such as
+`cli.progress_show_after`, do not change this.
+
 
 
 
@@ -66,6 +73,7 @@ also has the columns `code` (the kind of failure, for example
 `"io_error"`) and `error` (the reason). That row has `NA` in `outcome`,
 `hash`, `size` and `stored_size`. A path that does not exist raises an
 error and adds nothing.
+
 
 
 

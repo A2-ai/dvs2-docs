@@ -45,9 +45,9 @@ dvs_init(store)
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                             backend_group
-  <chr>       <lgl>                <chr>                                                                                    <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpXFfbEf/storage_770b7d88a436 staff        
+  compression metadata_folder_name backend_path                                                                            backend_group
+  <chr>       <lgl>                <chr>                                                                                   <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFlMi3H/storage_dc1e86e6853 staff        
 ```
 
 
@@ -83,7 +83,7 @@ Successfully added cars.csv (Copied)
 # A tibble: 1 × 6
   path     outcome hash                                                                size stored_size duration_ms
   <chr>    <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 cars.csv copied  5920946da5cfd6b4b32cf7b2fb866d926637dadb1b38d3d943bf8db3b9ebdb63  1.7 KB       905 B           0
+1 cars.csv copied  5920946da5cfd6b4b32cf7b2fb866d926637dadb1b38d3d943bf8db3b9ebdb63  1.7 KB       905 B           1
 ```
 
 

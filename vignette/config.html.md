@@ -49,9 +49,9 @@ dvs_init(store, root_dir = proj)
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                                              backend_group
-  <chr>       <lgl>                <chr>                                                                                                     <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/default-store staff        
+  compression metadata_folder_name backend_path                                                                                             backend_group
+  <chr>       <lgl>                <chr>                                                                                                    <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/default-store staff        
 ```
 
 
@@ -67,7 +67,7 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/default-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/default-store"
 group = "staff"
 ```
 
@@ -104,9 +104,9 @@ dvs_init(store, root_dir = proj, metadata_folder_name = ".datalock", compression
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                                             backend_group
-  <chr>       <chr>                <chr>                                                                                                    <chr>        
-1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/custom-store staff        
+  compression metadata_folder_name backend_path                                                                                            backend_group
+  <chr>       <chr>                <chr>                                                                                                   <chr>        
+1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/custom-store staff        
 ```
 
 
@@ -123,7 +123,7 @@ compression = "none"
 metadata_folder_name = ".datalock"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/custom-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/custom-store"
 group = "staff"
 ```
 
@@ -193,9 +193,9 @@ dvs_init(file.path(base, "repo-store"), root_dir = root)
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                                           backend_group
-  <chr>       <lgl>                <chr>                                                                                                  <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/repo-store staff        
+  compression metadata_folder_name backend_path                                                                                          backend_group
+  <chr>       <lgl>                <chr>                                                                                                 <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/repo-store staff        
 ```
 
 
@@ -209,9 +209,9 @@ dvs_init(file.path(base, "sub-store"), root_dir = sub)
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                                          backend_group
-  <chr>       <lgl>                <chr>                                                                                                 <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/sub-store staff        
+  compression metadata_folder_name backend_path                                                                                         backend_group
+  <chr>       <lgl>                <chr>                                                                                                <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/sub-store staff        
 ```
 
 

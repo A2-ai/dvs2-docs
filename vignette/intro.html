@@ -2353,7 +2353,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file84ef262fcaed_storage staff        </code></pre>
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef0f913214e53_storage staff        </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2363,7 +2363,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code>compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file84ef262fcaed_storage&quot;
+path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef0f913214e53_storage&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2378,8 +2378,8 @@ group = &quot;staff&quot;</code></pre>
 <pre><code># A tibble: 2 × 6
   path                         outcome hash                                                                size stored_size duration_ms
   &lt;chr&gt;                        &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
-1 data/derived/nca_summary.csv copied  2595da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91   102 B        80 B           0
-2 data/pk_profiles.csv         copied  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB       842 B           0</code></pre>
+1 data/derived/nca_summary.csv copied  040e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a    97 B        78 B           1
+2 data/pk_profiles.csv         copied  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB       842 B           2</code></pre>
 </div>
 </div>
 </section>
@@ -2408,7 +2408,7 @@ group = &quot;staff&quot;</code></pre>
   },
   &quot;size&quot;: 2992,
   &quot;created_by&quot;: &quot;elea&quot;,
-  &quot;add_time&quot;: &quot;2026-10-30T11:11:25.156986Z&quot;,
+  &quot;add_time&quot;: &quot;2026-10-30T18:42:53.817963Z&quot;,
   &quot;compression&quot;: &quot;zstd&quot;,
   &quot;message&quot;: &quot;PK profiles and NCA summary, data cut 2026-06&quot;
 }</code></pre>
@@ -2430,9 +2430,9 @@ group = &quot;staff&quot;</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(here<span class="sc">::</span><span class="fu">here</span>(storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file84ef262fcaed_storage
-├── 25
-│   └── 95da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91
+<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef0f913214e53_storage
+├── 04
+│   └── 0e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a
 ├── audit.log.jsonl
 └── cd
     └── d978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06</code></pre>
@@ -2449,8 +2449,8 @@ group = &quot;staff&quot;</code></pre>
 <pre><code># A tibble: 2 × 10
   path                         status  hash                                                                size created_by compression message                                       code  error add_time           
   &lt;chr&gt;                        &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                                         &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
-1 data/derived/nca_summary.csv current 2595da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91   102 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:25
-2 data/pk_profiles.csv         current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:25</code></pre>
+1 data/derived/nca_summary.csv current 040e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a    97 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:42:53
+2 data/pk_profiles.csv         current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:42:53</code></pre>
 </div>
 </div>
 <p>Delete a file, the way a fresh clone arrives without data, and it flips to <code>absent</code>: still tracked, not on disk.</p>
@@ -2462,8 +2462,8 @@ group = &quot;staff&quot;</code></pre>
 <pre><code># A tibble: 2 × 10
   path                         status  hash                                                                size created_by compression message                                       code  error add_time           
   &lt;chr&gt;                        &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                                         &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
-1 data/derived/nca_summary.csv current 2595da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91   102 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:25
-2 data/pk_profiles.csv         absent  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:25</code></pre>
+1 data/derived/nca_summary.csv current 040e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a    97 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:42:53
+2 data/pk_profiles.csv         absent  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:42:53</code></pre>
 </div>
 </div>
 </section>
@@ -2478,15 +2478,15 @@ group = &quot;staff&quot;</code></pre>
 # A tibble: 1 × 13
   path                 local_path           before action   satisfied    size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * &lt;chr&gt;                &lt;chr&gt;                &lt;chr&gt;  &lt;chr&gt;    &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
-1 data/pk_profiles.csv data/pk_profiles.csv absent restored TRUE       2.9 KB cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
+1 data/pk_profiles.csv data/pk_profiles.csv absent restored TRUE       2.9 KB cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 10
   path                         status  hash                                                                size created_by compression message                                       code  error add_time           
   &lt;chr&gt;                        &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                                         &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
-1 data/derived/nca_summary.csv current 2595da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91   102 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:25
-2 data/pk_profiles.csv         current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:25</code></pre>
+1 data/derived/nca_summary.csv current 040e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a    97 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:42:53
+2 data/pk_profiles.csv         current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:42:53</code></pre>
 </div>
 </div>
 <p>That is the whole loop: add when data changes, get after a clone or checkout, status any time you want to know where you stand.</p>
@@ -2501,7 +2501,7 @@ group = &quot;staff&quot;</code></pre>
 <pre><code>+------------------------------+---------+--------+
 | path                         | status  | size   |
 +------------------------------+---------+--------+
-| data/derived/nca_summary.csv | current |  102 B |
+| data/derived/nca_summary.csv | current |   97 B |
 +------------------------------+---------+--------+
 | data/pk_profiles.csv         | current | 2.9 KB |
 +------------------------------+---------+--------+

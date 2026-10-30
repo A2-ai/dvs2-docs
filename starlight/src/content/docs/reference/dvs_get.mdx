@@ -18,6 +18,13 @@ A working file that differs from the tracked version is replaced without
 asking only when dvs itself put it there (for example after switching git
 branches). Otherwise it is a conflict, handled by `on_conflict`.
 
+## Details
+
+In an interactive session, `dvs_get()` shows a progress bar while it
+copies files. It shows none in a dry run or in a non-interactive session,
+such as `Rscript`. The cli options for progress bars, such as
+`cli.progress_show_after`, do not change this.
+
 
 
 
@@ -94,6 +101,7 @@ at its tracked version afterwards.
 In scripts and pipelines, use `on_error = "error"` (or set
 `options(dvs.on_error = "error")`) so the analysis cannot continue on data
 that was not updated.
+
 
 
 

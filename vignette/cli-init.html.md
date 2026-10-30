@@ -86,11 +86,11 @@ cat dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/basic/proj
+DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpDakiAY/dvs_init_d4c6212c4c40/basic/proj
 compression = "zstd"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/basic/store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpDakiAY/dvs_init_d4c6212c4c40/basic/store"
 group = "staff"
 ```
 
@@ -147,7 +147,7 @@ ls -a
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/meta/proj
+DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpDakiAY/dvs_init_d4c6212c4c40/meta/proj
 .
 ..
 .meta
@@ -203,11 +203,11 @@ cat dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/nocomp/proj
+DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpDakiAY/dvs_init_d4c6212c4c40/nocomp/proj
 compression = "none"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/nocomp/store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpDakiAY/dvs_init_d4c6212c4c40/nocomp/store"
 group = "staff"
 ```
 
@@ -239,7 +239,7 @@ dvs init local ../store --threads 2
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/threads/proj
+DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpDakiAY/dvs_init_d4c6212c4c40/threads/proj
 ```
 
 
@@ -268,7 +268,7 @@ dvs init local ../store --json
 ::: {.cell-output .cell-output-stdout}
 
 ```
-{"command":"init","dry_run":false,"duration_ms":1,"error":null,"finished_at":"2026-10-30T11:10:09.871Z","outcome":"complete","project_root":"/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/jsonex/proj","started_at":"2026-10-30T11:10:09.869Z","v":1}
+{"command":"init","dry_run":false,"duration_ms":2,"error":null,"finished_at":"2026-10-30T18:41:03.668Z","outcome":"complete","project_root":"/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpDakiAY/dvs_init_d4c6212c4c40/jsonex/proj","started_at":"2026-10-30T18:41:03.666Z","v":1}
 ```
 
 
