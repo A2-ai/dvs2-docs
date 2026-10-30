@@ -2343,7 +2343,7 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Error: dvs init needs a backend before the storage path: did you mean `dvs init local /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f27345a20f_storage`?</code></pre>
+<pre><code>Error: dvs init needs a backend before the storage path: did you mean `dvs init local /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec027ca34b4c_storage`?</code></pre>
 </div>
 </div>
 </section>
@@ -2378,7 +2378,7 @@ Note
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f27345a20f_storage staff        </code></pre>
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec027ca34b4c_storage staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Second init fails</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="at">storage_path =</span> here<span class="sc">::</span><span class="fu">here</span>(storage), <span class="at">root_dir =</span> here<span class="sc">::</span><span class="fu">here</span>(new_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2412,7 +2412,7 @@ Note
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f221755e58_storage staff        </code></pre>
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec021f431ddf_storage staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove dvs.toml but leave the storage intact</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(here<span class="sc">::</span><span class="fu">here</span>(bse_project, <span class="st">&quot;dvs.toml&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2539,7 +2539,7 @@ Note
 <div class="cell-output cell-output-error">
 <pre><code>Error in `dvs_add()`:
 ! Refusing to add, the following paths are invalid:
-  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmpocq0BI/file81f25e974e60.csv: path is outside project</code></pre>
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpVuDexU/fileec021acb53fc.csv: path is outside project</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2550,7 +2550,7 @@ Note
 <span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> <span class="st">&quot;</span><span class="va">$OUTSIDE_FILE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Error: Refusing to add, the following paths are invalid:
-  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.8Y2umM5Ldc.csv: path is outside project</code></pre>
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.4Ocwz6sBcH.csv: path is outside project</code></pre>
 </div>
 </div>
 </section>
@@ -2637,7 +2637,7 @@ Note
 <pre><code># A tibble: 1 × 6
   path        outcome hash                                                                size stored_size duration_ms
   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
-1 present.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           0</code></pre>
+1 present.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           3</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">paths =</span> <span class="fu">c</span>(<span class="st">&quot;present.csv&quot;</span>, <span class="st">&quot;missing.csv&quot;</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>, <span class="at">n =</span> <span class="cn">Inf</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2645,7 +2645,7 @@ Note
 <pre><code># A tibble: 1 × 10
   path        status  hash                                                                size created_by compression message code  error add_time           
   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
-1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        &lt;NA&gt;    &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:15</code></pre>
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        &lt;NA&gt;    &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:42:35</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2678,7 +2678,7 @@ Checked 1</code></pre>
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f265bbb10b_storage staff        </code></pre>
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec0263e982f9_storage staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;x&quot;</span>, here<span class="sc">::</span><span class="fu">here</span>(ump_project, <span class="st">&quot;corrupt.csv&quot;</span>))</span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> <span class="st">&quot;corrupt.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2686,7 +2686,7 @@ Checked 1</code></pre>
 <pre><code># A tibble: 1 × 6
   path        outcome hash                                                                size stored_size duration_ms
   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
-1 corrupt.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           0</code></pre>
+1 corrupt.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Corrupt the meta file</span></span>
 <span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;garbage&quot;</span>, here<span class="sc">::</span><span class="fu">here</span>(ump_project, <span class="st">&quot;.dvs&quot;</span>, <span class="st">&quot;corrupt.csv.dvs&quot;</span>))</span>
@@ -2829,9 +2829,9 @@ Aborted, nothing changed: 1 file cannot be retrieved
 <span id="cb86-9"><a href="#cb86-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="at">storage_path =</span> here<span class="sc">::</span><span class="fu">here</span>(bm_storage), <span class="at">root_dir =</span> here<span class="sc">::</span><span class="fu">here</span>(bm_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                             backend_group
-  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                    &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f289fffbe_storage staff        </code></pre>
+  compression metadata_folder_name backend_path                                                              backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec02106428c6_storage staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;x,y,z&quot;</span>, here<span class="sc">::</span><span class="fu">here</span>(bm_project, <span class="st">&quot;tracked.csv&quot;</span>))</span>
 <span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> <span class="st">&quot;tracked.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2839,7 +2839,7 @@ Aborted, nothing changed: 1 file cannot be retrieved
 <pre><code># A tibble: 1 × 6
   path        outcome hash                                                                size stored_size duration_ms
   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
-1 tracked.csv copied  1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a     6 B        15 B           0</code></pre>
+1 tracked.csv copied  1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a     6 B        15 B           1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the local copy and delete every blob from storage</span></span>
 <span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(here<span class="sc">::</span><span class="fu">here</span>(bm_project, <span class="st">&quot;tracked.csv&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2888,7 +2888,7 @@ Failed: 1 failed
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f24b87901f_storage staff        </code></pre>
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec0219da8a26_storage staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;original&quot;</span>, here<span class="sc">::</span><span class="fu">here</span>(hm_project, <span class="st">&quot;tampered.csv&quot;</span>))</span>
 <span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> <span class="st">&quot;tampered.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2896,7 +2896,7 @@ Failed: 1 failed
 <pre><code># A tibble: 1 × 6
   path         outcome hash                                                                size stored_size duration_ms
   &lt;chr&gt;        &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
-1 tampered.csv copied  4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234     9 B        18 B           0</code></pre>
+1 tampered.csv copied  4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234     9 B        18 B           1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace the stored blob with zstd-compressed different content under the</span></span>
 <span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a><span class="co"># same filename (so the hash-keyed path resolves, but the decompressed bytes</span></span>
@@ -2922,7 +2922,7 @@ Failed: 1 failed
 # A tibble: 1 × 13
   path         local_path   before action satisfied    size target_hash                                                      local_hash stored_copy code          message                                            hint  duration_ms
 * &lt;chr&gt;        &lt;chr&gt;        &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;         &lt;chr&gt;                                              &lt;chr&gt;       &lt;dbl&gt;
-1 tampered.csv tampered.csv absent failed FALSE         9 B 4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234 &lt;NA&gt;       &lt;NA&gt;        hash_mismatch the stored content does not match the tracked hash &lt;NA&gt;            0</code></pre>
+1 tampered.csv tampered.csv absent failed FALSE         9 B 4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234 &lt;NA&gt;       &lt;NA&gt;        hash_mismatch the stored content does not match the tracked hash &lt;NA&gt;            1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">HM_PROJECT =</span> here<span class="sc">::</span><span class="fu">here</span>(hm_project))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>

@@ -70,7 +70,7 @@ dvs_init(store, root_dir = proj)
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                          backend_group
   <chr>       <lgl>                <chr>                                                                                                 <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmpk3VNnV/dvs_init_5a44773e0dcc/basic-store staff        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmprV1W7e/dvs_init_d0c27efa865f/basic-store staff        
 ```
 
 
@@ -93,7 +93,7 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmpk3VNnV/dvs_init_5a44773e0dcc/basic-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmprV1W7e/dvs_init_d0c27efa865f/basic-store"
 group = "staff"
 ```
 
@@ -152,7 +152,7 @@ dvs_init(store, root_dir = proj, metadata_folder_name = ".meta")
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                         backend_group
   <chr>       <chr>                <chr>                                                                                                <chr>        
-1 zstd        .meta                /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmpk3VNnV/dvs_init_5a44773e0dcc/meta-store staff        
+1 zstd        .meta                /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmprV1W7e/dvs_init_d0c27efa865f/meta-store staff        
 ```
 
 
@@ -203,7 +203,7 @@ mk("zstd-proj", "zstd")
 # A tibble: 1 × 6
   path     outcome hash                                                                size stored_size duration_ms
   <chr>    <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 cars.csv copied  5920946da5cfd6b4b32cf7b2fb866d926637dadb1b38d3d943bf8db3b9ebdb63  1.7 KB       905 B           0
+1 cars.csv copied  5920946da5cfd6b4b32cf7b2fb866d926637dadb1b38d3d943bf8db3b9ebdb63  1.7 KB       905 B           1
 ```
 
 
@@ -257,7 +257,7 @@ str(res)
 tibble [1 × 4] (S3: tbl_df/tbl/data.frame)
  $ compression         : chr "zstd"
  $ metadata_folder_name: logi NA
- $ backend_path        : chr "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtmpk3VNnV/dvs_init_5a44773e0dcc/ret-store"
+ $ backend_path        : chr "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmprV1W7e/dvs_init_d0c27efa865f/ret-store"
  $ backend_group       : chr "staff"
 ```
 

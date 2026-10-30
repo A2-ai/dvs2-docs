@@ -2331,16 +2331,16 @@ Note
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(store, <span class="at">root_dir =</span> proj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                                              backend_group
-  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                     &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/default-store staff        </code></pre>
+  compression metadata_folder_name backend_path                                                                                             backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                    &lt;chr&gt;        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/default-store staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">readLines</span>(<span class="fu">file.path</span>(proj, <span class="st">&quot;dvs.toml&quot;</span>)), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/default-store&quot;
+path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/default-store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2390,9 +2390,9 @@ group = &quot;staff&quot;</code></pre>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(store, <span class="at">root_dir =</span> proj, <span class="at">metadata_folder_name =</span> <span class="st">&quot;.datalock&quot;</span>, <span class="at">compression =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                                             backend_group
-  &lt;chr&gt;       &lt;chr&gt;                &lt;chr&gt;                                                                                                    &lt;chr&gt;        
-1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/custom-store staff        </code></pre>
+  compression metadata_folder_name backend_path                                                                                            backend_group
+  &lt;chr&gt;       &lt;chr&gt;                &lt;chr&gt;                                                                                                   &lt;chr&gt;        
+1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/custom-store staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">readLines</span>(<span class="fu">file.path</span>(proj, <span class="st">&quot;dvs.toml&quot;</span>)), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2400,7 +2400,7 @@ group = &quot;staff&quot;</code></pre>
 metadata_folder_name = &quot;.datalock&quot;
 
 [backend]
-path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/custom-store&quot;
+path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/custom-store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2438,16 +2438,16 @@ $source
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;repo-store&quot;</span>), <span class="at">root_dir =</span> root)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                                           backend_group
-  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                  &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/repo-store staff        </code></pre>
+  compression metadata_folder_name backend_path                                                                                          backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                 &lt;chr&gt;        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/repo-store staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;sub-store&quot;</span>), <span class="at">root_dir =</span> sub)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                                          backend_group
-  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                 &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/sub-store staff        </code></pre>
+  compression metadata_folder_name backend_path                                                                                         backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                &lt;chr&gt;        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFCWvfk/dvs_config_e41f4164f9d/sub-store staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(root, <span class="at">pattern =</span> <span class="st">&quot;dvs.toml&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">

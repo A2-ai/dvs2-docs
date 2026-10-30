@@ -52,7 +52,7 @@ dvs init local "$DVS_STORAGE"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file5973c02d284_project
+DVS Initialized at /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filecfbb2aff80f9_project
 ```
 
 

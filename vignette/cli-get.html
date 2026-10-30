@@ -2585,7 +2585,7 @@ exit code: 3</code></pre>
 restored      data/f2.csv  500 B
 
 Partial: restored 1, skipped 1
-on_conflict = skip (command line)
+on_conflict = skip (argument)
   keep your version:         dvs add data/f1.csv   (makes it the tracked version)
   take the tracked version:  dvs get --force data/f1.csv   (replaces yours; copy it first to keep both)</code></pre>
 </div>
@@ -2599,7 +2599,7 @@ on_conflict = skip (command line)
 <pre><code>replaced      data/f1.csv  local changes were discarded
 
 Replaced 1
-on_conflict = overwrite (command line)
+on_conflict = overwrite (argument)
 +-------------+---------+-------+
 | path        | status  | size  |
 +-------------+---------+-------+
@@ -2628,7 +2628,7 @@ Checked 1</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f1.csv <span class="at">--json</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>{&quot;bytes&quot;:{&quot;already_stored&quot;:488,&quot;to_transfer&quot;:0,&quot;total&quot;:488,&quot;transferred&quot;:0},&quot;command&quot;:&quot;get&quot;,&quot;counts&quot;:{&quot;cancelled&quot;:0,&quot;failed&quot;:0,&quot;not_run&quot;:0,&quot;replaced&quot;:0,&quot;restored&quot;:0,&quot;skipped&quot;:0,&quot;succeeded&quot;:1,&quot;total&quot;:1,&quot;unchanged&quot;:1,&quot;would_replace&quot;:0,&quot;would_restore&quot;:0},&quot;dry_run&quot;:false,&quot;duration_ms&quot;:0,&quot;error&quot;:null,&quot;files&quot;:[{&quot;action&quot;:&quot;unchanged&quot;,&quot;before&quot;:&quot;current&quot;,&quot;code&quot;:null,&quot;duration_ms&quot;:0,&quot;hint&quot;:null,&quot;local_hash&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;,&quot;local_path&quot;:&quot;data/f1.csv&quot;,&quot;message&quot;:null,&quot;path&quot;:&quot;data/f1.csv&quot;,&quot;satisfied&quot;:true,&quot;size&quot;:488,&quot;stored_copy&quot;:null,&quot;target_hash&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;}],&quot;finished_at&quot;:&quot;2026-10-30T11:10:23.493Z&quot;,&quot;on_conflict&quot;:&quot;abort&quot;,&quot;outcome&quot;:&quot;complete&quot;,&quot;source&quot;:&quot;default&quot;,&quot;started_at&quot;:&quot;2026-10-30T11:10:23.492Z&quot;,&quot;v&quot;:1}</code></pre>
+<pre><code>{&quot;bytes&quot;:{&quot;already_stored&quot;:488,&quot;to_transfer&quot;:0,&quot;total&quot;:488,&quot;transferred&quot;:0},&quot;command&quot;:&quot;get&quot;,&quot;counts&quot;:{&quot;cancelled&quot;:0,&quot;failed&quot;:0,&quot;not_run&quot;:0,&quot;replaced&quot;:0,&quot;restored&quot;:0,&quot;skipped&quot;:0,&quot;succeeded&quot;:1,&quot;total&quot;:1,&quot;unchanged&quot;:1,&quot;would_replace&quot;:0,&quot;would_restore&quot;:0},&quot;dry_run&quot;:false,&quot;duration_ms&quot;:1,&quot;error&quot;:null,&quot;files&quot;:[{&quot;action&quot;:&quot;unchanged&quot;,&quot;before&quot;:&quot;current&quot;,&quot;code&quot;:null,&quot;duration_ms&quot;:0,&quot;hint&quot;:null,&quot;local_hash&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;,&quot;local_path&quot;:&quot;data/f1.csv&quot;,&quot;message&quot;:null,&quot;path&quot;:&quot;data/f1.csv&quot;,&quot;satisfied&quot;:true,&quot;size&quot;:488,&quot;stored_copy&quot;:null,&quot;target_hash&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;}],&quot;finished_at&quot;:&quot;2026-10-30T18:41:20.069Z&quot;,&quot;on_conflict&quot;:&quot;abort&quot;,&quot;outcome&quot;:&quot;complete&quot;,&quot;source&quot;:&quot;default&quot;,&quot;started_at&quot;:&quot;2026-10-30T18:41:20.067Z&quot;,&quot;v&quot;:1}</code></pre>
 </div>
 </div>
 </section>

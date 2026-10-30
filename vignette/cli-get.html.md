@@ -400,7 +400,7 @@ skipped       data/f1.csv  local changes since dvs last wrote this file
 restored      data/f2.csv  500 B
 
 Partial: restored 1, skipped 1
-on_conflict = skip (command line)
+on_conflict = skip (argument)
   keep your version:         dvs add data/f1.csv   (makes it the tracked version)
   take the tracked version:  dvs get --force data/f1.csv   (replaces yours; copy it first to keep both)
 ```
@@ -429,7 +429,7 @@ dvs status data/f1.csv
 replaced      data/f1.csv  local changes were discarded
 
 Replaced 1
-on_conflict = overwrite (command line)
+on_conflict = overwrite (argument)
 +-------------+---------+-------+
 | path        | status  | size  |
 +-------------+---------+-------+
@@ -487,7 +487,7 @@ dvs get data/f1.csv --json
 ::: {.cell-output .cell-output-stdout}
 
 ```
-{"bytes":{"already_stored":488,"to_transfer":0,"total":488,"transferred":0},"command":"get","counts":{"cancelled":0,"failed":0,"not_run":0,"replaced":0,"restored":0,"skipped":0,"succeeded":1,"total":1,"unchanged":1,"would_replace":0,"would_restore":0},"dry_run":false,"duration_ms":0,"error":null,"files":[{"action":"unchanged","before":"current","code":null,"duration_ms":0,"hint":null,"local_hash":"5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65","local_path":"data/f1.csv","message":null,"path":"data/f1.csv","satisfied":true,"size":488,"stored_copy":null,"target_hash":"5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65"}],"finished_at":"2026-10-30T11:10:23.493Z","on_conflict":"abort","outcome":"complete","source":"default","started_at":"2026-10-30T11:10:23.492Z","v":1}
+{"bytes":{"already_stored":488,"to_transfer":0,"total":488,"transferred":0},"command":"get","counts":{"cancelled":0,"failed":0,"not_run":0,"replaced":0,"restored":0,"skipped":0,"succeeded":1,"total":1,"unchanged":1,"would_replace":0,"would_restore":0},"dry_run":false,"duration_ms":1,"error":null,"files":[{"action":"unchanged","before":"current","code":null,"duration_ms":0,"hint":null,"local_hash":"5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65","local_path":"data/f1.csv","message":null,"path":"data/f1.csv","satisfied":true,"size":488,"stored_copy":null,"target_hash":"5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65"}],"finished_at":"2026-10-30T18:41:20.069Z","on_conflict":"abort","outcome":"complete","source":"default","started_at":"2026-10-30T18:41:20.067Z","v":1}
 ```
 
 

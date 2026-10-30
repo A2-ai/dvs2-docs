@@ -62,7 +62,7 @@ dvs_init(here::here(storage))
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file51904d7bb99b_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileceaa7cb9523d_storage staff        
 ```
 
 
@@ -88,7 +88,7 @@ dvs_add("data/theoph.csv", message = "initial Theoph data")
 # A tibble: 1 × 6
   path            outcome hash                                                                size stored_size duration_ms
   <chr>           <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/theoph.csv copied  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB       842 B           2
+1 data/theoph.csv copied  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB       842 B           1
 ```
 
 
@@ -114,7 +114,7 @@ dvs_status()
 # A tibble: 1 × 10
   path            status  hash                                                                size created_by compression message             code  error add_time           
   <chr>           <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>               <chr> <chr> <dttm>             
-1 data/theoph.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data <NA>  <NA>  2026-10-30 11:09:42
+1 data/theoph.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data <NA>  <NA>  2026-10-30 18:40:30
 ```
 
 
@@ -154,7 +154,7 @@ dvs_status()
 # A tibble: 1 × 10
   path            status hash                                                                size created_by compression message             code  error add_time           
   <chr>           <chr>  <chr>                                                            <bytes> <chr>      <chr>       <chr>               <chr> <chr> <dttm>             
-1 data/theoph.csv absent cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data <NA>  <NA>  2026-10-30 11:09:42
+1 data/theoph.csv absent cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data <NA>  <NA>  2026-10-30 18:40:30
 ```
 
 
@@ -188,7 +188,7 @@ dvs_get("data/theoph.csv")
 # A tibble: 1 × 13
   path            local_path      before action   satisfied    size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * <chr>           <chr>           <chr>  <chr>    <lgl>     <bytes> <chr>                                                            <chr>      <chr>       <chr> <chr>   <chr>       <dbl>
-1 data/theoph.csv data/theoph.csv absent restored TRUE       2.9 KB cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06 <NA>       <NA>        <NA>  <NA>    <NA>            0
+1 data/theoph.csv data/theoph.csv absent restored TRUE       2.9 KB cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06 <NA>       <NA>        <NA>  <NA>    <NA>            1
 ```
 
 
@@ -214,7 +214,7 @@ dvs_status()
 # A tibble: 1 × 10
   path            status  hash                                                                size created_by compression message             code  error add_time           
   <chr>           <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>               <chr> <chr> <dttm>             
-1 data/theoph.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data <NA>  <NA>  2026-10-30 11:09:42
+1 data/theoph.csv current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        initial Theoph data <NA>  <NA>  2026-10-30 18:40:30
 ```
 
 

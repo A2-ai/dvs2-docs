@@ -2341,18 +2341,18 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(here<span class="sc">::</span><span class="fu">here</span>(shared_storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                              backend_group
-  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file884f659a64ce_storage staff        </code></pre>
+  compression metadata_folder_name backend_path                                                               backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                      &lt;chr&gt;        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file102e22ad9c105_storage staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>), <span class="at">message =</span> <span class="st">&quot;small corpus v1&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 6
   path             outcome hash                                                                  size stored_size duration_ms
   &lt;chr&gt;            &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
-1 data/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB           7
-2 data/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB           7
-3 data/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB           6</code></pre>
+1 data/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB          21
+2 data/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB          23
+3 data/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB          23</code></pre>
 </div>
 </div>
 <p>What user A now commits to git is the configuration plus the meta tree, a few hundred bytes per tracked file:</p>
@@ -2373,7 +2373,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code>compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file884f659a64ce_storage&quot;
+path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file102e22ad9c105_storage&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2393,9 +2393,9 @@ group = &quot;staff&quot;</code></pre>
 <pre><code># A tibble: 3 × 10
   path             status hash                                                                  size created_by compression message         code  error add_time           
   &lt;chr&gt;            &lt;chr&gt;  &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
-1 data/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:12:04
-2 data/small_2.csv absent 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:12:04
-3 data/small_3.csv absent 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:12:04</code></pre>
+1 data/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:44:02
+2 data/small_2.csv absent 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:44:02
+3 data/small_3.csv absent 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:44:02</code></pre>
 </div>
 </div>
 <p>One call materializes the project:</p>
@@ -2407,18 +2407,18 @@ group = &quot;staff&quot;</code></pre>
 # A tibble: 3 × 13
   path             local_path       before action   satisfied      size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;  &lt;chr&gt;    &lt;lgl&gt;       &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
-1 data/small_1.csv data/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            3
-2 data/small_2.csv data/small_2.csv absent restored TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            3
-3 data/small_3.csv data/small_3.csv absent restored TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            3</code></pre>
+1 data/small_1.csv data/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;           36
+2 data/small_2.csv data/small_2.csv absent restored TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;           28
+3 data/small_3.csv data/small_3.csv absent restored TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;           38</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 10
   path             status  hash                                                                  size created_by compression message         code  error add_time           
   &lt;chr&gt;            &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
-1 data/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:12:04
-2 data/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:12:04
-3 data/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:12:04</code></pre>
+1 data/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:44:02
+2 data/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:44:02
+3 data/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus v1 &lt;NA&gt;  &lt;NA&gt;  2026-10-30 18:44:02</code></pre>
 </div>
 </div>
 <p>And the content is byte-for-byte what user A added, verified by hash during retrieval:</p>
@@ -2438,7 +2438,7 @@ group = &quot;staff&quot;</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(here<span class="sc">::</span><span class="fu">here</span>(shared_storage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file884f659a64ce_storage
+<pre><code>/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file102e22ad9c105_storage
 ├── 15
 │   └── 74af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04
 ├── 9d
@@ -2456,9 +2456,9 @@ group = &quot;staff&quot;</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>log_lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(here<span class="sc">::</span><span class="fu">here</span>(shared_storage, <span class="st">&quot;audit.log.jsonl&quot;</span>))</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">tail</span>(log_lines, <span class="dv">2</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>{&quot;operation_id&quot;:&quot;e109dbae-d214-48af-b369-601942e01277&quot;,&quot;timestamp&quot;:1793358724,&quot;user&quot;:&quot;elea&quot;,&quot;action&quot;:{&quot;add&quot;:{&quot;file&quot;:{&quot;path&quot;:&quot;data/small_3.csv&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a&quot;}},&quot;compression&quot;:&quot;zstd&quot;,&quot;message&quot;:&quot;small corpus v1&quot;}}}
+<pre><code>{&quot;operation_id&quot;:&quot;5a0721e2-c63c-42a2-9cb2-79d8dd870862&quot;,&quot;timestamp&quot;:1793385842,&quot;user&quot;:&quot;elea&quot;,&quot;action&quot;:{&quot;add&quot;:{&quot;file&quot;:{&quot;path&quot;:&quot;data/small_2.csv&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04&quot;}},&quot;compression&quot;:&quot;zstd&quot;,&quot;message&quot;:&quot;small corpus v1&quot;}}}
 
-{&quot;operation_id&quot;:&quot;e109dbae-d214-48af-b369-601942e01277&quot;,&quot;timestamp&quot;:1793358724,&quot;user&quot;:&quot;elea&quot;,&quot;action&quot;:{&quot;add&quot;:{&quot;file&quot;:{&quot;path&quot;:&quot;data/small_2.csv&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04&quot;}},&quot;compression&quot;:&quot;zstd&quot;,&quot;message&quot;:&quot;small corpus v1&quot;}}}</code></pre>
+{&quot;operation_id&quot;:&quot;5a0721e2-c63c-42a2-9cb2-79d8dd870862&quot;,&quot;timestamp&quot;:1793385842,&quot;user&quot;:&quot;elea&quot;,&quot;action&quot;:{&quot;add&quot;:{&quot;file&quot;:{&quot;path&quot;:&quot;data/small_3.csv&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a&quot;}},&quot;compression&quot;:&quot;zstd&quot;,&quot;message&quot;:&quot;small corpus v1&quot;}}}</code></pre>
 </div>
 </div>
 </section>

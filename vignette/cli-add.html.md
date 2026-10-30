@@ -78,7 +78,7 @@ dvs init local "$DVS_STORAGE"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file67167355a933_project
+DVS Initialized at /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filed5ec2e689b63_project
 ```
 
 
@@ -296,7 +296,7 @@ dvs add data/as_json.csv --json
 ::: {.cell-output .cell-output-stdout}
 
 ```
-{"bytes":{"already_stored":0,"to_transfer":8,"total":8,"transferred":8},"command":"add","counts":{"cancelled":0,"failed":0,"succeeded":1,"total":1},"dry_run":false,"duration_ms":2,"error":null,"files":[{"code":null,"duration_ms":1,"hash":"30d20548da5fc9cabc8f23c2e8ad91195de922e541627f2ef5402967546f78e3","hint":null,"message":null,"outcome":"copied","path":"data/as_json.csv","size":8,"stored_size":17}],"finished_at":"2026-10-30T11:10:14.298Z","outcome":"complete","started_at":"2026-10-30T11:10:14.296Z","v":1}
+{"bytes":{"already_stored":0,"to_transfer":8,"total":8,"transferred":8},"command":"add","counts":{"cancelled":0,"failed":0,"succeeded":1,"total":1},"dry_run":false,"duration_ms":3,"error":null,"files":[{"code":null,"duration_ms":2,"hash":"30d20548da5fc9cabc8f23c2e8ad91195de922e541627f2ef5402967546f78e3","hint":null,"message":null,"outcome":"copied","path":"data/as_json.csv","size":8,"stored_size":17}],"finished_at":"2026-10-30T18:41:09.104Z","outcome":"complete","started_at":"2026-10-30T18:41:09.100Z","v":1}
 ```
 
 

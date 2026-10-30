@@ -55,9 +55,9 @@ dvs_init(store)
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                             backend_group
-  <chr>       <lgl>                <chr>                                                                                    <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpKpkcuI/storage_5b2f7dc54264 staff        
+  compression metadata_folder_name backend_path                                                                            backend_group
+  <chr>       <lgl>                <chr>                                                                                   <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpgSx4pP/storage_d193e14069b staff        
 ```
 
 
@@ -84,7 +84,7 @@ dvs_add("data/f1.csv")
 # A tibble: 1 × 6
   path        outcome hash                                                                size stored_size duration_ms
   <chr>       <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/f1.csv copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           0
+1 data/f1.csv copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           1
 ```
 
 
@@ -163,10 +163,10 @@ dvs_add(glob = "data/*.csv")
 # A tibble: 5 × 6
   path        outcome hash                                                                size stored_size duration_ms
   <chr>       <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/f1.csv present 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       488 B           0
-2 data/f2.csv present c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       500 B           0
-3 data/f3.csv present a84f725603d7fd025bb6deb4889fd25465c0d23dfcbd0129f4fc7aa1472ecc2c   488 B       488 B           0
-4 data/g1.csv present 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       312 B           0
+1 data/f1.csv present 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       488 B           1
+2 data/f2.csv present c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       500 B           1
+3 data/f3.csv present a84f725603d7fd025bb6deb4889fd25465c0d23dfcbd0129f4fc7aa1472ecc2c   488 B       488 B           1
+4 data/g1.csv present 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       312 B           1
 5 data/g2.csv copied  a8eebfc0b894a2818e8c9edffe742df01a934073e3602a978836d622665786f7   312 B       147 B           0
 ```
 
@@ -199,7 +199,7 @@ dvs_add(glob = "data/**/*.csv")
 3 data/f3.csv     present a84f725603d7fd025bb6deb4889fd25465c0d23dfcbd0129f4fc7aa1472ecc2c   488 B       488 B           0
 4 data/g1.csv     present 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       312 B           0
 5 data/g2.csv     present a8eebfc0b894a2818e8c9edffe742df01a934073e3602a978836d622665786f7   312 B       312 B           0
-6 data/sub/g3.csv copied  6d19965b2ae61ed235114e9739c4e1d1d52994d3be9f95e436ac1b7c69bb4582   310 B       146 B           0
+6 data/sub/g3.csv copied  6d19965b2ae61ed235114e9739c4e1d1d52994d3be9f95e436ac1b7c69bb4582   310 B       146 B           1
 ```
 
 

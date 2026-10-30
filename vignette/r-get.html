@@ -2384,17 +2384,17 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(store)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                            backend_group
-  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                   &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpgQNOo9/storage_5ed18147cd0 staff        </code></pre>
+  compression metadata_folder_name backend_path                                                                             backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                    &lt;chr&gt;        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpLmbafc/storage_d3d3710f76ec staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="fu">c</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="st">&quot;data/f2.csv&quot;</span>, <span class="st">&quot;data/sub/f3.csv&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 6
   path            outcome hash                                                                size stored_size duration_ms
   &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
-1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           0
-2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           0
+1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           1
+2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           1
 3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B           1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="st">&quot;data/f2.csv&quot;</span>, <span class="st">&quot;data/sub/f3.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2423,7 +2423,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 # A tibble: 1 × 13
   path        local_path  before action   satisfied    size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;    &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
-1 data/f1.csv data/f1.csv absent restored TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
+1 data/f1.csv data/f1.csv absent restored TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            1</code></pre>
 </div>
 </div>
 <p>The file is <code>current</code> again:</p>
@@ -2495,7 +2495,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 * &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;     &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;                                                            &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
 1 data/f1.csv     data/f1.csv     current unchanged TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
 2 data/f2.csv     data/f2.csv     current unchanged TRUE        500 B c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
-3 data/sub/f3.csv data/sub/f3.csv absent  restored  TRUE        312 B 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce &lt;NA&gt;                                                             &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
+3 data/sub/f3.csv data/sub/f3.csv absent  restored  TRUE        312 B 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce &lt;NA&gt;                                                             &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            1</code></pre>
 </div>
 </div>
 <p><code>glob</code> and <code>recursive</code> are mutually exclusive; passing both raises an error.</p>
@@ -2556,7 +2556,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="cell-output cell-output-stdout">
 <pre><code># 2 of 2 rows from:
 # Partial: restored 1, skipped 1
-# on_conflict = skip (command line)
+# on_conflict = skip (argument)
 # A tibble: 2 × 4
   path        before   action   satisfied
   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;    &lt;lgl&gt;    
@@ -2571,7 +2571,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="cell-output cell-output-stdout">
 <pre><code># 1 of 1 rows from:
 # Replaced 1
-# on_conflict = overwrite (command line)
+# on_conflict = overwrite (argument)
 # A tibble: 1 × 4
   path        before   action   satisfied
   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;    &lt;lgl&gt;    

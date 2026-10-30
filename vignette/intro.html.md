@@ -113,7 +113,7 @@ dvs_init(here::here(storage))
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file84ef262fcaed_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef0f913214e53_storage staff        
 ```
 
 
@@ -135,7 +135,7 @@ cat(readLines("dvs.toml"), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file84ef262fcaed_storage"
+path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef0f913214e53_storage"
 group = "staff"
 ```
 
@@ -164,8 +164,8 @@ dvs_add(glob = "data/**/*.csv", message = "PK profiles and NCA summary, data cut
 # A tibble: 2 × 6
   path                         outcome hash                                                                size stored_size duration_ms
   <chr>                        <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/derived/nca_summary.csv copied  2595da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91   102 B        80 B           0
-2 data/pk_profiles.csv         copied  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB       842 B           0
+1 data/derived/nca_summary.csv copied  040e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a    97 B        78 B           1
+2 data/pk_profiles.csv         copied  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB       842 B           2
 ```
 
 
@@ -222,7 +222,7 @@ cat(readLines(".dvs/data/pk_profiles.csv.dvs"), sep = "\n")
   },
   "size": 2992,
   "created_by": "elea",
-  "add_time": "2026-10-30T11:11:25.156986Z",
+  "add_time": "2026-10-30T18:42:53.817963Z",
   "compression": "zstd",
   "message": "PK profiles and NCA summary, data cut 2026-06"
 }
@@ -281,9 +281,9 @@ fs::dir_tree(here::here(storage))
 ::: {.cell-output .cell-output-stdout}
 
 ```
-/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file84ef262fcaed_storage
-├── 25
-│   └── 95da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/filef0f913214e53_storage
+├── 04
+│   └── 0e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a
 ├── audit.log.jsonl
 └── cd
     └── d978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06
@@ -313,8 +313,8 @@ dvs_status()
 # A tibble: 2 × 10
   path                         status  hash                                                                size created_by compression message                                       code  error add_time           
   <chr>                        <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>                                         <chr> <chr> <dttm>             
-1 data/derived/nca_summary.csv current 2595da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91   102 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 11:11:25
-2 data/pk_profiles.csv         current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 11:11:25
+1 data/derived/nca_summary.csv current 040e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a    97 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 18:42:53
+2 data/pk_profiles.csv         current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 18:42:53
 ```
 
 
@@ -340,8 +340,8 @@ dvs_status()
 # A tibble: 2 × 10
   path                         status  hash                                                                size created_by compression message                                       code  error add_time           
   <chr>                        <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>                                         <chr> <chr> <dttm>             
-1 data/derived/nca_summary.csv current 2595da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91   102 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 11:11:25
-2 data/pk_profiles.csv         absent  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 11:11:25
+1 data/derived/nca_summary.csv current 040e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a    97 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 18:42:53
+2 data/pk_profiles.csv         absent  cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 18:42:53
 ```
 
 
@@ -369,7 +369,7 @@ dvs_get("data/pk_profiles.csv")
 # A tibble: 1 × 13
   path                 local_path           before action   satisfied    size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * <chr>                <chr>                <chr>  <chr>    <lgl>     <bytes> <chr>                                                            <chr>      <chr>       <chr> <chr>   <chr>       <dbl>
-1 data/pk_profiles.csv data/pk_profiles.csv absent restored TRUE       2.9 KB cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06 <NA>       <NA>        <NA>  <NA>    <NA>            0
+1 data/pk_profiles.csv data/pk_profiles.csv absent restored TRUE       2.9 KB cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06 <NA>       <NA>        <NA>  <NA>    <NA>            1
 ```
 
 
@@ -385,8 +385,8 @@ dvs_status()
 # A tibble: 2 × 10
   path                         status  hash                                                                size created_by compression message                                       code  error add_time           
   <chr>                        <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>                                         <chr> <chr> <dttm>             
-1 data/derived/nca_summary.csv current 2595da3c15d470301a200f237c585866a792771fdfaf2a10ea1de3a67f1ccc91   102 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 11:11:25
-2 data/pk_profiles.csv         current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 11:11:25
+1 data/derived/nca_summary.csv current 040e56b26fdcf74c79a11e020a01f6b29565eae2e69849a7267d908111b3d17a    97 B elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 18:42:53
+2 data/pk_profiles.csv         current cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06  2.9 KB elea       zstd        PK profiles and NCA summary, data cut 2026-06 <NA>  <NA>  2026-10-30 18:42:53
 ```
 
 
@@ -419,7 +419,7 @@ dvs status
 +------------------------------+---------+--------+
 | path                         | status  | size   |
 +------------------------------+---------+--------+
-| data/derived/nca_summary.csv | current |  102 B |
+| data/derived/nca_summary.csv | current |   97 B |
 +------------------------------+---------+--------+
 | data/pk_profiles.csv         | current | 2.9 KB |
 +------------------------------+---------+--------+

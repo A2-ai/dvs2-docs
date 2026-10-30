@@ -69,7 +69,7 @@ dvs init "$DVS_STORAGE"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: dvs init needs a backend before the storage path: did you mean `dvs init local /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f27345a20f_storage`?
+Error: dvs init needs a backend before the storage path: did you mean `dvs init local /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec027ca34b4c_storage`?
 ```
 
 
@@ -142,7 +142,7 @@ dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f27345a20f_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec027ca34b4c_storage staff        
 ```
 
 
@@ -212,7 +212,7 @@ dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_proje
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f221755e58_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec021f431ddf_storage staff        
 ```
 
 
@@ -491,7 +491,7 @@ dvs_add(paths = outside_file)
 ```
 Error in `dvs_add()`:
 ! Refusing to add, the following paths are invalid:
-  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmpocq0BI/file81f25e974e60.csv: path is outside project
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmpVuDexU/fileec021acb53fc.csv: path is outside project
 ```
 
 
@@ -515,7 +515,7 @@ rm -f "$OUTSIDE_FILE"
 
 ```
 Error: Refusing to add, the following paths are invalid:
-  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.8Y2umM5Ldc.csv: path is outside project
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.4Ocwz6sBcH.csv: path is outside project
 ```
 
 
@@ -692,7 +692,7 @@ dvs_add(paths = "present.csv")
 # A tibble: 1 × 6
   path        outcome hash                                                                size stored_size duration_ms
   <chr>       <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 present.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           0
+1 present.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           3
 ```
 
 
@@ -709,7 +709,7 @@ dvs_status(paths = c("present.csv", "missing.csv")) |>
 # A tibble: 1 × 10
   path        status  hash                                                                size created_by compression message code  error add_time           
   <chr>       <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>   <chr> <chr> <dttm>             
-1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        <NA>    <NA>  <NA>  2026-10-30 11:11:15
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        <NA>    <NA>  <NA>  2026-10-30 18:42:35
 ```
 
 
@@ -771,7 +771,7 @@ dvs_init(storage_path = here::here(ump_storage), root_dir = here::here(ump_proje
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f265bbb10b_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec0263e982f9_storage staff        
 ```
 
 
@@ -788,7 +788,7 @@ dvs_add(paths = "corrupt.csv")
 # A tibble: 1 × 6
   path        outcome hash                                                                size stored_size duration_ms
   <chr>       <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 corrupt.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           0
+1 corrupt.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           1
 ```
 
 
@@ -1075,9 +1075,9 @@ dvs_init(storage_path = here::here(bm_storage), root_dir = here::here(bm_project
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                             backend_group
-  <chr>       <lgl>                <chr>                                                                    <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f289fffbe_storage staff        
+  compression metadata_folder_name backend_path                                                              backend_group
+  <chr>       <lgl>                <chr>                                                                     <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec02106428c6_storage staff        
 ```
 
 
@@ -1094,7 +1094,7 @@ dvs_add(paths = "tracked.csv")
 # A tibble: 1 × 6
   path        outcome hash                                                                size stored_size duration_ms
   <chr>       <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 tracked.csv copied  1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a     6 B        15 B           0
+1 tracked.csv copied  1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a     6 B        15 B           1
 ```
 
 
@@ -1193,7 +1193,7 @@ dvs_init(storage_path = here::here(hm_storage), root_dir = here::here(hm_project
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f24b87901f_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/fileec0219da8a26_storage staff        
 ```
 
 
@@ -1210,7 +1210,7 @@ dvs_add(paths = "tampered.csv")
 # A tibble: 1 × 6
   path         outcome hash                                                                size stored_size duration_ms
   <chr>        <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 tampered.csv copied  4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234     9 B        18 B           0
+1 tampered.csv copied  4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234     9 B        18 B           1
 ```
 
 
@@ -1254,7 +1254,7 @@ dvs_get(paths = "tampered.csv") |> print(width = Inf, n = Inf)
 # A tibble: 1 × 13
   path         local_path   before action satisfied    size target_hash                                                      local_hash stored_copy code          message                                            hint  duration_ms
 * <chr>        <chr>        <chr>  <chr>  <lgl>     <bytes> <chr>                                                            <chr>      <chr>       <chr>         <chr>                                              <chr>       <dbl>
-1 tampered.csv tampered.csv absent failed FALSE         9 B 4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234 <NA>       <NA>        hash_mismatch the stored content does not match the tracked hash <NA>            0
+1 tampered.csv tampered.csv absent failed FALSE         9 B 4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234 <NA>       <NA>        hash_mismatch the stored content does not match the tracked hash <NA>            1
 ```
 
 

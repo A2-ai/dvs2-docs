@@ -68,9 +68,9 @@ dvs_init(store)
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                            backend_group
-  <chr>       <lgl>                <chr>                                                                                   <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpgQNOo9/storage_5ed18147cd0 staff        
+  compression metadata_folder_name backend_path                                                                             backend_group
+  <chr>       <lgl>                <chr>                                                                                    <chr>        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpLmbafc/storage_d3d3710f76ec staff        
 ```
 
 
@@ -86,8 +86,8 @@ dvs_add(c("data/f1.csv", "data/f2.csv", "data/sub/f3.csv"))
 # A tibble: 3 × 6
   path            outcome hash                                                                size stored_size duration_ms
   <chr>           <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
-1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           0
-2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           0
+1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           1
+2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           1
 3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B           1
 ```
 
@@ -148,7 +148,7 @@ dvs_get("data/f1.csv")
 # A tibble: 1 × 13
   path        local_path  before action   satisfied    size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
 * <chr>       <chr>       <chr>  <chr>    <lgl>     <bytes> <chr>                                                            <chr>      <chr>       <chr> <chr>   <chr>       <dbl>
-1 data/f1.csv data/f1.csv absent restored TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 <NA>       <NA>        <NA>  <NA>    <NA>            0
+1 data/f1.csv data/f1.csv absent restored TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 <NA>       <NA>        <NA>  <NA>    <NA>            1
 ```
 
 
@@ -293,7 +293,7 @@ dvs_get("data", recursive = TRUE)
 * <chr>           <chr>           <chr>   <chr>     <lgl>     <bytes> <chr>                                                            <chr>                                                            <chr>       <chr> <chr>   <chr>       <dbl>
 1 data/f1.csv     data/f1.csv     current unchanged TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 <NA>        <NA>  <NA>    <NA>            0
 2 data/f2.csv     data/f2.csv     current unchanged TRUE        500 B c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 <NA>        <NA>  <NA>    <NA>            0
-3 data/sub/f3.csv data/sub/f3.csv absent  restored  TRUE        312 B 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce <NA>                                                             <NA>        <NA>  <NA>    <NA>            0
+3 data/sub/f3.csv data/sub/f3.csv absent  restored  TRUE        312 B 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce <NA>                                                             <NA>        <NA>  <NA>    <NA>            1
 ```
 
 
@@ -417,7 +417,7 @@ dvs_get("data", on_conflict = "skip")[, c("path", "before", "action", "satisfied
 ```
 # 2 of 2 rows from:
 # Partial: restored 1, skipped 1
-# on_conflict = skip (command line)
+# on_conflict = skip (argument)
 # A tibble: 2 × 4
   path        before   action   satisfied
   <chr>       <chr>    <chr>    <lgl>    
@@ -446,7 +446,7 @@ dvs_get("data/f1.csv", on_conflict = "overwrite")[, c("path", "before", "action"
 ```
 # 1 of 1 rows from:
 # Replaced 1
-# on_conflict = overwrite (command line)
+# on_conflict = overwrite (argument)
 # A tibble: 1 × 4
   path        before   action   satisfied
   <chr>       <chr>    <chr>    <lgl>    
