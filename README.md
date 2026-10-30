@@ -19,7 +19,7 @@ R/              Helper scripts used by vignettes
 site/           Zola static site (config.toml, templates, sass, content/)
 tools/          htmlmd_to_zola.py, converts vignette .html.md to Zola pages
 .alx/           Alexandria config (project ID 22c331d9-0bd0-4e36-b5fd-df81a841a628)
-rproject.toml   rv-managed R environment; dvs installed from .dvs2/dvs-rpkg
+rproject.toml   rv-managed R environment, dvs built from .dvs2 (directory dvs-rpkg)
 justfile        All build recipes
 ```
 
@@ -63,7 +63,7 @@ just site-serve          # build the Zola site and open it in the browser
 Point `rproject.toml` at the branch worktree instead of `.dvs`:
 
 ```toml
-{ name = "dvs", path = "/path/to/dvs2-worktrees/<branch>/dvs-rpkg" }
+{ name = "dvs", path = "/path/to/dvs2-worktrees/<branch>", directory = "dvs-rpkg" }
 ```
 
 Install the CLI from the same worktree:

@@ -238,12 +238,11 @@ clone-dvs:
     gh repo clone A2-ai/dvs2 .dvs2 -- --single-branch --depth=1
     echo '*' > .dvs2/.gitignore
 
-# Pull the latest dvs2 source, then re-vendor dvs-rpkg so rv can build it
-# from a copied temp dir (the rpkg's core-crate dep is a workspace path that
-# only resolves via the vendor/ tree outside the dvs2 checkout).
+# Pull the latest dvs2 source. rv builds the R package from .dvs2 with
+# `directory = "dvs-rpkg"` (rproject.toml), which runs dvs-rpkg's bootstrap.R
+# in the clone to stage the core crate, so there is no vendor step.
 update-dvs:
     git -C .dvs2 checkout -- . && git -C .dvs2 pull --rebase
-    just --justfile .dvs2/justfile --working-directory .dvs2 vendor
 
 # Install the dvs CLI from the local clone into ./bin (kept on PATH above)
 install-cli:

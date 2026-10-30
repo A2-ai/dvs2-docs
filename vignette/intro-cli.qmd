@@ -47,7 +47,7 @@ Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(stora
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs init "$DVS_STORAGE"
+dvs init local "$DVS_STORAGE"
 cat dvs.toml
 ```
 

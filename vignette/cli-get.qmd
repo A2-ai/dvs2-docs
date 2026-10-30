@@ -67,7 +67,7 @@ Sys.setenv(DVS_PROJECT = proj, DVS_STORAGE = storage)
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs init "$DVS_STORAGE" >/dev/null
+dvs init local "$DVS_STORAGE" >/dev/null
 dvs add data/f1.csv data/f2.csv data/sub/f3.csv >/dev/null
 rm data/f1.csv data/f2.csv data/sub/f3.csv
 dvs status --absent
