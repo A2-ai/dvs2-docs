@@ -38,7 +38,8 @@ export default defineConfig({
             { label: "dvs_init", slug: "reference/dvs_init" },
             { label: "dvs_add", slug: "reference/dvs_add" },
             { label: "dvs_status", slug: "reference/dvs_status" },
-            { label: "dvs_get", slug: "reference/dvs_get" }
+            { label: "dvs_get", slug: "reference/dvs_get" },
+            { label: "dvs_result_info", slug: "reference/dvs_result_info" }
           ]
         },
         {
@@ -55,6 +56,13 @@ export default defineConfig({
           items: [
             { label: "format_byte_size", slug: "reference/format_byte_size" },
             { label: "new_dvs_bytes", slug: "reference/new_dvs_bytes" }
+          ]
+        },
+        {
+          label: "Version",
+          collapsed: true,
+          items: [
+            { label: "dvs_version", slug: "reference/dvs_version" }
           ]
         }
       ]

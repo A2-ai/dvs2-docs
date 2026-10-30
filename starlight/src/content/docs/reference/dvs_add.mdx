@@ -18,7 +18,7 @@ Hashes and copies the specified files into DVS storage.
 ## Usage
 
 ```r
-dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
+dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = FALSE)
 ```
 
 ## Arguments
@@ -31,15 +31,15 @@ dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
 <tbody>
 <tr>
 <td><code>paths</code></td>
-<td>Character vector of file paths to add to DVS storage.</td>
+<td>Files to add, or directories to search with `glob`, relative to the working directory. `NULL` is the same as `character(0)`. `paths` or `glob` is required, and a directory needs `glob`.</td>
 </tr>
 <tr>
 <td><code>message</code></td>
-<td>Optional commit message describing why the files were added.</td>
+<td>A message stored with the files' metadata, such as why they were added.</td>
 </tr>
 <tr>
 <td><code>glob</code></td>
-<td>Optional glob pattern to select files (e.g. `"data/*.csv"`). Globs use a literal path separator: `*.csv` only matches files in the target directory and will not match `subdir/file.csv`. Use `**/*.csv` to match recursively across subdirectories.</td>
+<td>A glob that selects the files to add, such as `"*.csv"`. It runs from the working directory, or from each directory in `paths`. A file named in `paths` is added whether or not it matches. `*` does not cross a path separator, so `*.csv` matches `a.csv` but not `sub/a.csv`. Use `**/*.csv` to match at any depth.</td>
 </tr>
 <tr>
 <td><code>dry_run</code></td>
@@ -48,6 +48,24 @@ dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
 </tbody>
 </table>
 </div>
+
+
+## Value
+
+A tibble with one row per file: `path` (relative to the project
+root), `outcome`, `hash` (the blake3 hash), `size` (`dvs_bytes`),
+`stored_size` (`dvs_bytes`, the size of the copy in storage after
+compression) and `duration_ms` (the milliseconds spent on the file).
+`outcome` is `"copied"` when the file was stored and its metadata
+written, and `"present"` when dvs already tracked the file at this
+version. In a dry run it is what would happen, and `stored_size` is
+`size`.
+
+A file that fails does not stop the others. When one fails, the result
+also has the columns `code` (the kind of failure, for example
+`"io_error"`) and `error` (the reason). That row has `NA` in `outcome`,
+`hash`, `size` and `stored_size`. A path that does not exist raises an
+error and adds nothing.
 
 
 

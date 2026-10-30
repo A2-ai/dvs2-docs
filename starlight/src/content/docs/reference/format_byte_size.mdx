@@ -1,6 +1,6 @@
 ---
 title: "Format a byte count as a human-readable size string"
-description: "Format a byte count as a human-readable size string."
+description: "Formats a size the way the dvs CLI prints it. The size columns of , and print this way in a tibble."
 sidebar:
   label: "format_byte_size"
 pagefind: true
@@ -8,8 +8,8 @@ pagefind: true
 
 ## Description
 
-Format a byte count as a human-readable size string
-
+Formats a size the way the dvs CLI prints it. The size columns of
+[`dvs_add()`](../dvs_add/), [`dvs_status()`](../dvs_status/) and [`dvs_get()`](../dvs_get/) print this way in a tibble.
 
 
 
@@ -32,11 +32,19 @@ format_byte_size(size_bytes)
 <tbody>
 <tr>
 <td><code>size_bytes</code></td>
-<td>non-negative integer representing file sizes in bytes.</td>
+<td>A size in bytes: one whole number, 0 or more. `TRUE` and `FALSE` are refused.</td>
 </tr>
 </tbody>
 </table>
 </div>
+
+
+## Value
+
+A string. Below 1024 bytes it is the count with `B`, as in
+`"512 B"`. From 1024 bytes up it has one decimal and the largest unit
+that fits: `KB`, `MB`, `GB` or `TB`. The units are powers of 1024, so
+`format_byte_size(1e6)` is `"976.6 KB"`.
 
 
 

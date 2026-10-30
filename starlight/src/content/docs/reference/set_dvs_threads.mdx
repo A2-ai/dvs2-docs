@@ -6,6 +6,8 @@ sidebar:
 pagefind: true
 ---
 
+import { Icon } from '@astrojs/starlight/components';
+
 ## Description
 
 Controls the thread pool size for parallel file operations (add, get, status).
@@ -14,7 +16,18 @@ Rust backend before each operation.
 
 ## Details
 
-Can also be set via `.Rprofile` or temporarily with withr::with_options().
+Can also be set via `.Rprofile` or temporarily with [`withr::with_options()`](https://withr.r-lib.org/reference/with_options.html)<span style = {{ display: 'inline-block', verticalAlign: 'middle' }}><Icon name="external" /></span>.
+
+Each add, get and status operation takes its thread count from the first
+rule that applies:
+1. A thread count set here or in the `dvs.num_threads` option: that many threads, at most 32.
+1. The `DVS_NUM_THREADS` environment variable, when it is a whole number above 0: that many threads, at most 32. Any other value is ignored.
+1. Otherwise 4 threads per CPU, at most 16.
+
+
+An operation never uses more threads than it has files. `NULL` and `0` set
+no thread count, so the operation falls through to `DVS_NUM_THREADS` or to
+4 threads per CPU. `--threads 0` in the CLI does the same.
 
 
 
@@ -37,7 +50,7 @@ set_dvs_threads(threads)
 <tbody>
 <tr>
 <td><code>threads</code></td>
-<td>Integer number of threads to use. Set to `NULL` to revert to the default (automatic detection).</td>
+<td>A whole number of threads, or `NULL` or `0` to set no thread count. `NA`, a negative or fractional number, `TRUE`, `FALSE`, a string or more than one value raises a `dvs_error_argument` condition.</td>
 </tr>
 </tbody>
 </table>
@@ -59,7 +72,7 @@ set_dvs_threads(4)
 
 # Temporarily use 2 threads
 withr::with_options(list(dvs.num_threads = 2), {
-  dvs_add(files = "big_data.csv")
+  dvs_add(paths = "big_data.csv")
 })
 ```
 
