@@ -142,7 +142,7 @@ dependencies = [
 [[packages]]
 name = "dvs"
 version = "0.5.1"
-source = { git = "https://github.com/A2-ai/dvs2", sha = "7ff0aa0300a108197ecbc8bbb287c7a1cf34f54a", directory = "dvs-rpkg" }
+source = { git = "https://github.com/A2-ai/dvs2", sha = "370f4480f1871fb56cfa75c834044c2e08876e80", directory = "dvs-rpkg" }
 force_source = true
 dependencies = [
     "cli",
