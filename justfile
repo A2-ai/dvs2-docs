@@ -275,7 +275,12 @@ install-cli path="":
     if [ -n "{{path}}" ]; then
         cargo install --locked --force --path "{{path}}/dvs-cli" --root .
     else
-        cargo install --locked --git https://github.com/A2-ai/dvs2 --rev "$(just dvs-sha)" --root . dvs-cli
+        # Build in a fresh directory. With a target-dir in the user's cargo
+        # config, cargo reuses the build of the old commit when the version
+        # is the same, and installs the old dvs.
+        tmp=$(mktemp -d)
+        trap 'rm -rf "$tmp"' EXIT
+        CARGO_TARGET_DIR="$tmp" cargo install --locked --git https://github.com/A2-ai/dvs2 --rev "$(just dvs-sha)" --root . dvs-cli
     fi
 
 # === Bootstrap ===
