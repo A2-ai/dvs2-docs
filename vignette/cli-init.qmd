@@ -61,7 +61,7 @@ in the project root and records the storage path under `[backend]`.
 cd "$DVS_BASE"
 mkdir -p basic/proj basic/store
 cd basic/proj
-dvs init ../store
+dvs init local ../store
 cat dvs.toml
 ```
 
@@ -73,7 +73,7 @@ Initialize a project rooted at a path other than the current directory.
 ```{bash}
 cd "$DVS_BASE"
 mkdir -p rootdir/proj rootdir/store
-dvs init rootdir/store --root-dir rootdir/proj
+dvs init local rootdir/store --root-dir rootdir/proj
 ls rootdir/proj/dvs.toml
 ```
 
@@ -86,7 +86,7 @@ Use a metadata folder name other than `.dvs`. The name is recorded in
 cd "$DVS_BASE"
 mkdir -p meta/proj meta/store
 cd meta/proj
-dvs init ../store --metadata-folder-name .meta
+dvs init local ../store --metadata-folder-name .meta
 ls -a
 ```
 
@@ -101,7 +101,7 @@ requires a specific group on the host.
 cd "$DVS_BASE"
 mkdir -p group/proj group/store
 cd group/proj
-dvs init ../store --group rstudio
+dvs init local ../store --group rstudio
 ```
 
 ```text
@@ -119,7 +119,7 @@ files added under this project.
 cd "$DVS_BASE"
 mkdir -p nocomp/proj nocomp/store
 cd nocomp/proj
-dvs init ../store --no-compression
+dvs init local ../store --no-compression
 cat dvs.toml
 ```
 
@@ -136,7 +136,7 @@ Override the auto-detected thread count for this command.
 cd "$DVS_BASE"
 mkdir -p threads/proj threads/store
 cd threads/proj
-dvs init ../store --threads 2
+dvs init local ../store --threads 2
 ```
 
 ## `--json`
@@ -147,7 +147,7 @@ Emit the result as JSON instead of a status line.
 cd "$DVS_BASE"
 mkdir -p jsonex/proj jsonex/store
 cd jsonex/proj
-dvs init ../store --json
+dvs init local ../store --json
 ```
 
 ## Notes

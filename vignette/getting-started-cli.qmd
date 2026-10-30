@@ -38,7 +38,7 @@ flag.
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs init "$DVS_STORAGE"
+dvs init local "$DVS_STORAGE"
 ```
 
 ## 2. Add

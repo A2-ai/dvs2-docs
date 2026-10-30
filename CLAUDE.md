@@ -19,7 +19,7 @@ Documentation and demo repo for [dvs2](https://github.com/A2-ai/dvs2). Two roles
   the justfile prepends it to PATH for every recipe, so rendered bash chunks
   use the same build as the R package)
 - `.alx/` — Alexandria config (project ID `22c331d9-0bd0-4e36-b5fd-df81a841a628`, remote https://alx.dev.a2-ai.cloud/api)
-- `rproject.toml` — rv config; dvs R package installed from source at `.dvs2/dvs-rpkg`
+- `rproject.toml` — rv config. The dvs R package is built from source from `.dvs2`, subdirectory `dvs-rpkg`
 
 ## Key workflows
 
@@ -44,26 +44,30 @@ export PATH="/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/bin:$P
 and the CLI. It is **not** tracked by git (`.dvs2/.gitignore` contains `*`).
 
 ```bash
-just update-dvs    # pull latest main + re-vendor dvs-rpkg (required!)
+just update-dvs    # pull latest main
 just install-cli   # cargo install --path .dvs2/dvs-cli --root .  ->  ./bin/dvs
-just sync          # rebuild the R package from .dvs2/dvs-rpkg (R 4.5 on PATH)
+just sync          # rebuild the R package from .dvs2 (R 4.5 on PATH)
 ```
 
-The vendor step matters: dvs-rpkg depends on the in-repo core crate by
-workspace path, which does not resolve when rv copies `dvs-rpkg/` to a temp
-dir for the build. `just update-dvs` runs `.dvs2`'s own `vendor` recipe
-(cargo-revendor) to seal the core crate into `dvs-rpkg/vendor/`. If sync
-fails with `failed to load manifest for dependency 'dvs'`, the vendor step
-was skipped.
-
-The canonical `rproject.toml` entry is:
+dvs-rpkg depends on the dvs core crate by the path `../../../dvs`, which is
+outside `dvs-rpkg/`. So the `rproject.toml` entry names the repository root
+and the package's subdirectory:
 
 ```toml
-{ name = "dvs", path = ".dvs2/dvs-rpkg" }
+{ name = "dvs", path = ".dvs2", directory = "dvs-rpkg" }
 ```
 
-To test a dvs2 branch instead, point `rproject.toml` at a worktree of that
-branch, run its vendor step, `rv sync`, reinstall the CLI from the same
+With `directory`, rv runs dvs-rpkg's `bootstrap.R` in the clone, which stages
+the core crate for the build. There is no vendor step. The older entry
+`path = ".dvs2/dvs-rpkg"` fails at configure with "Path dependencies outside
+the package directory are missing".
+
+The CLI needs `dvs init local <path>` since dvs2 added the server backend.
+`dvs init <path>` stops with "dvs init needs a backend before the storage
+path".
+
+To test a dvs2 branch instead, point `path` at a worktree of that branch
+(keep `directory = "dvs-rpkg"`), `rv sync`, reinstall the CLI from the same
 worktree, then clear the freeze cache (`rm -rf _freeze/vignette/<name>`) and
 re-render.
 
