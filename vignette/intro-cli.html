@@ -2330,14 +2330,14 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <h2 class="anchored" data-anchor-id="dvs-init">dvs init</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> dvs.toml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized at &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file897a32623b5a_project&quot;
+<pre><code>DVS Initialized at /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file871f465edab1_project
 compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file897a474b920f_storage&quot;
+path = &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file871f6ee81399_storage&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2350,7 +2350,9 @@ group = &quot;staff&quot;</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/large/large_1.csv <span class="at">-m</span> <span class="st">&quot;one large dataset&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Added: data/large/large_1.csv [25.0 MB] --&gt; saved [10.5 MB] as 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838</code></pre>
+<pre><code>Added: data/large/large_1.csv [25.0 MB] --&gt; saved [10.5 MB] as 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838
+
+Added 1</code></pre>
 </div>
 </div>
 <p>Each line reports the size on disk, the compressed size that landed in storage, and the content hash.</p>
@@ -2363,9 +2365,11 @@ group = &quot;staff&quot;</code></pre>
 <pre><code>Added: data/small/small_1.csv [1024.0 KB] --&gt; saved [427.8 KB] as e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937
 Added: data/small/small_2.csv [1024.0 KB] --&gt; saved [427.9 KB] as 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04
 Added: data/small/small_3.csv [1024.0 KB] --&gt; saved [428.1 KB] as 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a
-Added: data/individual/individual_48.csv [3.0 MB] --&gt; saved [1.3 MB] as 7d62b45f3c50dcaf1f3143a9c67d5a1606b58660359405f533483713157d3ce2
-Added: data/individual/individual_49.csv [3.0 MB] --&gt; saved [1.3 MB] as d855539255e6bcef2bdb7b3be9c727312db4c8eb6229851bb2ddd71667bde6e3
-Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b05327be23b5f7172df2b5c2a19ba2a214b6d8c01d87f6231563a2b2dd9f464b</code></pre>
+
+Added 3
+Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b05327be23b5f7172df2b5c2a19ba2a214b6d8c01d87f6231563a2b2dd9f464b
+
+Added 50</code></pre>
 </div>
 </div>
 <section id="dry-runs" class="level3">
@@ -2376,7 +2380,12 @@ Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b0532
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;1,2,3&quot;</span> <span class="op">&gt;</span> data/small/new_file.csv</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add <span class="at">--glob</span> <span class="st">&quot;data/small/*.csv&quot;</span> <span class="at">--dry-run</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>To add: data/small/new_file.csv [6 B] as 8ebd15e1b413963410d68a325723e4bc165afcd389a860e601b5aee8731e570e</code></pre>
+<pre><code>To add: data/small/new_file.csv [6 B] as 8ebd15e1b413963410d68a325723e4bc165afcd389a860e601b5aee8731e570e
+Unchanged: data/small/small_1.csv [1024.0 KB] already tracked
+Unchanged: data/small/small_2.csv [1024.0 KB] already tracked
+Unchanged: data/small/small_3.csv [1024.0 KB] already tracked
+
+Would add 1, 3 unchanged</code></pre>
 </div>
 </div>
 </section>
@@ -2393,7 +2402,7 @@ Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b0532
   },
   &quot;size&quot;: 26214390,
   &quot;created_by&quot;: &quot;elea&quot;,
-  &quot;add_time&quot;: &quot;2026-08-10T19:48:36.161915Z&quot;,
+  &quot;add_time&quot;: &quot;2026-10-30T11:11:57.682029Z&quot;,
   &quot;compression&quot;: &quot;zstd&quot;,
   &quot;message&quot;: &quot;one large dataset&quot;
 }</code></pre>
@@ -2419,7 +2428,9 @@ Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b0532
 | data/small/small_2.csv | current | 1024.0 KB |
 +------------------------+---------+-----------+
 | data/small/small_3.csv | current | 1024.0 KB |
-+------------------------+---------+-----------+</code></pre>
++------------------------+---------+-----------+
+
+Checked 4</code></pre>
 </div>
 </div>
 <p>Make some work for it: delete three files and modify one.</p>
@@ -2428,11 +2439,11 @@ Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b0532
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/individual/individual_04.csv data/individual/individual_08.csv data/individual/individual_15.csv</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;99,0,0,0,0,0&quot;</span> <span class="op">&gt;&gt;</span> data/large/large_1.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The <code>--absent</code> and <code>--unsynced</code> flags filter; without flags you get all states:</p>
+<p>The <code>--absent</code> and <code>--modified</code> flags filter. Without flags you get all statuses:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--absent</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--unsynced</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--modified</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-----------------------------------+--------+--------+
 | path                              | status | size   |
@@ -2443,23 +2454,29 @@ Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b0532
 +-----------------------------------+--------+--------+
 | data/individual/individual_15.csv | absent | 3.0 MB |
 +-----------------------------------+--------+--------+
+
+Checked 3
 +------------------------+----------+---------+
 | path                   | status   | size    |
 +------------------------+----------+---------+
-| data/large/large_1.csv | unsynced | 25.0 MB |
-+------------------------+----------+---------+</code></pre>
+| data/large/large_1.csv | modified | 25.0 MB |
++------------------------+----------+---------+
+
+Checked 1</code></pre>
 </div>
 </div>
 <p><code>--with-metadata</code> widens the table with the hash, author, timestamp, compression, and message:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--unsynced</span> <span class="at">--with-metadata</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--modified</span> <span class="at">--with-metadata</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
 | path                   | status   | size    | hash                                                             | created_by | add_time                    | compression | message           |
 +------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
-| data/large/large_1.csv | unsynced | 25.0 MB | 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 | elea       | 2026-08-10T19:48:36.161915Z | zstd        | one large dataset |
-+------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+</code></pre>
+| data/large/large_1.csv | modified | 25.0 MB | 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 | elea       | 2026-10-30T11:11:57.682029Z | zstd        | one large dataset |
++------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
+
+Checked 1</code></pre>
 </div>
 </div>
 <section id="json-output" class="level3">
@@ -2469,26 +2486,26 @@ Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b0532
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--absent</span> <span class="at">--json</span> <span class="kw">|</span> <span class="ex">python3</span> <span class="at">-m</span> json.tool <span class="kw">|</span> <span class="fu">head</span> <span class="at">-20</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[
-    {
-        &quot;path&quot;: &quot;data/individual/individual_04.csv&quot;,
-        &quot;status&quot;: &quot;absent&quot;,
-        &quot;metadata&quot;: {
-            &quot;hashes&quot;: {
-                &quot;blake3&quot;: &quot;388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee&quot;
-            },
-            &quot;size&quot;: 3145709,
-            &quot;created_by&quot;: &quot;elea&quot;,
-            &quot;add_time&quot;: &quot;2026-08-10T19:48:36.410722Z&quot;,
-            &quot;compression&quot;: &quot;zstd&quot;,
-            &quot;message&quot;: &quot;individual datasets&quot;
-        }
+<pre><code>{
+    &quot;command&quot;: &quot;status&quot;,
+    &quot;counts&quot;: {
+        &quot;cancelled&quot;: 0,
+        &quot;failed&quot;: 0,
+        &quot;succeeded&quot;: 3,
+        &quot;total&quot;: 3
     },
-    {
-        &quot;path&quot;: &quot;data/individual/individual_08.csv&quot;,
-        &quot;status&quot;: &quot;absent&quot;,
-        &quot;metadata&quot;: {
-            &quot;hashes&quot;: {</code></pre>
+    &quot;dry_run&quot;: false,
+    &quot;duration_ms&quot;: 12,
+    &quot;error&quot;: null,
+    &quot;files&quot;: [
+        {
+            &quot;baseline&quot;: {
+                &quot;blake3&quot;: &quot;388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee&quot;,
+                &quot;size&quot;: 3145709
+            },
+            &quot;code&quot;: null,
+            &quot;hint&quot;: null,
+            &quot;message&quot;: null,</code></pre>
 </div>
 </div>
 </section>
@@ -2500,10 +2517,11 @@ Added: data/individual/individual_50.csv [3.0 MB] --&gt; saved [1.3 MB] as b0532
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get <span class="at">--glob</span> <span class="st">&quot;data/individual/individual_*.csv&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/individual/individual_04.csv [3.0 MB]
-data/individual/individual_08.csv [3.0 MB]
-data/individual/individual_15.csv [3.0 MB]
-Total: 3 files, 9.0 MB</code></pre>
+<pre><code>restored      data/individual/individual_04.csv  3.0 MB
+restored      data/individual/individual_08.csv  3.0 MB
+restored      data/individual/individual_15.csv  3.0 MB
+
+Restored 3, 47 already current</code></pre>
 </div>
 </div>
 <p>Re-add the modified file to bring the project back to all <code>current</code>:</p>
@@ -2511,7 +2529,9 @@ Total: 3 files, 9.0 MB</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/large/large_1.csv <span class="at">-m</span> <span class="st">&quot;append row 99&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Added: data/large/large_1.csv [25.0 MB] --&gt; saved [10.5 MB] as 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c</code></pre>
+<pre><code>Added: data/large/large_1.csv [25.0 MB] --&gt; saved [10.5 MB] as 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c
+
+Added 1</code></pre>
 </div>
 </div>
 <section id="directory-scoping-and-recursive" class="level3">
@@ -2523,9 +2543,9 @@ Total: 3 files, 9.0 MB</code></pre>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get . <span class="at">-r</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-3</span></span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--absent</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/small/small_2.csv [1024.0 KB]
-data/small/small_3.csv [1024.0 KB]
-Total: 54 files, 178.0 MB
+<pre><code>restored      data/small/small_3.csv             1024.0 KB
+
+Restored 54
 No tracked files matching the filter</code></pre>
 </div>
 </div>
@@ -2539,8 +2559,10 @@ No tracked files matching the filter</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/no_such_file.csv <span class="kw">||</span> <span class="bu">echo</span> <span class="st">&quot;exit code: </span><span class="va">$?</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Error: The following paths are not tracked by DVS:
-  data/no_such_file.csv
+<pre><code>failed        data/no_such_file.csv  not tracked by dvs
+
+Aborted, nothing changed: 1 file cannot be retrieved
+  data/no_such_file.csv: check the path; list tracked files with: dvs status
 exit code: 1</code></pre>
 </div>
 </div>
@@ -2554,6 +2576,8 @@ exit code: 1</code></pre>
 +------------------------+---------+---------+
 | data/large/large_1.csv | current | 25.0 MB |
 +------------------------+---------+---------+
+
+Checked 1
 exit code: 0</code></pre>
 </div>
 </div>
@@ -2566,8 +2590,8 @@ exit code: 0</code></pre>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--threads</span> 2 <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-----------------------------------+---------+-----------+
-| data/small/small_3.csv            | current | 1024.0 KB |
-+-----------------------------------+---------+-----------+</code></pre>
+
+Checked 54</code></pre>
 </div>
 </div>
 </section>

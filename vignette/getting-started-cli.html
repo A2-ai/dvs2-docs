@@ -2319,9 +2319,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <p>Point storage at the sibling directory. See <a href="cli-init.html">dvs init</a> for every flag.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized at &quot;/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file7518680de0cd_project&quot;</code></pre>
+<pre><code>DVS Initialized at /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file5973c02d284_project</code></pre>
 </div>
 </div>
 </section>
@@ -2332,7 +2332,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/theoph.csv <span class="at">-m</span> <span class="st">&quot;initial Theoph data&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Added: data/theoph.csv [2.9 KB] --&gt; saved [842 B] as cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06</code></pre>
+<pre><code>Added: data/theoph.csv [2.9 KB] --&gt; saved [842 B] as cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06
+
+Added 1</code></pre>
 </div>
 </div>
 </section>
@@ -2347,7 +2349,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 | path            | status  | size   |
 +-----------------+---------+--------+
 | data/theoph.csv | current | 2.9 KB |
-+-----------------+---------+--------+</code></pre>
++-----------------+---------+--------+
+
+Checked 1</code></pre>
 </div>
 </div>
 </section>
@@ -2370,7 +2374,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 | path            | status | size   |
 +-----------------+--------+--------+
 | data/theoph.csv | absent | 2.9 KB |
-+-----------------+--------+--------+</code></pre>
++-----------------+--------+--------+
+
+Checked 1</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -2383,7 +2389,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>dvs reports three states: <code>current</code>, <code>absent</code>, and <code>unsynced</code> (on disk but not matching the stored hash). See <a href="intro-internals.html">Storage and meta files</a>.</p>
+<p>dvs reports five statuses: <code>current</code>, <code>absent</code>, <code>stale</code> (unchanged since dvs wrote it, while the tracked version moved on), <code>modified</code> (edited locally) and <code>unsynced</code> (different, with no record of what dvs wrote). See <a href="cli-status.html">dvs status</a> and <a href="intro-internals.html">Storage and meta files</a>.</p>
 </div>
 </div>
 </section>
@@ -2394,8 +2400,9 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/theoph.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/theoph.csv [2.9 KB]
-Total: 1 files, 2.9 KB</code></pre>
+<pre><code>restored      data/theoph.csv  2.9 KB
+
+Restored 1</code></pre>
 </div>
 </div>
 </section>
@@ -2410,7 +2417,9 @@ Total: 1 files, 2.9 KB</code></pre>
 | path            | status  | size   |
 +-----------------+---------+--------+
 | data/theoph.csv | current | 2.9 KB |
-+-----------------+---------+--------+</code></pre>
++-----------------+---------+--------+
+
+Checked 1</code></pre>
 </div>
 </div>
 </section>

@@ -13,8 +13,19 @@ writes the contents back to their original paths. It is the inverse of
 [dvs_add()](r-add.html): the call to run after re-cloning a project whose data
 is not on disk.
 
+A local file that differs from the tracked version is replaced without asking
+only when dvs itself put it there, for example after switching git branches.
+Otherwise it is a conflict, handled by `on_conflict`.
+
 ```r
-dvs_get(paths = character(0), glob = NULL, recursive = NULL, dry_run = NULL)
+dvs_get(
+  paths = character(0),
+  glob = NULL,
+  recursive = FALSE,
+  dry_run = FALSE,
+  on_conflict = NULL,
+  on_error = NULL
+)
 ```
 
 ## Parameters
@@ -23,8 +34,10 @@ dvs_get(paths = character(0), glob = NULL, recursive = NULL, dry_run = NULL)
 |---|---|---|---|
 | `paths` | character | `character(0)` | Files to retrieve. |
 | `glob` | character(1) | `NULL` | Library-expanded glob. Uses a literal path separator (use `**` to recurse). |
-| `recursive` | logical(1) | `NULL` (treated as `FALSE`) | If `TRUE`, walk explicit directory paths recursively (same as the CLI `-r`). |
-| `dry_run` | logical(1) | `NULL` (treated as `FALSE`) | Report what would be retrieved; write nothing. |
+| `recursive` | logical(1) | `FALSE` | If `TRUE`, walk explicit directory paths recursively (same as the CLI `-r`). |
+| `dry_run` | logical(1) | `FALSE` | Report what would be retrieved. Write nothing. |
+| `on_conflict` | character(1) | `NULL` | `"abort"`, `"skip"` or `"overwrite"`. What to do with files that have local changes. `NULL` takes `DVS_GET_ON_CONFLICT`, then `[get] on_conflict` in `dvs.toml`, then `"abort"`. |
+| `on_error` | character(1) | `NULL` | `"return"`, `"warn"` or `"error"`. What to do when get did not do as asked. `NULL` takes the `dvs.on_error` option, then `"return"`. |
 
 In interactive sessions a progress bar is shown while files are processed. It is
 not a parameter, and no bar appears in scripts, rendered documents, or dry runs.
@@ -53,7 +66,9 @@ dvs_status(status = "absent")[, c("path", "status")]
 
 ## `paths`
 
-Restore a single file. The result reports `path`, `outcome`, and `size`.
+Restore a single file. The result has one row per requested file, under a
+summary line. `before` is the state of the file before the get, and `action` is
+what get did with it.
 
 ```{r}
 setwd(proj)
@@ -93,7 +108,7 @@ dvs_status("data/sub/f3.csv")[, c("path", "status")]
 ```
 
 With `recursive = TRUE` the whole subtree is restored. Files already back on
-disk are reported as `present` rather than retrieved again.
+disk are `current` before and `unchanged` after. They are not copied again.
 
 ```{r}
 setwd(proj)
@@ -104,8 +119,8 @@ dvs_get("data", recursive = TRUE)
 
 ## `dry_run`
 
-With `dry_run = TRUE` the result reports what would be retrieved, but no file is
-written.
+With `dry_run = TRUE` the result reports what would be retrieved
+(`would_restore`), but no file is written. `satisfied` is the prediction.
 
 ```{r}
 setwd(proj)
@@ -120,24 +135,97 @@ setwd(proj)
 dvs_status("data/f2.csv")[, c("path", "status")]
 ```
 
+## `on_conflict`
+
+Edit a tracked file. Its status is `modified`, so a get of it is a conflict.
+With the default, `"abort"`, get changes no file at all, not even the absent
+`data/f2.csv`. The `code` and `hint` columns say why and what to do.
+
+```{r}
+setwd(proj)
+write.csv(mtcars[1:9, ], "data/f1.csv")
+res <- dvs_get("data")
+res[, c("path", "before", "action", "satisfied", "code")]
+```
+
+`"skip"` leaves the conflicting file and gets the rest:
+
+```{r}
+setwd(proj)
+dvs_get("data", on_conflict = "skip")[, c("path", "before", "action", "satisfied")]
+```
+
+`"overwrite"` replaces the file with the tracked version. The local changes are
+lost.
+
+```{r}
+setwd(proj)
+dvs_get("data/f1.csv", on_conflict = "overwrite")[, c("path", "before", "action", "satisfied")]
+```
+
+The policy can also come from the `DVS_GET_ON_CONFLICT` environment variable or
+from `[get] on_conflict` in `dvs.toml`. `dvs.toml` cannot set `"overwrite"`.
+That raises a `dvs_config_error`.
+
+## `on_error`
+
+By default `dvs_get()` returns its result even when it did not do as asked,
+that is when a file failed or `"abort"` held files back. `"warn"` also warns.
+`"error"` raises an error of class `dvs_get_incomplete`, which carries the
+result as `cnd$result`.
+
+```{r}
+#| error: true
+setwd(proj)
+write.csv(mtcars[1:10, ], "data/f1.csv")
+dvs_get("data/f1.csv", on_error = "error")
+```
+
+In scripts and pipelines, pass `on_error = "error"` or set
+`options(dvs.on_error = "error")`, so the analysis cannot go on with data that
+was not updated.
+
 ## Return value
 
-A tibble with one row per file:
+A tibble of class `dvs_get_result` with one row per requested file and always
+the same columns:
 
 | Column | Type | Description |
 |---|---|---|
-| `path` | character | File path. |
-| `outcome` | character | `copied` (written from storage) or `present` (already on disk). |
-| `size` | `dvs_bytes` | Retrieved size. |
+| `path` | character | Path relative to the project root. |
+| `local_path` | character | Path relative to the working directory. |
+| `before` | character | State before the get: `absent`, `current`, `clean`, `modified`, `unknown`, `not_tracked`, `not_a_file` or `unsafe_path`. |
+| `action` | character | What get did: `restored`, `replaced`, `unchanged`, `skipped`, `not_run`, `failed`, `would_restore` or `would_replace`. |
+| `satisfied` | logical | `TRUE` when the file is at its tracked version afterwards. |
+| `size` | `dvs_bytes` | Size of the tracked version. |
+| `target_hash` | character | blake3 hash of the tracked version. |
+| `local_hash` | character | blake3 hash of the local file before the get, or `NA`. |
+| `stored_copy` | character | For a conflict, whether the local version has a copy in storage: `present`, `absent` or `unknown`. `NA` otherwise. |
+| `code` | character | The kind of problem, such as `local_changes`, or `NA`. |
+| `message` | character | What went wrong, or `NA`. |
+| `hint` | character | The next step, in CLI syntax, or `NA`. |
+| `duration_ms` | double | Milliseconds spent on the file, `NA` when it was never hashed or copied. |
 
-Rows that fail carry an `error` column. The `size` column is a
-[dvs_bytes](r-bytes.html) value.
+A file that cannot be retrieved, such as an untracked path, is a row with
+`action` `failed`, not an R error. Outside a dvs project `dvs_get()` raises an
+error. The `size` column is a [dvs_bytes](r-bytes.html) value.
+
+`dvs_result_info()` returns what applies to the whole operation: `outcome`
+(`complete`, `aborted`, `partial` or `failed`), `did_as_asked`, `on_conflict`
+and its `source`, the `counts`, and the `summary` printed above the rows.
+
+```{r}
+setwd(proj)
+info <- dvs_result_info(res)
+info[c("outcome", "did_as_asked", "on_conflict", "source")]
+```
 
 ## Differences from the CLI
 
 The CLI command is [dvs get](cli-get.html). It prints lines rather than
 returning a data frame, and adds `--threads` and `--json`, which the R surface
-does not have. Threads are set process-wide with
+does not have. Its `--force` is short for `--on-conflict overwrite`. It has no
+`on_error`: its exit code is non-zero when get did not do as asked. Threads are set process-wide with
 [set_dvs_threads()](r-threads.html).
 
 ## See also

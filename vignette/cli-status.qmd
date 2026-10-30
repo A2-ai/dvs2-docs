@@ -8,9 +8,19 @@ execute:
   freeze: auto
 ---
 
-`dvs status` reports each tracked file as `current` (on disk and matching the
-stored hash), `absent` (tracked but missing on disk), or `unsynced` (on disk but
-not matching the stored hash). By default it prints a compact table.
+`dvs status` reports each tracked file with one of five statuses:
+
+- `current`: on disk and matching the tracked version.
+- `absent`: tracked but missing on disk.
+- `stale`: on disk as dvs last wrote or added it, while the tracked version has
+  changed since, for example after a `git pull`. `dvs get` updates it.
+- `modified`: on disk, but different from the tracked version and from what dvs
+  last wrote or added there. This is a local edit.
+- `unsynced`: on disk and different from the tracked version, with no record of
+  what dvs last wrote there.
+
+A file whose metadata cannot be read is listed with status `error`. By default
+`dvs status` prints a compact table and a `Checked N` summary line.
 
 ```text
 Usage: dvs status [OPTIONS] [PATHS]...
@@ -19,15 +29,20 @@ Arguments:
   [PATHS]...  Paths (files or directories) to check status for
 
 Options:
-      --json               Output results as JSON
   -r, --recursive          Recurse into subdirectories of given directories
-  -g, --glob <GLOB>        Select files by glob pattern
+  -g, --glob <GLOB>        Only include the tracked files matching this glob
       --current            Include current files
       --absent             Include absent files
+      --stale              Include stale files
+      --modified           Include modified files
       --unsynced           Include unsynced files
       --with-metadata      Show all metadata columns
-      --threads <THREADS>  Threads (0 = auto-detect)
   -h, --help               Print help
+
+Global Options:
+      --json               Output results as JSON
+      --emit-events        Stream results and progress as NDJSON
+      --threads <THREADS>  Threads (0 = auto-detect)
 ```
 
 ## Options
@@ -39,17 +54,20 @@ Options:
 | `-g`, `--glob` | pattern | none | Library-expanded glob, literal path separator (use `**` to recurse). |
 | `--current` | flag | off | Include `current` files. |
 | `--absent` | flag | off | Include `absent` files. |
+| `--stale` | flag | off | Include `stale` files. |
+| `--modified` | flag | off | Include `modified` files. |
 | `--unsynced` | flag | off | Include `unsynced` files. |
 | `--with-metadata` | flag | off | Add hash, created_by, add_time, compression, message columns. |
 | `--threads` | integer | `0` (auto) | Thread pool size for this command. |
 | `--json` | flag | off | Emit results as JSON. |
 
-The three status flags are independent booleans and combine. With none set, all
+The five status flags are independent booleans and combine. With none set, all
 statuses are shown.
 
 ## Setup
 
-Add three files, then delete one and edit another so all three states appear.
+Add three files, then delete one and edit another, so `current`, `absent` and
+`modified` appear.
 
 ```{r}
 #| message: false
@@ -71,7 +89,7 @@ cd "$DVS_PROJECT"
 dvs init local "$DVS_STORAGE" >/dev/null
 dvs add data/f1.csv data/f2.csv data/sub/f3.csv >/dev/null
 rm data/f2.csv                      # -> absent
-echo "extra,row" >> data/f1.csv     # -> unsynced
+echo "extra,row" >> data/f1.csv     # -> modified
 ```
 
 ## All files
@@ -137,14 +155,14 @@ dvs status --absent
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs status --unsynced
+dvs status --modified
 ```
 
 Filters combine:
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs status --absent --unsynced
+dvs status --absent --modified
 ```
 
 ## `--with-metadata`
@@ -180,7 +198,8 @@ dvs status --json
 The R function is [dvs_status()](r-status.html). It always returns the metadata
 columns as a data frame, so there is no `--with-metadata` toggle; select columns
 instead. Its filters are a single `status` character vector
-(`c("current", "absent", "unsynced")`) rather than independent flags, and it has
+(`c("current", "absent", "stale", "modified", "unsynced")`) rather than
+independent flags, and it has
 no `--threads` or `--json`.
 
 ## See also

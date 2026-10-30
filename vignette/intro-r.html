@@ -2348,7 +2348,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                     &lt;chr&gt;        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/filefb1413109d64_storage staff        </code></pre>
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file85bf7e2104ac_storage staff        </code></pre>
 </div>
 </div>
 </section>
@@ -2360,10 +2360,10 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;one large dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 5
-  path                   outcome hash                                                                size stored_size
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
-1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     10.5 MB</code></pre>
+<pre><code># A tibble: 1 × 6
+  path                   outcome hash                                                                size stored_size duration_ms
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     10.5 MB         149</code></pre>
 </div>
 </div>
 <p>The result is a tibble, one row per file. <code>size</code> is the file on disk; <code>stored_size</code> is what actually landed in storage after zstd compression.</p>
@@ -2373,12 +2373,12 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">paths =</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>), <span class="at">message =</span> <span class="st">&quot;small corpus&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 5
-  path                   outcome hash                                                                  size stored_size
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt;     &lt;bytes&gt;
-1 data/small/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB
-2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB
-3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB</code></pre>
+<pre><code># A tibble: 3 × 6
+  path                   outcome hash                                                                  size stored_size duration_ms
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+1 data/small/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB    427.8 KB           7
+2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB    427.9 KB           7
+3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB    428.1 KB           7</code></pre>
 </div>
 </div>
 <p>And a glob, resolved by dvs itself (not the shell), which keeps behavior identical between R and the CLI:</p>
@@ -2387,19 +2387,19 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="at">glob =</span> <span class="st">&quot;data/individual/individual_*.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;individual datasets&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 50 × 5
-   path                              outcome hash                                                                size stored_size
-   &lt;chr&gt;                             &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
- 1 data/individual/individual_01.csv copied  57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB      1.3 MB
- 2 data/individual/individual_02.csv copied  85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB      1.3 MB
- 3 data/individual/individual_03.csv copied  cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB      1.3 MB
- 4 data/individual/individual_04.csv copied  388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB      1.3 MB
- 5 data/individual/individual_05.csv copied  0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB      1.3 MB
- 6 data/individual/individual_06.csv copied  e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB      1.3 MB
- 7 data/individual/individual_07.csv copied  e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB      1.3 MB
- 8 data/individual/individual_08.csv copied  93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB      1.3 MB
- 9 data/individual/individual_09.csv copied  26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB      1.3 MB
-10 data/individual/individual_10.csv copied  804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB      1.3 MB
+<pre><code># A tibble: 50 × 6
+   path                              outcome hash                                                                size stored_size duration_ms
+   &lt;chr&gt;                             &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+ 1 data/individual/individual_01.csv copied  57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB      1.3 MB          48
+ 2 data/individual/individual_02.csv copied  85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB      1.3 MB          47
+ 3 data/individual/individual_03.csv copied  cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB      1.3 MB          60
+ 4 data/individual/individual_04.csv copied  388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB      1.3 MB          47
+ 5 data/individual/individual_05.csv copied  0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB      1.3 MB          38
+ 6 data/individual/individual_06.csv copied  e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB      1.3 MB          47
+ 7 data/individual/individual_07.csv copied  e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB      1.3 MB          43
+ 8 data/individual/individual_08.csv copied  93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB      1.3 MB          54
+ 9 data/individual/individual_09.csv copied  26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB      1.3 MB          52
+10 data/individual/individual_10.csv copied  804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB      1.3 MB          58
 # ℹ 40 more rows</code></pre>
 </div>
 </div>
@@ -2409,10 +2409,10 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;this message is not written&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 5
-  path                   outcome hash                                                                size stored_size
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
-1 data/large/large_1.csv present 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     25.0 MB</code></pre>
+<pre><code># A tibble: 1 × 6
+  path                   outcome hash                                                                size stored_size duration_ms
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+1 data/large/large_1.csv present 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     25.0 MB           0</code></pre>
 </div>
 </div>
 </section>
@@ -2424,19 +2424,19 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 54 × 8
-   path                              status  hash                                                                size created_by compression message             add_time           
-   &lt;chr&gt;                             &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;               &lt;dttm&gt;             
- 1 data/individual/individual_01.csv current 57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
- 2 data/individual/individual_02.csv current 85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
- 3 data/individual/individual_03.csv current cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
- 4 data/individual/individual_04.csv current 388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
- 5 data/individual/individual_05.csv current 0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
- 6 data/individual/individual_06.csv current e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
- 7 data/individual/individual_07.csv current e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
- 8 data/individual/individual_08.csv current 93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
- 9 data/individual/individual_09.csv current 26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
-10 data/individual/individual_10.csv current 804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB elea       zstd        individual datasets 2026-08-10 15:26:45
+<pre><code># A tibble: 54 × 10
+   path                              status  hash                                                                size created_by compression message             code  error add_time           
+   &lt;chr&gt;                             &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;               &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+ 1 data/individual/individual_01.csv current 57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+ 2 data/individual/individual_02.csv current 85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+ 3 data/individual/individual_03.csv current cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+ 4 data/individual/individual_04.csv current 388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+ 5 data/individual/individual_05.csv current 0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+ 6 data/individual/individual_06.csv current e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+ 7 data/individual/individual_07.csv current e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+ 8 data/individual/individual_08.csv current 93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+ 9 data/individual/individual_09.csv current 26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+10 data/individual/individual_10.csv current 804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB elea       zstd        individual datasets &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
 # ℹ 44 more rows</code></pre>
 </div>
 </div>
@@ -2451,17 +2451,17 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </section>
 <section id="when-data-changes" class="level2">
 <h2 class="anchored" data-anchor-id="when-data-changes">When data changes</h2>
-<p>Append a row to the large file. Its hash no longer matches the meta file, so its status flips to <code>unsynced</code>:</p>
+<p>Append a row to the large file. Its hash no longer matches the meta file, so its status flips to <code>modified</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;99,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;modified&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 8
-  path                   status   hash                                                                size created_by compression message           add_time           
-  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;             &lt;dttm&gt;             
-1 data/large/large_1.csv unsynced 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB elea       zstd        one large dataset 2026-08-10 15:26:45</code></pre>
+<pre><code># A tibble: 1 × 10
+  path                   status   hash                                                                size created_by compression message           code  error add_time           
+  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;             &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/large/large_1.csv modified 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB elea       zstd        one large dataset &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41</code></pre>
 </div>
 </div>
 <p>Re-add it with a message that says why. dvs writes the new content to storage as a new blob and updates the meta file; the old blob stays, so clones pinned to the old meta file still resolve.</p>
@@ -2470,14 +2470,15 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;append row 99, corrected dataset&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 5
-  path                   outcome hash                                                                size stored_size
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
-1 data/large/large_1.csv copied  5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB     10.5 MB</code></pre>
+<pre><code># A tibble: 1 × 6
+  path                   outcome hash                                                                size stored_size duration_ms
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+1 data/large/large_1.csv copied  5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB     10.5 MB         138</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;modified&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 0 × 0</code></pre>
+<pre><code># A tibble: 0 × 10
+# ℹ 10 variables: path &lt;chr&gt;, status &lt;chr&gt;, hash &lt;chr&gt;, size &lt;bytes&gt;, created_by &lt;chr&gt;, compression &lt;chr&gt;, message &lt;chr&gt;, code &lt;chr&gt;, error &lt;chr&gt;, add_time &lt;dttm&gt;</code></pre>
 </div>
 </div>
 </section>
@@ -2490,44 +2491,45 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;100,0,0,0,0,0</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> <span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;preview only&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 5
-  path                   outcome hash                                                                size stored_size
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
-1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     25.0 MB</code></pre>
+<pre><code># A tibble: 1 × 6
+  path                   outcome hash                                                                size stored_size duration_ms
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     25.0 MB          14</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;unsynced&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;modified&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 8
-  path                   status   hash                                                                size created_by compression message                          add_time           
-  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                            &lt;dttm&gt;             
-1 data/large/large_1.csv unsynced 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB elea       zstd        append row 99, corrected dataset 2026-08-10 15:26:45</code></pre>
+<pre><code># A tibble: 1 × 10
+  path                   status   hash                                                                size created_by compression message                          code  error add_time           
+  &lt;chr&gt;                  &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;                            &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/large/large_1.csv modified 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c 25.0 MB elea       zstd        append row 99, corrected dataset &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41</code></pre>
 </div>
 </div>
-<p>Still <code>unsynced</code>: no blob was written, no meta file updated. The same works for retrieval:</p>
+<p>Still <code>modified</code>: no blob was written, no meta file updated. The same works for retrieval:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(here<span class="sc">::</span><span class="fu">here</span>(new_project))</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="st">&quot;data/large/large_1.csv&quot;</span>, <span class="at">message =</span> <span class="st">&quot;append row 100&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 5
-  path                   outcome hash                                                                size stored_size
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
-1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     10.5 MB</code></pre>
+<pre><code># A tibble: 1 × 6
+  path                   outcome hash                                                                size stored_size duration_ms
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+1 data/large/large_1.csv copied  06c48bdae05977921d72ffec654c120bf19d6bdfa4988d61a6e821245ab90655 25.0 MB     10.5 MB         132</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 3
-  path                   outcome      size
-  &lt;chr&gt;                  &lt;chr&gt;     &lt;bytes&gt;
-1 data/small/small_1.csv copied  1024.0 KB</code></pre>
+<pre><code># Would restore 1
+# A tibble: 1 × 13
+  path                   local_path             before action        satisfied      size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
+* &lt;chr&gt;                  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;         &lt;lgl&gt;       &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/small/small_1.csv data/small/small_1.csv absent would_restore TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 8
-  path                   status hash                                                                  size created_by compression message      add_time           
-  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
-1 data/small/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
+<pre><code># A tibble: 1 × 10
+  path                   status hash                                                                  size created_by compression message      code  error add_time           
+  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/small/small_1.csv absent e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2535,14 +2537,16 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 3
-  path                   outcome      size
-  &lt;chr&gt;                  &lt;chr&gt;     &lt;bytes&gt;
-1 data/small/small_1.csv copied  1024.0 KB</code></pre>
+<pre><code># Restored 1
+# A tibble: 1 × 13
+  path                   local_path             before action   satisfied      size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
+* &lt;chr&gt;                  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;    &lt;lgl&gt;       &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/small/small_1.csv data/small/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            4</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 0 × 0</code></pre>
+<pre><code># A tibble: 0 × 10
+# ℹ 10 variables: path &lt;chr&gt;, status &lt;chr&gt;, hash &lt;chr&gt;, size &lt;bytes&gt;, created_by &lt;chr&gt;, compression &lt;chr&gt;, message &lt;chr&gt;, code &lt;chr&gt;, error &lt;chr&gt;, add_time &lt;dttm&gt;</code></pre>
 </div>
 </div>
 </section>
@@ -2560,12 +2564,12 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 8
-  path                   status  hash                                                                  size created_by compression message      add_time           
-  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
-1 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
-2 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
-3 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
+<pre><code># A tibble: 3 × 10
+  path                   status  hash                                                                  size created_by compression message      code  error add_time           
+  &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/small/small_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+2 data/small/small_2.csv current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+3 data/small/small_3.csv current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2573,13 +2577,13 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 8
-  path                           status  hash                                                                  size created_by compression message      add_time           
-  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
-1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  2026-08-10 15:26:46
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
+<pre><code># A tibble: 4 × 10
+  path                           status  hash                                                                  size created_by compression message      code  error add_time           
+  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:42
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41</code></pre>
 </div>
 </div>
 <p>Retrieval scopes the same way. Delete everything under <code>data/small</code>, then restore only the direct children:</p>
@@ -2589,22 +2593,23 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;file&quot;</span>))</span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 3
-  path                   outcome      size
-  &lt;chr&gt;                  &lt;chr&gt;     &lt;bytes&gt;
-1 data/small/small_1.csv copied  1024.0 KB
-2 data/small/small_2.csv copied  1024.0 KB
-3 data/small/small_3.csv copied  1024.0 KB</code></pre>
+<pre><code># Restored 3
+# A tibble: 3 × 13
+  path                   local_path             before action   satisfied      size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
+* &lt;chr&gt;                  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;    &lt;lgl&gt;       &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/small/small_1.csv data/small/small_1.csv absent restored TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            6
+2 data/small/small_2.csv data/small/small_2.csv absent restored TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            5
+3 data/small/small_3.csv data/small/small_3.csv absent restored TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            5</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 8
-  path                           status  hash                                                                  size created_by compression message      add_time           
-  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
-1 data/small/nested/nested_1.csv absent  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  2026-08-10 15:26:46
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
+<pre><code># A tibble: 4 × 10
+  path                           status  hash                                                                  size created_by compression message      code  error add_time           
+  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/small/nested/nested_1.csv absent  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:42
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41</code></pre>
 </div>
 </div>
 <p>The nested file is still <code>absent</code>; a recursive get brings it back:</p>
@@ -2613,23 +2618,24 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 3
-  path                           outcome      size
-  &lt;chr&gt;                          &lt;chr&gt;     &lt;bytes&gt;
-1 data/small/nested/nested_1.csv copied  1024.0 KB
-2 data/small/small_1.csv         present 1024.0 KB
-3 data/small/small_2.csv         present 1024.0 KB
-4 data/small/small_3.csv         present 1024.0 KB</code></pre>
+<pre><code># Restored 1, 3 already current
+# A tibble: 4 × 13
+  path                           local_path                     before  action    satisfied      size target_hash                                                      local_hash                                                       stored_copy code  message hint  duration_ms
+* &lt;chr&gt;                          &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;     &lt;lgl&gt;       &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;                                                            &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/small/nested/nested_1.csv data/small/nested/nested_1.csv absent  restored  TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 &lt;NA&gt;                                                             &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            3
+2 data/small/small_1.csv         data/small/small_1.csv         current unchanged TRUE      1024.0 KB e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
+3 data/small/small_2.csv         data/small/small_2.csv         current unchanged TRUE      1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
+4 data/small/small_3.csv         data/small/small_3.csv         current unchanged TRUE      1024.0 KB 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/small&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 8
-  path                           status  hash                                                                  size created_by compression message      add_time           
-  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;dttm&gt;             
-1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  2026-08-10 15:26:46
-2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
-3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45
-4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus 2026-08-10 15:26:45</code></pre>
+<pre><code># A tibble: 4 × 10
+  path                           status  hash                                                                  size created_by compression message      code  error add_time           
+  &lt;chr&gt;                          &lt;chr&gt;   &lt;chr&gt;                                                              &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/small/nested/nested_1.csv current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        nested file  &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:42
+2 data/small/small_1.csv         current e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+3 data/small/small_2.csv         current 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41
+4 data/small/small_3.csv         current 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB elea       zstd        small corpus &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:11:41</code></pre>
 </div>
 </div>
 </section>
@@ -2648,10 +2654,13 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span>
 <span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/small/small_2.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 2
-  path                   error                                                                                                         
-  &lt;chr&gt;                  &lt;chr&gt;                                                                                                         
-1 data/small/small_2.csv Storage file missing for hash: Hashes(blake3=1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04)</code></pre>
+<pre><code># Failed: 1 failed
+# ! data/small/small_2.csv: this version is not in storage
+#     the stored content of this version is missing (probably an interrupted upload); tell whoever added it
+# A tibble: 1 × 13
+  path                   local_path             before action satisfied      size target_hash                                                      local_hash stored_copy code           message                        hint                                                                                                  duration_ms
+* &lt;chr&gt;                  &lt;chr&gt;                  &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt;       &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;chr&gt;                          &lt;chr&gt;                                                                                                       &lt;dbl&gt;
+1 data/small/small_2.csv data/small/small_2.csv absent failed FALSE     1024.0 KB 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 &lt;NA&gt;       &lt;NA&gt;        source_missing this version is not in storage the stored content of this version is missing (probably an interrupted upload); tell whoever added it           0</code></pre>
 </div>
 </div>
 <p>The get returns normally, reports the failure in <code>error</code>, and leaves everything else intact. Note what it did not do: write a corrupt file. Retrieval verifies the hash before the file is moved into place.</p>

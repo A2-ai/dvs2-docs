@@ -1,6 +1,6 @@
 ---
 title: "Set the log level for DVS internals"
-description: "Controls which log messages from the DVS internals are routed to R's console. `error` and `warn` go to ; `info`, `debug`, and `trace` go to stdout."
+description: "Controls which log messages from the DVS internals are routed to R's console. `error` and `warn` go to. `info`, `debug` and `trace` go to stdout. The R package "
 sidebar:
   label: "set_dvs_log_level"
 pagefind: true
@@ -8,8 +8,16 @@ pagefind: true
 
 ## Description
 
-Controls which log messages from the DVS internals are routed to R's console. `error` and `warn` go to [`stderr()`](../stderr/); `info`, `debug`, and `trace` go to stdout.
+Controls which log messages from the DVS internals are routed to R's
+console. `error` and `warn` go to [`stderr()`](../stderr/). `info`, `debug` and `trace`
+go to stdout.
 
+The R package does not consult the `RUST_LOG` environment variable.
+`RUST_LOG=dvs=<level>` only affects the `dvs` CLI binary. In R, call
+`set_dvs_log_level()`.
+
+The level is `"off"` when the package loads, so there is no log output
+until this function is called.
 
 
 
@@ -32,7 +40,7 @@ set_dvs_log_level(level = c("off", "error", "warn", "info", "debug", "trace"))
 <tbody>
 <tr>
 <td><code>level</code></td>
-<td>Character string giving the desired log level. The default is `"off"`.</td>
+<td>One of "off", "error", "warn", "info", "debug", "trace".</td>
 </tr>
 </tbody>
 </table>
@@ -41,7 +49,7 @@ set_dvs_log_level(level = c("off", "error", "warn", "info", "debug", "trace"))
 
 ## Value
 
-Called for its side effect; returns `NULL` invisibly.
+`NULL`, invisibly. It is called for its side effect.
 
 
 

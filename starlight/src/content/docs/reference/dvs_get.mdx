@@ -1,6 +1,6 @@
 ---
 title: "Retrieve files from DVS storage into the working directory"
-description: "Fetches the specified files from DVS storage and writes them to their original paths in the working directory."
+description: "Fetches the specified files from DVS storage and writes them to their original paths in the working directory. With no `paths` or `glob`, `dvs_get()` scopes to "
 sidebar:
   label: "dvs_get"
 pagefind: true
@@ -8,7 +8,15 @@ pagefind: true
 
 ## Description
 
-Fetches the specified files from DVS storage and writes them to their original paths in the working directory.
+Fetches the specified files from DVS storage and writes them
+to their original paths in the working directory. With no `paths`
+or `glob`, `dvs_get()` scopes to the working directory: it restores
+the files directly under it, and `dvs_get(recursive = TRUE)` restores
+every tracked file beneath it at any depth.
+
+A working file that differs from the tracked version is replaced without
+asking only when dvs itself put it there (for example after switching git
+branches). Otherwise it is a conflict, handled by `on_conflict`.
 
 
 
@@ -18,7 +26,14 @@ Fetches the specified files from DVS storage and writes them to their original p
 ## Usage
 
 ```r
-dvs_get(paths = character(0), glob = NULL, dry_run = NULL)
+dvs_get(
+  paths = character(0),
+  glob = NULL,
+  recursive = FALSE,
+  dry_run = FALSE,
+  on_conflict = NULL,
+  on_error = NULL
+)
 ```
 
 ## Arguments
@@ -31,19 +46,67 @@ dvs_get(paths = character(0), glob = NULL, dry_run = NULL)
 <tbody>
 <tr>
 <td><code>paths</code></td>
-<td>Character vector of file paths to retrieve from DVS storage.</td>
+<td>Tracked files or directories to retrieve, relative to the working directory. `NULL` is the same as `character(0)`.</td>
 </tr>
 <tr>
 <td><code>glob</code></td>
-<td>Optional glob pattern to select files (e.g. `"data/*.csv"`). Globs use a literal path separator: `*.csv` only matches files in the target directory and will not match `subdir/file.csv`. Use `**/*.csv` to match recursively across subdirectories.</td>
+<td>A glob that selects tracked files, such as `"*.csv"`. It runs from the working directory, or from each directory in `paths`. `*` does not cross a path separator, so `*.csv` matches `a.csv` but not `sub/a.csv`. Use `**/*.csv` to match at any depth. Mutually exclusive with `recursive`.</td>
+</tr>
+<tr>
+<td><code>recursive</code></td>
+<td>If `TRUE`, directory inputs include all descendants. Otherwise only direct children of the directory. With no explicit `paths` the directory is the working directory. Mutually exclusive with `glob`.</td>
 </tr>
 <tr>
 <td><code>dry_run</code></td>
-<td>If `TRUE`, report what would be retrieved without writing files.</td>
+<td>If `TRUE`, report what would happen without writing files.</td>
+</tr>
+<tr>
+<td><code>on_conflict</code></td>
+<td>`NULL` (use `DVS_GET_ON_CONFLICT`, then `[get] on_conflict` in dvs.toml, then `"abort"`), or one of `"abort"` (change no files if any requested file has local changes or another problem), `"skip"` (leave those files and get the rest) or `"overwrite"` (replace them, and lose the local changes).</td>
+</tr>
+<tr>
+<td><code>on_error</code></td>
+<td>What to do when get did not do as asked, that is when a file failed or `on_conflict = "abort"` held files back. Files left by `on_conflict = "skip"` count as done. `"return"` only returns the result, `"warn"` also warns and `"error"` raises an error. `NULL` (the default) takes the `dvs.on_error` option, and `"return"` when it is unset. The condition has class `dvs_get_incomplete` and carries the result as `cnd$result`. Pipelines can set `options(dvs.on_error = "error")`.</td>
 </tr>
 </tbody>
 </table>
 </div>
 
 
+## Value
+
+A tibble of class `dvs_get_result` with one row per requested file
+and always the same columns: `path`, `local_path`, `before` (`"absent"`,
+`"current"`, `"clean"`, `"modified"`, `"unknown"`, `"not_tracked"`,
+`"not_a_file"`, `"unsafe_path"`), `action` (`"restored"`, `"replaced"`,
+`"unchanged"`, `"skipped"`, `"not_run"`, `"failed"`, `"would_restore"`,
+`"would_replace"`), `satisfied`, `size`, `target_hash`, `local_hash`,
+`stored_copy`, `code`, `message`, `hint` and `duration_ms` (the
+milliseconds spent on the file, `NA` when it was never hashed or
+copied). [`dvs_result_info()`](../dvs_result_info/) returns
+the outcome and the policy that applied. Outside a dvs project it raises an
+error. A configuration error, for example `on_conflict = "overwrite"`
+in dvs.toml, raises a `dvs_config_error`.
+
+In a dry run, `satisfied` is the prediction: `TRUE` when the file would be
+at its tracked version afterwards.
+
+In scripts and pipelines, use `on_error = "error"` (or set
+`options(dvs.on_error = "error")`) so the analysis cannot continue on data
+that was not updated.
+
+
+
+## Examples
+
+```r
+# Not run:
+# In a script: stop unless get did as asked
+dvs_get(recursive = TRUE, on_error = "error")
+
+# Interactively: look at what needs attention
+res <- dvs_get(recursive = TRUE)
+res[!res$satisfied, c("path", "code", "hint")]
+dvs_get("data/derived.csv", on_conflict = "overwrite")
+```
 

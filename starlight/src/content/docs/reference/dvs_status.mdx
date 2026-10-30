@@ -1,6 +1,6 @@
 ---
 title: "Report the sync status of DVS-managed files"
-description: "Reports the sync status of DVS-managed files. By default all statuses are shown; pass a character vector of status names (e. g. `c(\"current\", \"absent\")`) to res"
+description: "Reports the sync status of DVS-managed files. By default all statuses are shown. Pass a character vector of status names, such as `c(\"current\", \"absent\")`, to s"
 sidebar:
   label: "dvs_status"
 pagefind: true
@@ -8,7 +8,11 @@ pagefind: true
 
 ## Description
 
-Reports the sync status of DVS-managed files. By default all statuses are shown; pass a character vector of status names (e.g. `c("current", "absent")`) to restrict output.
+Reports the sync status of DVS-managed files. By default all statuses
+are shown. Pass a character vector of status names, such as
+`c("current", "absent")`, to show only those.
+A file whose status cannot be read is always kept, with status `"error"`,
+the kind of failure in `code` and the reason in `error`.
 
 
 
@@ -20,8 +24,9 @@ Reports the sync status of DVS-managed files. By default all statuses are shown;
 ```r
 dvs_status(
   paths = character(0),
-  recursive = NULL,
-  status = c("current", "absent", "unsynced")
+  recursive = FALSE,
+  glob = NULL,
+  status = c("current", "absent", "stale", "modified", "unsynced")
 )
 ```
 
@@ -35,19 +40,35 @@ dvs_status(
 <tbody>
 <tr>
 <td><code>paths</code></td>
-<td>Character vector of file or directory paths to check status for.</td>
+<td>Files or directories to report, relative to the working directory. `NULL` is the same as `character(0)`.</td>
 </tr>
 <tr>
 <td><code>recursive</code></td>
-<td>If `TRUE`, recursively include files in subdirectories.</td>
+<td>If `TRUE`, directory inputs include all descendants. If `FALSE` or `NULL`, only direct children of the directory are returned. The flag only constrains descendants of paths passed explicitly. When `paths` is empty, every tracked file is returned regardless of nesting depth, and `recursive` has no effect.</td>
+</tr>
+<tr>
+<td><code>glob</code></td>
+<td>A glob that selects tracked files, such as `"*.csv"`. It runs from the working directory, or from each directory in `paths`. `*` does not cross a path separator, so `*.csv` matches `a.csv` but not `sub/a.csv`. Use `**/*.csv` to match at any depth. Mutually exclusive with `recursive`.</td>
 </tr>
 <tr>
 <td><code>status</code></td>
-<td>Character vector of statuses to include. Valid values are `"current"`, `"absent"`, and `"unsynced"`. When empty (default), all statuses are shown.</td>
+<td>The statuses to include, any of: - `"current"`: the local file matches the tracked version. - `"absent"`: the file is tracked but missing locally. - `"stale"`: the local file is what dvs last wrote or added there, and the tracked version has changed since, for example after a git pull. [`dvs_get()`](../dvs_get/) updates it. - `"modified"`: the local file differs from the tracked version and from what dvs last wrote or added there. - `"unsynced"`: the local file differs from the tracked version, and dvs has no record of what it last wrote there. `NULL`, `character(0)` and the default show every status.</td>
 </tr>
 </tbody>
 </table>
 </div>
+
+
+## Value
+
+A tibble with one row per tracked file and always the same
+columns: `path` (relative to the project root), `status`, `hash` (the
+blake3 hash of the tracked version), `size` (`dvs_bytes`, the size of the
+tracked version), `created_by` (who added it), `compression`, `message`
+(the message given at add, `NA` without one), `code` and `error` (`NA`
+unless `status` is `"error"`) and `add_time` (POSIXct, UTC). Files that
+dvs does not track are not listed. A row whose metadata cannot be read has
+`NA` in the metadata columns.
 
 
 

@@ -12,20 +12,29 @@ execute:
 metadata folder (`.dvs` by default). It records where file contents are stored
 and how they are compressed.
 
+The first argument names the storage backend. `dvs init local <PATH>` stores
+file contents in a directory, such as a shared drive. `dvs init server` stores
+them on a dvs server, and is not covered on this page. A plain
+`dvs init <PATH>` stops with "dvs init needs a backend before the storage
+path".
+
 ```text
-Usage: dvs init [OPTIONS] <PATH>
+Usage: dvs init local [OPTIONS] <PATH>
 
 Arguments:
   <PATH>  Where the data will be stored
 
 Options:
-      --json                                          Output results as JSON
       --root-dir <ROOT_DIR>                           Project root (default: cwd)
       --metadata-folder-name <METADATA_FOLDER_NAME>   Metadata folder (default: .dvs)
-      --threads <THREADS>                             Threads (0 = auto-detect)
       --group <GROUP>                                 Unix group for storage and files
       --no-compression                                Disable compression (default: zstd)
   -h, --help                                          Print help
+
+Global Options:
+      --json                                          Output results as JSON
+      --emit-events                                   Stream results and progress as NDJSON
+      --threads <THREADS>                             Threads (0 = auto-detect)
 ```
 
 ## Options
@@ -69,7 +78,7 @@ in the project root and records the storage path under `[backend]`.
 cd "$DVS_BASE"
 mkdir -p basic/proj basic/store
 cd basic/proj
-dvs init ../store
+dvs init local ../store
 cat dvs.toml
 ```
 
@@ -77,11 +86,11 @@ cat dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/basic/proj"
+DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/basic/proj
 compression = "zstd"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/basic/store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/basic/store"
 group = "staff"
 ```
 
@@ -101,7 +110,7 @@ Initialize a project rooted at a path other than the current directory.
 ```{.bash .cell-code}
 cd "$DVS_BASE"
 mkdir -p rootdir/proj rootdir/store
-dvs init rootdir/store --root-dir rootdir/proj
+dvs init local rootdir/store --root-dir rootdir/proj
 ls rootdir/proj/dvs.toml
 ```
 
@@ -109,7 +118,7 @@ ls rootdir/proj/dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "rootdir/proj"
+DVS Initialized at rootdir/proj
 rootdir/proj/dvs.toml
 ```
 
@@ -130,7 +139,7 @@ Use a metadata folder name other than `.dvs`. The name is recorded in
 cd "$DVS_BASE"
 mkdir -p meta/proj meta/store
 cd meta/proj
-dvs init ../store --metadata-folder-name .meta
+dvs init local ../store --metadata-folder-name .meta
 ls -a
 ```
 
@@ -138,7 +147,7 @@ ls -a
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/meta/proj"
+DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/meta/proj
 .
 ..
 .meta
@@ -163,13 +172,13 @@ requires a specific group on the host.
 cd "$DVS_BASE"
 mkdir -p group/proj group/store
 cd group/proj
-dvs init ../store --group rstudio
+dvs init local ../store --group rstudio
 ```
 :::
 
 
 ```text
-DVS Initialized at "/path/to/group/proj"
+DVS Initialized at /path/to/group/proj
 ```
 
 The chosen group is written to `dvs.toml` under `[backend]`.
@@ -186,7 +195,7 @@ files added under this project.
 cd "$DVS_BASE"
 mkdir -p nocomp/proj nocomp/store
 cd nocomp/proj
-dvs init ../store --no-compression
+dvs init local ../store --no-compression
 cat dvs.toml
 ```
 
@@ -194,11 +203,11 @@ cat dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/nocomp/proj"
+DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/nocomp/proj
 compression = "none"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/nocomp/store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/nocomp/store"
 group = "staff"
 ```
 
@@ -223,14 +232,14 @@ Override the auto-detected thread count for this command.
 cd "$DVS_BASE"
 mkdir -p threads/proj threads/store
 cd threads/proj
-dvs init ../store --threads 2
+dvs init local ../store --threads 2
 ```
 
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/threads/proj"
+DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/threads/proj
 ```
 
 
@@ -240,7 +249,10 @@ DVS Initialized at "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/Rtm
 
 ## `--json`
 
-Emit the result as JSON instead of a status line.
+Emit the result as JSON instead of a status line. Every command prints one
+versioned object with the same top-level fields: `v` (the format version),
+`command`, `outcome`, `error` (`null` unless the command failed) and timings.
+The commands that act on files add `counts` and a `files` list.
 
 
 ::: {.cell}
@@ -249,14 +261,14 @@ Emit the result as JSON instead of a status line.
 cd "$DVS_BASE"
 mkdir -p jsonex/proj jsonex/store
 cd jsonex/proj
-dvs init ../store --json
+dvs init local ../store --json
 ```
 
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-{"status":"initialized"}
+{"command":"init","dry_run":false,"duration_ms":1,"error":null,"finished_at":"2026-10-30T11:10:09.871Z","outcome":"complete","project_root":"/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/jsonex/proj","started_at":"2026-10-30T11:10:09.869Z","v":1}
 ```
 
 

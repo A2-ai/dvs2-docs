@@ -2299,18 +2299,24 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 
 <p><code>dvs get</code> reads the meta files, finds the matching blobs in storage, and writes the contents back to their original paths. It is the inverse of <code>add</code>: the loop to run after re-cloning a project whose data is not on disk. Pass paths, a glob, or both.</p>
+<p>A local file that differs from the tracked version is replaced without asking only when dvs itself put it there, for example after switching git branches. Otherwise it is a conflict, handled by <code>--on-conflict</code>.</p>
 <pre class="text"><code>Usage: dvs get [OPTIONS] [PATHS]...
 
 Arguments:
-  [PATHS]...
+  [PATHS]...  Tracked files or directories to retrieve
 
 Options:
-  -g, --glob &lt;GLOB&gt;        Select files by glob pattern
-  -r, --recursive          Recurse into subdirectories of directory inputs
-      --json               Output results as JSON
-      --dry-run            Show what would be retrieved without writing files
-      --threads &lt;THREADS&gt;  Threads (0 = auto-detect)
-  -h, --help               Print help</code></pre>
+  -g, --glob &lt;GLOB&gt;           Only retrieve the tracked files matching this glob
+  -r, --recursive             Recurse into subdirectories of directory inputs
+      --dry-run               Show what would be retrieved without writing files
+      --on-conflict &lt;POLICY&gt;  abort, skip or overwrite files with local changes
+  -f, --force                 Same as --on-conflict overwrite
+  -h, --help                  Print help
+
+Global Options:
+      --json                  Output results as JSON
+      --emit-events           Stream results and progress as NDJSON
+      --threads &lt;THREADS&gt;     Threads (0 = auto-detect)</code></pre>
 <section id="options" class="level2">
 <h2 class="anchored" data-anchor-id="options">Options</h2>
 <table class="caption-top table">
@@ -2351,7 +2357,19 @@ Options:
 <td><code>--dry-run</code></td>
 <td>flag</td>
 <td>off</td>
-<td>Report what would be retrieved; write nothing.</td>
+<td>Report what would be retrieved. Write nothing.</td>
+</tr>
+<tr class="odd">
+<td><code>--on-conflict</code></td>
+<td><code>abort</code>, <code>skip</code>, <code>overwrite</code></td>
+<td><code>DVS_GET_ON_CONFLICT</code>, then <code>[get] on_conflict</code> in <code>dvs.toml</code>, then <code>abort</code></td>
+<td>What to do with files that have local changes. <code>abort</code> changes nothing, <code>skip</code> leaves them and gets the rest, <code>overwrite</code> replaces them.</td>
+</tr>
+<tr class="even">
+<td><code>-f</code>, <code>--force</code></td>
+<td>flag</td>
+<td>off</td>
+<td>Same as <code>--on-conflict overwrite</code>.</td>
 </tr>
 <tr class="odd">
 <td><code>--threads</code></td>
@@ -2400,7 +2418,7 @@ Note
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span> <span class="op">&gt;</span>/dev/null</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span> <span class="op">&gt;</span>/dev/null</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/f1.csv data/f2.csv data/sub/f3.csv <span class="op">&gt;</span>/dev/null</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/f1.csv data/f2.csv data/sub/f3.csv</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--absent</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2413,19 +2431,22 @@ Note
 | data/f2.csv     | absent | 500 B |
 +-----------------+--------+-------+
 | data/sub/f3.csv | absent | 312 B |
-+-----------------+--------+-------+</code></pre>
++-----------------+--------+-------+
+
+Checked 3</code></pre>
 </div>
 </div>
 </section>
 <section id="paths" class="level2">
 <h2 class="anchored" data-anchor-id="paths">Paths</h2>
-<p>Restore a single file. Output lists each retrieved file and a total.</p>
+<p>Restore a single file. Output lists each retrieved file and a summary line.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f1.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/f1.csv [488 B]
-Total: 1 files, 488 B</code></pre>
+<pre><code>restored      data/f1.csv  488 B
+
+Restored 1</code></pre>
 </div>
 </div>
 <p>After <code>get</code>, the file is <code>current</code> again.</p>
@@ -2437,7 +2458,9 @@ Total: 1 files, 488 B</code></pre>
 | path        | status  | size  |
 +-------------+---------+-------+
 | data/f1.csv | current | 488 B |
-+-------------+---------+-------+</code></pre>
++-------------+---------+-------+
+
+Checked 1</code></pre>
 </div>
 </div>
 </section>
@@ -2448,9 +2471,10 @@ Total: 1 files, 488 B</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get <span class="at">-g</span> <span class="st">&quot;data/**/*.csv&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/f2.csv [500 B]
-data/sub/f3.csv [312 B]
-Total: 2 files, 812 B</code></pre>
+<pre><code>restored      data/f2.csv      500 B
+restored      data/sub/f3.csv  312 B
+
+Restored 2, 1 already current</code></pre>
 </div>
 </div>
 </section>
@@ -2463,14 +2487,17 @@ Total: 2 files, 812 B</code></pre>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--absent</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/f1.csv [488 B]
-data/f2.csv [500 B]
-Total: 2 files, 988 B
+<pre><code>restored      data/f1.csv  488 B
+restored      data/f2.csv  500 B
+
+Restored 2
 +-----------------+--------+-------+
 | path            | status | size  |
 +-----------------+--------+-------+
 | data/sub/f3.csv | absent | 312 B |
-+-----------------+--------+-------+</code></pre>
++-----------------+--------+-------+
+
+Checked 1</code></pre>
 </div>
 </div>
 <p>With <code>-r</code> the rest of the subtree is retrieved.</p>
@@ -2478,8 +2505,9 @@ Total: 2 files, 988 B
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data <span class="at">-r</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/sub/f3.csv [312 B]
-Total: 1 files, 312 B</code></pre>
+<pre><code>restored      data/sub/f3.csv  312 B
+
+Restored 1, 2 already current</code></pre>
 </div>
 </div>
 </section>
@@ -2491,10 +2519,11 @@ Total: 1 files, 312 B</code></pre>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/f1.csv data/f2.csv data/sub/f3.csv</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get . <span class="at">-r</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/f1.csv [488 B]
-data/f2.csv [500 B]
-data/sub/f3.csv [312 B]
-Total: 3 files, 1.3 KB</code></pre>
+<pre><code>restored      data/f1.csv      488 B
+restored      data/f2.csv      500 B
+restored      data/sub/f3.csv  312 B
+
+Restored 3</code></pre>
 </div>
 </div>
 <p><code>dvs get -g &#39;**/*&#39;</code> does the same thing through the glob surface. Quote the pattern so the shell does not expand it first.</p>
@@ -2507,8 +2536,9 @@ Total: 3 files, 1.3 KB</code></pre>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/f2.csv</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f2.csv <span class="at">--dry-run</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/f2.csv [500 B]
-Total: 1 files, 500 B</code></pre>
+<pre><code>would restore data/f2.csv  500 B
+
+Would restore 1</code></pre>
 </div>
 </div>
 <p>The file is still absent after a dry run:</p>
@@ -2520,7 +2550,63 @@ Total: 1 files, 500 B</code></pre>
 | path        | status | size  |
 +-------------+--------+-------+
 | data/f2.csv | absent | 500 B |
-+-------------+--------+-------+</code></pre>
++-------------+--------+-------+
+
+Checked 1</code></pre>
+</div>
+</div>
+</section>
+<section id="on-conflict--f" class="level2">
+<h2 class="anchored" data-anchor-id="on-conflict--f"><code>--on-conflict</code>, <code>-f</code></h2>
+<p>Edit a tracked file, so it is <code>modified</code>. With the default, <code>abort</code>, <code>get</code> changes no file at all, not even the absent <code>data/f2.csv</code>, and exits non-zero. It says why and what to do.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;extra,row&quot;</span> <span class="op">&gt;&gt;</span> data/f1.csv</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f1.csv data/f2.csv</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;exit code: </span><span class="va">$?</span><span class="st">&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>not run       data/f1.csv  local changes since dvs last wrote this file
+not run       data/f2.csv  held back: another requested file has a problem
+
+Aborted, nothing changed: 1 file has local changes
+on_conflict = abort (default)
+  keep your version:         dvs add data/f1.csv   (makes it the tracked version)
+  get the other files:       rerun with --on-conflict skip
+  take the tracked version:  dvs get --force data/f1.csv   (replaces yours; copy it first to keep both)
+exit code: 3</code></pre>
+</div>
+</div>
+<p><code>--on-conflict skip</code> leaves the conflicting file and gets the rest:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f1.csv data/f2.csv <span class="at">--on-conflict</span> skip</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>skipped       data/f1.csv  local changes since dvs last wrote this file
+restored      data/f2.csv  500 B
+
+Partial: restored 1, skipped 1
+on_conflict = skip (command line)
+  keep your version:         dvs add data/f1.csv   (makes it the tracked version)
+  take the tracked version:  dvs get --force data/f1.csv   (replaces yours; copy it first to keep both)</code></pre>
+</div>
+</div>
+<p><code>--force</code> (or <code>--on-conflict overwrite</code>) replaces it with the tracked version. The local changes are lost.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f1.csv <span class="at">--force</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status data/f1.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>replaced      data/f1.csv  local changes were discarded
+
+Replaced 1
+on_conflict = overwrite (command line)
++-------------+---------+-------+
+| path        | status  | size  |
++-------------+---------+-------+
+| data/f1.csv | current | 488 B |
++-------------+---------+-------+
+
+Checked 1</code></pre>
 </div>
 </div>
 </section>
@@ -2528,28 +2614,27 @@ Total: 1 files, 500 B</code></pre>
 <h2 class="anchored" data-anchor-id="threads"><code>--threads</code></h2>
 <p>Override the auto-detected thread count for this command.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f2.csv <span class="at">--threads</span> 2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f2.csv <span class="at">--threads</span> 2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>data/f2.csv [500 B]
-Total: 1 files, 500 B</code></pre>
+<pre><code>Nothing to do, 1 already current</code></pre>
 </div>
 </div>
 </section>
 <section id="json" class="level2">
 <h2 class="anchored" data-anchor-id="json"><code>--json</code></h2>
-<p>Each result row carries <code>path</code>, <code>outcome</code> (<code>copied</code> or <code>present</code>), and <code>size</code>.</p>
+<p>The result is one versioned object: <code>command</code>, <code>outcome</code>, <code>counts</code>, <code>bytes</code>, timings, and a <code>files</code> list with a row per file (<code>path</code>, <code>before</code>, <code>action</code>, <code>satisfied</code>, <code>size</code>, the hashes, and <code>code</code>, <code>message</code> and <code>hint</code> for a problem).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f1.csv <span class="at">--json</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> get data/f1.csv <span class="at">--json</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[{&quot;path&quot;:&quot;data/f1.csv&quot;,&quot;outcome&quot;:&quot;present&quot;,&quot;size&quot;:488}]</code></pre>
+<pre><code>{&quot;bytes&quot;:{&quot;already_stored&quot;:488,&quot;to_transfer&quot;:0,&quot;total&quot;:488,&quot;transferred&quot;:0},&quot;command&quot;:&quot;get&quot;,&quot;counts&quot;:{&quot;cancelled&quot;:0,&quot;failed&quot;:0,&quot;not_run&quot;:0,&quot;replaced&quot;:0,&quot;restored&quot;:0,&quot;skipped&quot;:0,&quot;succeeded&quot;:1,&quot;total&quot;:1,&quot;unchanged&quot;:1,&quot;would_replace&quot;:0,&quot;would_restore&quot;:0},&quot;dry_run&quot;:false,&quot;duration_ms&quot;:0,&quot;error&quot;:null,&quot;files&quot;:[{&quot;action&quot;:&quot;unchanged&quot;,&quot;before&quot;:&quot;current&quot;,&quot;code&quot;:null,&quot;duration_ms&quot;:0,&quot;hint&quot;:null,&quot;local_hash&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;,&quot;local_path&quot;:&quot;data/f1.csv&quot;,&quot;message&quot;:null,&quot;path&quot;:&quot;data/f1.csv&quot;,&quot;satisfied&quot;:true,&quot;size&quot;:488,&quot;stored_copy&quot;:null,&quot;target_hash&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;}],&quot;finished_at&quot;:&quot;2026-10-30T11:10:23.493Z&quot;,&quot;on_conflict&quot;:&quot;abort&quot;,&quot;outcome&quot;:&quot;complete&quot;,&quot;source&quot;:&quot;default&quot;,&quot;started_at&quot;:&quot;2026-10-30T11:10:23.492Z&quot;,&quot;v&quot;:1}</code></pre>
 </div>
 </div>
 </section>
 <section id="differences-from-r" class="level2">
 <h2 class="anchored" data-anchor-id="differences-from-r">Differences from R</h2>
-<p>The R function is <a href="r-get.html">dvs_get()</a>. It returns a data frame rather than printed lines, has no <code>--threads</code> or <code>--json</code>, and shows a progress bar only in interactive sessions.</p>
+<p>The R function is <a href="r-get.html">dvs_get()</a>. It returns a data frame rather than printed lines, has no <code>--threads</code> or <code>--json</code>, and shows a progress bar only in interactive sessions. It takes <code>on_conflict</code> like <code>--on-conflict</code> but has no <code>--force</code>. Where the CLI exits non-zero, it returns the result, and its <code>on_error</code> argument can make it warn or raise an error instead.</p>
 </section>
 <section id="see-also" class="level2">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>

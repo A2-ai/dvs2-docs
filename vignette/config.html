@@ -2333,14 +2333,14 @@ Note
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                              backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                     &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/default-store staff        </code></pre>
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/default-store staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">readLines</span>(<span class="fu">file.path</span>(proj, <span class="st">&quot;dvs.toml&quot;</span>)), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/default-store&quot;
+path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/default-store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2372,6 +2372,10 @@ group = &quot;staff&quot;</code></pre>
 <td><code>metadata_folder_name</code></td>
 <td>Name of the metadata folder (default <code>.dvs</code>). Only written when set to a non-default value.</td>
 </tr>
+<tr class="odd">
+<td><code>[get] on_conflict</code></td>
+<td><code>&quot;abort&quot;</code> or <code>&quot;skip&quot;</code>: what <code>get</code> does with files that have local changes. Not written by <code>init</code>. See below.</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -2388,7 +2392,7 @@ group = &quot;staff&quot;</code></pre>
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                             backend_group
   &lt;chr&gt;       &lt;chr&gt;                &lt;chr&gt;                                                                                                    &lt;chr&gt;        
-1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/custom-store staff        </code></pre>
+1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/custom-store staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">readLines</span>(<span class="fu">file.path</span>(proj, <span class="st">&quot;dvs.toml&quot;</span>)), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2396,35 +2400,56 @@ group = &quot;staff&quot;</code></pre>
 metadata_folder_name = &quot;.datalock&quot;
 
 [backend]
-path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/custom-store&quot;
+path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/custom-store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
+</section>
+<section id="get-on_conflict" class="level2">
+<h2 class="anchored" data-anchor-id="get-on_conflict"><code>[get] on_conflict</code></h2>
+<p><code>get</code> takes its conflict policy from the argument or flag first, then the <code>DVS_GET_ON_CONFLICT</code> environment variable, then <code>[get] on_conflict</code> in <code>dvs.toml</code>, then <code>&quot;abort&quot;</code>. A project can make <code>&quot;skip&quot;</code> its default:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&#39;</span><span class="sc">\n</span><span class="st">[get]</span><span class="sc">\n</span><span class="st">on_conflict = &quot;skip&quot;</span><span class="sc">\n</span><span class="st">&#39;</span>, <span class="at">file =</span> <span class="st">&quot;dvs.toml&quot;</span>, <span class="at">append =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;f.csv&quot;</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dvs_add</span>(<span class="st">&quot;f.csv&quot;</span>))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">&quot;b&quot;</span>, <span class="st">&quot;f.csv&quot;</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">dvs_get</span>(<span class="st">&quot;f.csv&quot;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_result_info</span>(res)[<span class="fu">c</span>(<span class="st">&quot;on_conflict&quot;</span>, <span class="st">&quot;source&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$on_conflict
+[1] &quot;skip&quot;
+
+$source
+[1] &quot;config&quot;</code></pre>
+</div>
+</div>
+<p><code>on_conflict = &quot;overwrite&quot;</code> in <code>dvs.toml</code> is a configuration error, so that a committed file cannot discard someone’s local changes. Pass it as an argument, a flag or the environment variable instead.</p>
 </section>
 <section id="project-discovery" class="level2">
 <h2 class="anchored" data-anchor-id="project-discovery">Project discovery</h2>
 <p>A command finds its project by walking up from the working directory to the nearest <code>dvs.toml</code>. A <code>dvs.toml</code> in a parent directory does not block a nested project: you can initialize a project inside another one, and you can have several projects in a single Git repository.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>root <span class="ot">&lt;-</span> <span class="fu">file.path</span>(base, <span class="st">&quot;repo&quot;</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>sub  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(root, <span class="st">&quot;sub&quot;</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(sub, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;repo-store&quot;</span>))</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;sub-store&quot;</span>))</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;repo-store&quot;</span>), <span class="at">root_dir =</span> root)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>root <span class="ot">&lt;-</span> <span class="fu">file.path</span>(base, <span class="st">&quot;repo&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>sub  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(root, <span class="st">&quot;sub&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(sub, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;repo-store&quot;</span>))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;sub-store&quot;</span>))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;repo-store&quot;</span>), <span class="at">root_dir =</span> root)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                           backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                  &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/repo-store staff        </code></pre>
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/repo-store staff        </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;sub-store&quot;</span>), <span class="at">root_dir =</span> sub)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(<span class="fu">file.path</span>(base, <span class="st">&quot;sub-store&quot;</span>), <span class="at">root_dir =</span> sub)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                          backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                                 &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/sub-store staff        </code></pre>
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/sub-store staff        </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(root, <span class="at">pattern =</span> <span class="st">&quot;dvs.toml&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(root, <span class="at">pattern =</span> <span class="st">&quot;dvs.toml&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] &quot;dvs.toml&quot;     &quot;sub/dvs.toml&quot;</code></pre>
 </div>

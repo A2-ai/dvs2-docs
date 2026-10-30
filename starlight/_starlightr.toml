@@ -36,6 +36,7 @@ reference = [
     "dvs_add",
     "dvs_status",
     "dvs_get",
+    "dvs_result_info",
   ] },
   { label = "Options", collapsed = true, contents = [
     "set_dvs_threads",
@@ -44,6 +45,9 @@ reference = [
   { label = "Byte Sizes", collapsed = true, contents = [
     "format_byte_size",
     "new_dvs_bytes",
+  ] },
+  { label = "Version", collapsed = true, contents = [
+    "dvs_version",
   ] },
 ]
 
