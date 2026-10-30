@@ -2298,12 +2298,20 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
-<p><code>dvs_status()</code> reports each tracked file as <code>current</code> (on disk and matching the stored hash), <code>absent</code> (tracked but missing on disk), or <code>unsynced</code> (on disk but not matching the stored hash). It returns a tibble that always includes the full metadata columns.</p>
+<p><code>dvs_status()</code> reports each tracked file with one of five statuses:</p>
+<ul>
+<li><code>current</code>: on disk and matching the tracked version.</li>
+<li><code>absent</code>: tracked but missing on disk.</li>
+<li><code>stale</code>: on disk as dvs last wrote or added it, while the tracked version has changed since, for example after a <code>git pull</code>. <a href="r-get.html">dvs_get()</a> updates it.</li>
+<li><code>modified</code>: on disk, but different from the tracked version and from what dvs last wrote or added there. This is a local edit.</li>
+<li><code>unsynced</code>: on disk and different from the tracked version, with no record of what dvs last wrote there.</li>
+</ul>
+<p>A file whose metadata cannot be read is kept, with status <code>error</code>. It returns a tibble that always includes the full metadata columns.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">paths =</span> <span class="fu">character</span>(<span class="dv">0</span>),</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">recursive =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">recursive =</span> <span class="cn">FALSE</span>,</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">glob =</span> <span class="cn">NULL</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> <span class="fu">c</span>(<span class="st">&quot;current&quot;</span>, <span class="st">&quot;absent&quot;</span>, <span class="st">&quot;unsynced&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> <span class="fu">c</span>(<span class="st">&quot;current&quot;</span>, <span class="st">&quot;absent&quot;</span>, <span class="st">&quot;stale&quot;</span>, <span class="st">&quot;modified&quot;</span>, <span class="st">&quot;unsynced&quot;</span>)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -2332,7 +2340,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <tr class="even">
 <td><code>recursive</code></td>
 <td>logical(1)</td>
-<td><code>NULL</code> (treated as <code>FALSE</code>)</td>
+<td><code>FALSE</code></td>
 <td>Include files in subdirectories of given directories.</td>
 </tr>
 <tr class="odd">
@@ -2344,15 +2352,15 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <tr class="even">
 <td><code>status</code></td>
 <td>character</td>
-<td>all three</td>
-<td>Statuses to include. Validated with <code>match.arg(several.ok = TRUE)</code>.</td>
+<td>all five</td>
+<td>Statuses to include. Validated with <code>match.arg(several.ok = TRUE)</code>. <code>NULL</code> and <code>character(0)</code> also mean all.</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
-<p>Add three files, then delete one and edit another so all three states appear.</p>
+<p>Add three files, then delete one and edit another, so <code>current</code>, <code>absent</code> and <code>modified</code> appear.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width =</span> <span class="dv">1000</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dvs)</span>
@@ -2370,22 +2378,22 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                             backend_group
   &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                    &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpKG8M0x/storage_7171252ea01a staff        </code></pre>
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpIpkU5p/storage_5c4420359080 staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="fu">c</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="st">&quot;data/f2.csv&quot;</span>, <span class="st">&quot;data/sub/f3.csv&quot;</span>), <span class="at">message =</span> <span class="st">&quot;initial add&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 5
-  path            outcome hash                                                                size stored_size
-  &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
-1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B
-2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B
-3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B</code></pre>
+<pre><code># A tibble: 3 × 6
+  path            outcome hash                                                                size stored_size duration_ms
+  &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           0
+2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           0
+3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B           0</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;data/f2.csv&quot;</span>)                                   <span class="co"># -&gt; absent</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(mtcars[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, ], <span class="st">&quot;data/f1.csv&quot;</span>)                       <span class="co"># -&gt; unsynced</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(mtcars[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, ], <span class="st">&quot;data/f1.csv&quot;</span>)                       <span class="co"># -&gt; modified</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="all-files" class="level2">
@@ -2395,12 +2403,12 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 8
-  path            status   hash                                                                size created_by compression message     add_time           
-  &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv     unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
-2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
-3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
+<pre><code># A tibble: 3 × 10
+  path            status   hash                                                                size created_by compression message     code  error add_time           
+  &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/f1.csv     modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00
+2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00
+3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00</code></pre>
 </div>
 </div>
 </section>
@@ -2411,10 +2419,10 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data/sub/f3.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 8
-  path            status  hash                                                                size created_by compression message     add_time           
-  &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/sub/f3.csv current 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
+<pre><code># A tibble: 1 × 10
+  path            status  hash                                                                size created_by compression message     code  error add_time           
+  &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/sub/f3.csv current 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00</code></pre>
 </div>
 </div>
 </section>
@@ -2425,23 +2433,23 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 8
-  path        status   hash                                                                size created_by compression message     add_time           
-  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
-2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
+<pre><code># A tibble: 2 × 10
+  path        status   hash                                                                size created_by compression message     code  error add_time           
+  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/f1.csv modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00
+2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="st">&quot;data&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 8
-  path            status   hash                                                                size created_by compression message     add_time           
-  &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv     unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
-2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
-3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
+<pre><code># A tibble: 3 × 10
+  path            status   hash                                                                size created_by compression message     code  error add_time           
+  &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/f1.csv     modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00
+2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00
+3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00</code></pre>
 </div>
 </div>
 </section>
@@ -2452,21 +2460,21 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="st">&quot;absent&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 8
-  path        status hash                                                                size created_by compression message     add_time           
-  &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f2.csv absent c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
+<pre><code># A tibble: 1 × 10
+  path        status hash                                                                size created_by compression message     code  error add_time           
+  &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/f2.csv absent c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="fu">c</span>(<span class="st">&quot;absent&quot;</span>, <span class="st">&quot;unsynced&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_status</span>(<span class="at">status =</span> <span class="fu">c</span>(<span class="st">&quot;absent&quot;</span>, <span class="st">&quot;modified&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 8
-  path        status   hash                                                                size created_by compression message     add_time           
-  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
-2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47</code></pre>
+<pre><code># A tibble: 2 × 10
+  path        status   hash                                                                size created_by compression message     code  error add_time           
+  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                                                            &lt;bytes&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;             
+1 data/f1.csv modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00
+2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add &lt;NA&gt;  &lt;NA&gt;  2026-10-30 11:10:00</code></pre>
 </div>
 </div>
 </section>
@@ -2480,7 +2488,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 3 × 3
   path            status      size
   &lt;chr&gt;           &lt;chr&gt;    &lt;bytes&gt;
-1 data/f1.csv     unsynced   488 B
+1 data/f1.csv     modified   488 B
 2 data/f2.csv     absent     500 B
 3 data/sub/f3.csv current    312 B</code></pre>
 </div>
@@ -2493,9 +2501,9 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <pre><code># A tibble: 3 × 4
   path            status   message     add_time           
   &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;       &lt;dttm&gt;             
-1 data/f1.csv     unsynced initial add 2026-08-10 19:43:47
-2 data/f2.csv     absent   initial add 2026-08-10 19:43:47
-3 data/sub/f3.csv current  initial add 2026-08-10 19:43:47</code></pre>
+1 data/f1.csv     modified initial add 2026-10-30 11:10:00
+2 data/f2.csv     absent   initial add 2026-10-30 11:10:00
+3 data/sub/f3.csv current  initial add 2026-10-30 11:10:00</code></pre>
 </div>
 </div>
 </section>
@@ -2524,7 +2532,7 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <tr class="even">
 <td><code>status</code></td>
 <td>character</td>
-<td><code>current</code>, <code>absent</code>, or <code>unsynced</code>.</td>
+<td><code>current</code>, <code>absent</code>, <code>stale</code>, <code>modified</code>, <code>unsynced</code>, or <code>error</code>.</td>
 </tr>
 <tr class="odd">
 <td><code>hash</code></td>
@@ -2552,17 +2560,27 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <td>Message from <code>dvs_add()</code>, or <code>NA</code>.</td>
 </tr>
 <tr class="even">
+<td><code>code</code></td>
+<td>character</td>
+<td>The kind of failure, such as <code>bad_metadata</code>, or <code>NA</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>error</code></td>
+<td>character</td>
+<td>The reason for the failure, or <code>NA</code>.</td>
+</tr>
+<tr class="even">
 <td><code>add_time</code></td>
 <td>POSIXct</td>
-<td>When the file was added.</td>
+<td>When the file was added (UTC).</td>
 </tr>
 </tbody>
 </table>
-<p>Rows that fail carry an <code>error</code> column. The <code>size</code> column is a <a href="r-bytes.html">dvs_bytes</a> value.</p>
+<p>The columns are the same in every result, even an empty one. A row with status <code>error</code> has <code>NA</code> in the metadata columns. The <code>size</code> column is a <a href="r-bytes.html">dvs_bytes</a> value.</p>
 </section>
 <section id="differences-from-the-cli" class="level2">
 <h2 class="anchored" data-anchor-id="differences-from-the-cli">Differences from the CLI</h2>
-<p>The CLI command is <a href="cli-status.html">dvs status</a>. It shows a compact <code>path</code>, <code>status</code>, <code>size</code> table by default and only adds the metadata columns with <code>--with-metadata</code>; <code>dvs_status()</code> always returns them. Its filters are independent <code>--current</code> / <code>--absent</code> / <code>--unsynced</code> flags rather than a single <code>status</code> vector, and it adds <code>--threads</code> and <code>--json</code>.</p>
+<p>The CLI command is <a href="cli-status.html">dvs status</a>. It shows a compact <code>path</code>, <code>status</code>, <code>size</code> table by default and only adds the metadata columns with <code>--with-metadata</code>; <code>dvs_status()</code> always returns them. Its filters are independent <code>--current</code>, <code>--absent</code>, <code>--stale</code>, <code>--modified</code> and <code>--unsynced</code> flags rather than a single <code>status</code> vector, and it adds <code>--threads</code> and <code>--json</code>.</p>
 </section>
 <section id="see-also" class="level2">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>

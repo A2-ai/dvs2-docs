@@ -50,6 +50,33 @@ Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(stora
 
 # `init` errors
 
+## No storage backend given
+
+The CLI needs a backend before the storage path: `dvs init local <PATH>` for a
+directory, or `dvs init server` for a dvs server. A plain `dvs init <PATH>`, the
+form from before the server backend, exits 2 and suggests the `local` form.
+`dvs_init()` in R always uses a local directory.
+
+
+::: {.cell}
+
+```{.bash .cell-code}
+cd "$DVS_PROJECT"
+dvs init "$DVS_STORAGE"
+```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Error: dvs init needs a backend before the storage path: did you mean `dvs init local /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f27345a20f_storage`?
+```
+
+
+:::
+:::
+
+
 ## Storage path is inside the repository
 
 Passing a storage path that resolves to a subdirectory of the project root is
@@ -67,7 +94,7 @@ dvs_init(storage_path = here::here(new_project, "inside_storage"),
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_init_impl()`:
+Error in `dvs_init()`:
 ! The given storage path is within the repository.
 ```
 
@@ -81,7 +108,7 @@ Error in `dvs_init_impl()`:
 
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
-dvs init "$DVS_PROJECT/inside_storage"
+dvs init local "$DVS_PROJECT/inside_storage"
 ```
 
 
@@ -115,7 +142,7 @@ dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f3a8a5fc6_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f27345a20f_storage staff        
 ```
 
 
@@ -129,7 +156,7 @@ dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_init_impl()`:
+Error in `dvs_init()`:
 ! dvs is already initialized (dvs.toml exists)
 ```
 
@@ -144,7 +171,7 @@ Error in `dvs_init_impl()`:
 ```{.bash .cell-code}
 # dvs.toml already created by the R chunk above
 cd "$DVS_PROJECT"
-dvs init "$DVS_STORAGE"
+dvs init local "$DVS_STORAGE"
 ```
 
 
@@ -185,7 +212,7 @@ dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_proje
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f4a84b4ee_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f221755e58_storage staff        
 ```
 
 
@@ -213,7 +240,7 @@ dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_proje
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_init_impl()`:
+Error in `dvs_init()`:
 ! dvs is already initialized (backend storage exists)
 ```
 
@@ -230,9 +257,9 @@ BSE_STORAGE=$(mktemp -d)
 BSE_PROJECT=$(mktemp -d)
 git -C "$BSE_PROJECT" init -q
 cd "$BSE_PROJECT"
-dvs init "$BSE_STORAGE" > /dev/null
+dvs init local "$BSE_STORAGE" > /dev/null
 rm dvs.toml
-dvs init "$BSE_STORAGE"
+dvs init local "$BSE_STORAGE"
 rm -rf "$BSE_STORAGE" "$BSE_PROJECT"
 ```
 
@@ -269,7 +296,7 @@ dvs_add(paths = "anything.csv")
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_add_impl()`:
+Error in `dvs_add()`:
 ! Not in a DVS repository
 ```
 
@@ -316,7 +343,7 @@ dvs_add(glob = "data/*.csv")
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_add_impl()`:
+Error in `dvs_add()`:
 ! No files to add
 ```
 
@@ -361,7 +388,7 @@ dvs_add(paths = "nonexistent_file.csv")
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_add_impl()`:
+Error in `dvs_add()`:
 ! Path not found: nonexistent_file.csv
 ```
 
@@ -394,7 +421,7 @@ Error: Path not found: nonexistent_file.csv
 
 Passing a bare directory name with no glob is an invalid input, not an empty
 match. Both surfaces refuse the batch with the same message (`path is a
-directory`); the CLI exits 1. Directories only make sense combined with a
+directory`), and the CLI exits 2. Directories only make sense combined with a
 glob, or via `--recursive` on `status` and `get`.
 
 
@@ -409,7 +436,7 @@ dvs_add(paths = "mydir")
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_add_impl()`:
+Error in `dvs_add()`:
 ! Refusing to add, the following paths are invalid:
   mydir: path is a directory
 ```
@@ -462,9 +489,9 @@ dvs_add(paths = outside_file)
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_add_impl()`:
+Error in `dvs_add()`:
 ! Refusing to add, the following paths are invalid:
-  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//RtmphOMKU8/file774f19adc335.csv: path is outside project
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T//Rtmpocq0BI/file81f25e974e60.csv: path is outside project
 ```
 
 
@@ -488,7 +515,7 @@ rm -f "$OUTSIDE_FILE"
 
 ```
 Error: Refusing to add, the following paths are invalid:
-  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.eMDZyPnyvz.csv: path is outside project
+  /var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/dvs_outside.8Y2umM5Ldc.csv: path is outside project
 ```
 
 
@@ -513,7 +540,7 @@ dvs_add(paths = c("present.csv", "missing.csv"))
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_add_impl()`:
+Error in `dvs_add()`:
 ! Path not found: missing.csv
 ```
 
@@ -562,7 +589,7 @@ dvs_status()
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_status_impl()`:
+Error in `dvs_status()`:
 ! Not in a DVS repository
 ```
 
@@ -612,7 +639,8 @@ dvs_status(paths = outside_status) |> print(width = Inf, n = Inf)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 0 × 0
+# A tibble: 0 × 10
+# ℹ 10 variables: path <chr>, status <chr>, hash <chr>, size <bytes>, created_by <chr>, compression <chr>, message <chr>, code <chr>, error <chr>, add_time <dttm>
 ```
 
 
@@ -661,10 +689,10 @@ dvs_add(paths = "present.csv")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 5
-  path        outcome hash                                                                size stored_size
-  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>
-1 present.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B
+# A tibble: 1 × 6
+  path        outcome hash                                                                size stored_size duration_ms
+  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
+1 present.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           0
 ```
 
 
@@ -678,10 +706,10 @@ dvs_status(paths = c("present.csv", "missing.csv")) |>
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 7
-  path        status  hash                                                                size created_by compression add_time           
-  <chr>       <chr>   <chr>                                                            <bytes> <chr>      <chr>       <dttm>             
-1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        2026-08-10 19:44:33
+# A tibble: 1 × 10
+  path        status  hash                                                                size created_by compression message code  error add_time           
+  <chr>       <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>   <chr> <chr> <dttm>             
+1 present.csv current 44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B elea       zstd        <NA>    <NA>  <NA>  2026-10-30 11:11:15
 ```
 
 
@@ -706,6 +734,8 @@ dvs status present.csv missing.csv
 +-------------+---------+------+
 | present.csv | current |  2 B |
 +-------------+---------+------+
+
+Checked 1
 ```
 
 
@@ -717,7 +747,9 @@ dvs status present.csv missing.csv
 
 If a `.dvs` meta file is corrupted (non-JSON content), the parse error
 surfaces as a per-file row in the result rather than a top-level abort. The
-rest of the tree still resolves.
+rest of the tree still resolves. In R the row has status `error`, the kind of
+failure in `code` (`bad_metadata`) and the reason in `error`. The CLI prints
+the reason, leaves the file out of the table and counts it as failed.
 
 
 ::: {.cell}
@@ -739,7 +771,7 @@ dvs_init(storage_path = here::here(ump_storage), root_dir = here::here(ump_proje
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f34580c9c_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f265bbb10b_storage staff        
 ```
 
 
@@ -753,10 +785,10 @@ dvs_add(paths = "corrupt.csv")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 5
-  path        outcome hash                                                                size stored_size
-  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>
-1 corrupt.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B
+# A tibble: 1 × 6
+  path        outcome hash                                                                size stored_size duration_ms
+  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
+1 corrupt.csv copied  44c77418e27569db9213c6b43d9049ecffb5496f7d0e3d4254bb68410adecc3e     2 B        11 B           0
 ```
 
 
@@ -772,10 +804,10 @@ dvs_status() |> print(width = Inf, n = Inf)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 3
-  path        error                             add_time
-  <chr>       <chr>                             <dttm>  
-1 corrupt.csv expected value at line 1 column 1 NA      
+# A tibble: 1 × 10
+  path        status hash     size created_by compression message code         error                             add_time
+  <chr>       <chr>  <chr> <bytes> <chr>      <chr>       <chr>   <chr>        <chr>                             <dttm>  
+1 corrupt.csv error  <NA>       NA <NA>       <NA>        <NA>    bad_metadata expected value at line 1 column 1 NA      
 ```
 
 
@@ -803,7 +835,8 @@ Error getting status for corrupt.csv: expected value at line 1 column 1
 +------+--------+------+
 | path | status | size |
 +------+--------+------+
-Error: Some files failed to get status
+
+1 failed
 ```
 
 
@@ -828,7 +861,7 @@ dvs_get(paths = "something.csv")
 ::: {.cell-output .cell-output-error}
 
 ```
-Error in `dvs_get_impl()`:
+Error in `dvs_get()`:
 ! Not in a DVS repository
 ```
 
@@ -861,7 +894,9 @@ Error: Not in a DVS repository
 
 ## No files to get: empty glob
 
-When the glob resolves to zero tracked files, `dvs get` aborts.
+When the glob resolves to zero tracked files, there is nothing to get.
+`dvs_get()` returns an empty result under the line `no tracked files matched`,
+not an R error. The CLI prints the same line and exits 1.
 
 
 ::: {.cell}
@@ -871,11 +906,12 @@ setwd(here::here(new_project))
 dvs_get(glob = "data/nope_*.csv")
 ```
 
-::: {.cell-output .cell-output-error}
+::: {.cell-output .cell-output-stdout}
 
 ```
-Error in `dvs_get_impl()`:
-! No files to get
+# no tracked files matched
+# A tibble: 0 × 13
+# ℹ 13 variables: path <chr>, local_path <chr>, before <chr>, action <chr>, satisfied <lgl>, size <bytes>, target_hash <chr>, local_hash <chr>, stored_copy <chr>, code <chr>, message <chr>, hint <chr>, duration_ms <dbl>
 ```
 
 
@@ -895,7 +931,7 @@ dvs get --glob "data/nope_*.csv"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: No files to get
+dvs get: no tracked files matched
 ```
 
 
@@ -905,7 +941,10 @@ Error: No files to get
 
 ## File is not tracked by DVS
 
-Requesting a file that exists on disk but has never been `dvs add`-ed.
+Requesting a file that exists on disk but has never been `dvs add`-ed. This
+is a result, not an R error: the row has `action` `failed` and `code`
+`not_tracked`, and no other requested file is changed. The CLI prints the same
+and exits 1.
 
 
 ::: {.cell}
@@ -916,12 +955,16 @@ writeLines("col1,col2", here::here(new_project, "untracked.csv"))
 dvs_get(paths = "untracked.csv")
 ```
 
-::: {.cell-output .cell-output-error}
+::: {.cell-output .cell-output-stdout}
 
 ```
-Error in `dvs_get_impl()`:
-! The following paths are not tracked by DVS:
-  untracked.csv
+# Aborted, nothing changed: 1 file cannot be retrieved
+# ! untracked.csv: not tracked by dvs
+#     check the path; list tracked files with: dvs status
+# A tibble: 1 × 13
+  path          local_path    before      action satisfied    size target_hash local_hash stored_copy code        message            hint                                                duration_ms
+* <chr>         <chr>         <chr>       <chr>  <lgl>     <bytes> <chr>       <chr>      <chr>       <chr>       <chr>              <chr>                                                     <dbl>
+1 untracked.csv untracked.csv not_tracked failed FALSE          NA <NA>        <NA>       <NA>        not_tracked not tracked by dvs check the path; list tracked files with: dvs status          NA
 ```
 
 
@@ -942,8 +985,10 @@ dvs get untracked.csv
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: The following paths are not tracked by DVS:
-  untracked.csv
+failed        untracked.csv  not tracked by dvs
+
+Aborted, nothing changed: 1 file cannot be retrieved
+  untracked.csv: check the path; list tracked files with: dvs status
 ```
 
 
@@ -953,7 +998,8 @@ Error: The following paths are not tracked by DVS:
 
 ## File is not found at all
 
-Requesting a path that neither exists on disk nor has metadata.
+Requesting a path that neither exists on disk nor has metadata. dvs does not
+tell it apart from an untracked file: it is `not_tracked` too.
 
 
 ::: {.cell}
@@ -963,12 +1009,16 @@ setwd(here::here(new_project))
 dvs_get(paths = "ghost.csv")
 ```
 
-::: {.cell-output .cell-output-error}
+::: {.cell-output .cell-output-stdout}
 
 ```
-Error in `dvs_get_impl()`:
-! The following paths are not tracked by DVS:
-  ghost.csv
+# Aborted, nothing changed: 1 file cannot be retrieved
+# ! ghost.csv: not tracked by dvs
+#     check the path; list tracked files with: dvs status
+# A tibble: 1 × 13
+  path      local_path before      action satisfied    size target_hash local_hash stored_copy code        message            hint                                                duration_ms
+* <chr>     <chr>      <chr>       <chr>  <lgl>     <bytes> <chr>       <chr>      <chr>       <chr>       <chr>              <chr>                                                     <dbl>
+1 ghost.csv ghost.csv  not_tracked failed FALSE          NA <NA>        <NA>       <NA>        not_tracked not tracked by dvs check the path; list tracked files with: dvs status          NA
 ```
 
 
@@ -988,8 +1038,10 @@ dvs get ghost.csv
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: The following paths are not tracked by DVS:
-  ghost.csv
+failed        ghost.csv  not tracked by dvs
+
+Aborted, nothing changed: 1 file cannot be retrieved
+  ghost.csv: check the path; list tracked files with: dvs status
 ```
 
 
@@ -1000,7 +1052,9 @@ Error: The following paths are not tracked by DVS:
 ## Storage blob missing for tracked file
 
 The metadata `.dvs` file exists but the corresponding blob has been deleted
-from storage, simulating a corrupted or partially-synced store.
+from storage, simulating a corrupted or partially-synced store. The row has
+`code` `source_missing` and a hint on what to do. The local file is left
+alone.
 
 
 ::: {.cell}
@@ -1021,9 +1075,9 @@ dvs_init(storage_path = here::here(bm_storage), root_dir = here::here(bm_project
 
 ```
 # A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                              backend_group
-  <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f2934d750_storage staff        
+  compression metadata_folder_name backend_path                                                             backend_group
+  <chr>       <lgl>                <chr>                                                                    <chr>        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f289fffbe_storage staff        
 ```
 
 
@@ -1037,10 +1091,10 @@ dvs_add(paths = "tracked.csv")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 5
-  path        outcome hash                                                                size stored_size
-  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>
-1 tracked.csv copied  1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a     6 B        15 B
+# A tibble: 1 × 6
+  path        outcome hash                                                                size stored_size duration_ms
+  <chr>       <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
+1 tracked.csv copied  1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a     6 B        15 B           0
 ```
 
 
@@ -1070,10 +1124,13 @@ dvs_get(paths = "tracked.csv") |> print(width = Inf, n = Inf)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 2
-  path        error                                                                                                         
-  <chr>       <chr>                                                                                                         
-1 tracked.csv Storage file missing for hash: Hashes(blake3=1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a)
+# Failed: 1 failed
+# ! tracked.csv: this version is not in storage
+#     the stored content of this version is missing (probably an interrupted upload); tell whoever added it
+# A tibble: 1 × 13
+  path        local_path  before action satisfied    size target_hash                                                      local_hash stored_copy code           message                        hint                                                                                                  duration_ms
+* <chr>       <chr>       <chr>  <chr>  <lgl>     <bytes> <chr>                                                            <chr>      <chr>       <chr>          <chr>                          <chr>                                                                                                       <dbl>
+1 tracked.csv tracked.csv absent failed FALSE         6 B 1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a <NA>       <NA>        source_missing this version is not in storage the stored content of this version is missing (probably an interrupted upload); tell whoever added it           0
 ```
 
 
@@ -1097,8 +1154,10 @@ dvs get tracked.csv
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: tracked.csv - Storage file missing for hash: Hashes(blake3=1357bc0161e229426dd1fba64a6adfd193f667632c54a5614ebde7370b700a5a)
-Error: Some files failed to get
+failed        tracked.csv  this version is not in storage
+
+Failed: 1 failed
+  tracked.csv: the stored content of this version is missing (probably an interrupted upload); tell whoever added it
 ```
 
 
@@ -1110,7 +1169,9 @@ Error: Some files failed to get
 
 The blob exists and decompresses successfully, but its content hashes to
 something other than the hash recorded in the meta file. Simulates
-content-level corruption of the blob.
+content-level corruption of the blob. `get` verifies the bytes before it
+writes the file, so the row has `code` `hash_mismatch` and no file is
+written.
 
 
 ::: {.cell}
@@ -1132,7 +1193,7 @@ dvs_init(storage_path = here::here(hm_storage), root_dir = here::here(hm_project
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file774f2b394d53_storage staff        
+1 zstd        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file81f24b87901f_storage staff        
 ```
 
 
@@ -1146,10 +1207,10 @@ dvs_add(paths = "tampered.csv")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 5
-  path         outcome hash                                                                size stored_size
-  <chr>        <chr>   <chr>                                                            <bytes>     <bytes>
-1 tampered.csv copied  4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234     9 B        18 B
+# A tibble: 1 × 6
+  path         outcome hash                                                                size stored_size duration_ms
+  <chr>        <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
+1 tampered.csv copied  4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234     9 B        18 B           0
 ```
 
 
@@ -1159,8 +1220,9 @@ dvs_add(paths = "tampered.csv")
 # Replace the stored blob with zstd-compressed different content under the
 # same filename (so the hash-keyed path resolves, but the decompressed bytes
 # no longer match the recorded hash).
-blob <- list.files(hm_storage, recursive = TRUE, full.names = TRUE)
+blob <- list.files(here::here(hm_storage), recursive = TRUE, full.names = TRUE)
 blob <- blob[!grepl("audit", blob)]
+stopifnot(length(blob) == 1)
 Sys.chmod(blob, mode = "0644")
 # zstd -q reads stdin and writes compressed bytes to stdout
 system2("bash", c("-c",
@@ -1187,10 +1249,12 @@ dvs_get(paths = "tampered.csv") |> print(width = Inf, n = Inf)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 3
-  path         outcome    size
-  <chr>        <chr>   <bytes>
-1 tampered.csv copied      9 B
+# Failed: 1 failed
+# ! tampered.csv: the stored content does not match the tracked hash
+# A tibble: 1 × 13
+  path         local_path   before action satisfied    size target_hash                                                      local_hash stored_copy code          message                                            hint  duration_ms
+* <chr>        <chr>        <chr>  <chr>  <lgl>     <bytes> <chr>                                                            <chr>      <chr>       <chr>         <chr>                                              <chr>       <dbl>
+1 tampered.csv tampered.csv absent failed FALSE         9 B 4618385b07b77df8055daff68db05c4e3c37151fc3306a3f2bdbeb1958419234 <NA>       <NA>        hash_mismatch the stored content does not match the tracked hash <NA>            0
 ```
 
 
@@ -1209,6 +1273,18 @@ Sys.setenv(HM_PROJECT = here::here(hm_project))
 cd "$HM_PROJECT"
 dvs get tampered.csv
 ```
+
+
+::: {.cell-output .cell-output-stdout}
+
+```
+failed        tampered.csv  the stored content does not match the tracked hash
+
+Failed: 1 failed
+```
+
+
+:::
 :::
 
 

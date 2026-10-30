@@ -33,7 +33,7 @@ dvs_version()
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] "0.4.0"
+[1] "0.5.1"
 ```
 
 

@@ -2299,7 +2299,15 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 
 <p><code>dvs_get()</code> reads the meta files, finds the matching blobs in storage, and writes the contents back to their original paths. It is the inverse of <a href="r-add.html">dvs_add()</a>: the call to run after re-cloning a project whose data is not on disk.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">paths =</span> <span class="fu">character</span>(<span class="dv">0</span>), <span class="at">glob =</span> <span class="cn">NULL</span>, <span class="at">recursive =</span> <span class="cn">NULL</span>, <span class="at">dry_run =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A local file that differs from the tracked version is replaced without asking only when dvs itself put it there, for example after switching git branches. Otherwise it is a conflict, handled by <code>on_conflict</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">paths =</span> <span class="fu">character</span>(<span class="dv">0</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">glob =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">recursive =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">dry_run =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">on_conflict =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">on_error =</span> <span class="cn">NULL</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="caption-top table">
@@ -2333,14 +2341,26 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <tr class="odd">
 <td><code>recursive</code></td>
 <td>logical(1)</td>
-<td><code>NULL</code> (treated as <code>FALSE</code>)</td>
+<td><code>FALSE</code></td>
 <td>If <code>TRUE</code>, walk explicit directory paths recursively (same as the CLI <code>-r</code>).</td>
 </tr>
 <tr class="even">
 <td><code>dry_run</code></td>
 <td>logical(1)</td>
-<td><code>NULL</code> (treated as <code>FALSE</code>)</td>
-<td>Report what would be retrieved; write nothing.</td>
+<td><code>FALSE</code></td>
+<td>Report what would be retrieved. Write nothing.</td>
+</tr>
+<tr class="odd">
+<td><code>on_conflict</code></td>
+<td>character(1)</td>
+<td><code>NULL</code></td>
+<td><code>&quot;abort&quot;</code>, <code>&quot;skip&quot;</code> or <code>&quot;overwrite&quot;</code>. What to do with files that have local changes. <code>NULL</code> takes <code>DVS_GET_ON_CONFLICT</code>, then <code>[get] on_conflict</code> in <code>dvs.toml</code>, then <code>&quot;abort&quot;</code>.</td>
+</tr>
+<tr class="even">
+<td><code>on_error</code></td>
+<td>character(1)</td>
+<td><code>NULL</code></td>
+<td><code>&quot;return&quot;</code>, <code>&quot;warn&quot;</code> or <code>&quot;error&quot;</code>. What to do when get did not do as asked. <code>NULL</code> takes the <code>dvs.on_error</code> option, then <code>&quot;return&quot;</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -2364,18 +2384,18 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_init</span>(store)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                                                             backend_group
-  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                    &lt;chr&gt;        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmprdiVZ0/storage_6f3d5f0b9746 staff        </code></pre>
+  compression metadata_folder_name backend_path                                                                            backend_group
+  &lt;chr&gt;       &lt;lgl&gt;                &lt;chr&gt;                                                                                   &lt;chr&gt;        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpgQNOo9/storage_5ed18147cd0 staff        </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_add</span>(<span class="fu">c</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="st">&quot;data/f2.csv&quot;</span>, <span class="st">&quot;data/sub/f3.csv&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 5
-  path            outcome hash                                                                size stored_size
-  &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;
-1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B
-2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B
-3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B</code></pre>
+<pre><code># A tibble: 3 × 6
+  path            outcome hash                                                                size stored_size duration_ms
+  &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;                                                            &lt;bytes&gt;     &lt;bytes&gt;       &lt;dbl&gt;
+1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           0
+2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           0
+3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B           1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="st">&quot;data/f2.csv&quot;</span>, <span class="st">&quot;data/sub/f3.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2394,15 +2414,16 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </section>
 <section id="paths" class="level2">
 <h2 class="anchored" data-anchor-id="paths"><code>paths</code></h2>
-<p>Restore a single file. The result reports <code>path</code>, <code>outcome</code>, and <code>size</code>.</p>
+<p>Restore a single file. The result has one row per requested file, under a summary line. <code>before</code> is the state of the file before the get, and <code>action</code> is what get did with it.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/f1.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 3
-  path        outcome    size
-  &lt;chr&gt;       &lt;chr&gt;   &lt;bytes&gt;
-1 data/f1.csv copied    488 B</code></pre>
+<pre><code># Restored 1
+# A tibble: 1 × 13
+  path        local_path  before action   satisfied    size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
+* &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;    &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/f1.csv data/f1.csv absent restored TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
 </div>
 </div>
 <p>The file is <code>current</code> again:</p>
@@ -2424,12 +2445,13 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="at">glob =</span> <span class="st">&quot;data/**/*.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 3
-  path            outcome    size
-  &lt;chr&gt;           &lt;chr&gt;   &lt;bytes&gt;
-1 data/f1.csv     present   488 B
-2 data/f2.csv     copied    500 B
-3 data/sub/f3.csv copied    312 B</code></pre>
+<pre><code># Restored 2, 1 already current
+# A tibble: 3 × 13
+  path            local_path      before  action    satisfied    size target_hash                                                      local_hash                                                       stored_copy code  message hint  duration_ms
+* &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;     &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;                                                            &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/f1.csv     data/f1.csv     current unchanged TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
+2 data/f2.csv     data/f2.csv     absent  restored  TRUE        500 B c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 &lt;NA&gt;                                                             &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
+3 data/sub/f3.csv data/sub/f3.csv absent  restored  TRUE        312 B 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce &lt;NA&gt;                                                             &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
 </div>
 </div>
 </section>
@@ -2444,11 +2466,12 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 3
-  path        outcome    size
-  &lt;chr&gt;       &lt;chr&gt;   &lt;bytes&gt;
-1 data/f1.csv copied    488 B
-2 data/f2.csv copied    500 B</code></pre>
+<pre><code># Restored 2
+# A tibble: 2 × 13
+  path        local_path  before action   satisfied    size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
+* &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;    &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/f1.csv data/f1.csv absent restored TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
+2 data/f2.csv data/f2.csv absent restored TRUE        500 B c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2461,24 +2484,25 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 1 data/sub/f3.csv absent</code></pre>
 </div>
 </div>
-<p>With <code>recursive = TRUE</code> the whole subtree is restored. Files already back on disk are reported as <code>present</code> rather than retrieved again.</p>
+<p>With <code>recursive = TRUE</code> the whole subtree is restored. Files already back on disk are <code>current</code> before and <code>unchanged</code> after. They are not copied again.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data&quot;</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 3
-  path            outcome    size
-  &lt;chr&gt;           &lt;chr&gt;   &lt;bytes&gt;
-1 data/f1.csv     present   488 B
-2 data/f2.csv     present   500 B
-3 data/sub/f3.csv copied    312 B</code></pre>
+<pre><code># Restored 1, 2 already current
+# A tibble: 3 × 13
+  path            local_path      before  action    satisfied    size target_hash                                                      local_hash                                                       stored_copy code  message hint  duration_ms
+* &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;     &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;                                                            &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/f1.csv     data/f1.csv     current unchanged TRUE        488 B 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
+2 data/f2.csv     data/f2.csv     current unchanged TRUE        500 B c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0
+3 data/sub/f3.csv data/sub/f3.csv absent  restored  TRUE        312 B 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce &lt;NA&gt;                                                             &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
 </div>
 </div>
 <p><code>glob</code> and <code>recursive</code> are mutually exclusive; passing both raises an error.</p>
 </section>
 <section id="dry_run" class="level2">
 <h2 class="anchored" data-anchor-id="dry_run"><code>dry_run</code></h2>
-<p>With <code>dry_run = TRUE</code> the result reports what would be retrieved, but no file is written.</p>
+<p>With <code>dry_run = TRUE</code> the result reports what would be retrieved (<code>would_restore</code>), but no file is written. <code>satisfied</code> is the prediction.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;data/f2.csv&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2487,10 +2511,11 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/f2.csv&quot;</span>, <span class="at">dry_run =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 3
-  path        outcome    size
-  &lt;chr&gt;       &lt;chr&gt;   &lt;bytes&gt;
-1 data/f2.csv copied    500 B</code></pre>
+<pre><code># Would restore 1
+# A tibble: 1 × 13
+  path        local_path  before action        satisfied    size target_hash                                                      local_hash stored_copy code  message hint  duration_ms
+* &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;         &lt;lgl&gt;     &lt;bytes&gt; &lt;chr&gt;                                                            &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;
+1 data/f2.csv data/f2.csv absent would_restore TRUE        500 B c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;            0</code></pre>
 </div>
 </div>
 <p>The file is still absent after a dry run:</p>
@@ -2505,9 +2530,77 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </div>
 </div>
 </section>
+<section id="on_conflict" class="level2">
+<h2 class="anchored" data-anchor-id="on_conflict"><code>on_conflict</code></h2>
+<p>Edit a tracked file. Its status is <code>modified</code>, so a get of it is a conflict. With the default, <code>&quot;abort&quot;</code>, get changes no file at all, not even the absent <code>data/f2.csv</code>. The <code>code</code> and <code>hint</code> columns say why and what to do.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(mtcars[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, ], <span class="st">&quot;data/f1.csv&quot;</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">dvs_get</span>(<span class="st">&quot;data&quot;</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>res[, <span class="fu">c</span>(<span class="st">&quot;path&quot;</span>, <span class="st">&quot;before&quot;</span>, <span class="st">&quot;action&quot;</span>, <span class="st">&quot;satisfied&quot;</span>, <span class="st">&quot;code&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># 2 of 2 rows from:
+# Aborted, nothing changed: 1 file has local changes
+# on_conflict = abort (default)
+# A tibble: 2 × 5
+  path        before   action  satisfied code         
+  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;   &lt;lgl&gt;     &lt;chr&gt;        
+1 data/f1.csv modified not_run FALSE     local_changes
+2 data/f2.csv absent   not_run FALSE     batch_aborted</code></pre>
+</div>
+</div>
+<p><code>&quot;skip&quot;</code> leaves the conflicting file and gets the rest:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data&quot;</span>, <span class="at">on_conflict =</span> <span class="st">&quot;skip&quot;</span>)[, <span class="fu">c</span>(<span class="st">&quot;path&quot;</span>, <span class="st">&quot;before&quot;</span>, <span class="st">&quot;action&quot;</span>, <span class="st">&quot;satisfied&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># 2 of 2 rows from:
+# Partial: restored 1, skipped 1
+# on_conflict = skip (command line)
+# A tibble: 2 × 4
+  path        before   action   satisfied
+  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;    &lt;lgl&gt;    
+1 data/f1.csv modified skipped  FALSE    
+2 data/f2.csv absent   restored TRUE     </code></pre>
+</div>
+</div>
+<p><code>&quot;overwrite&quot;</code> replaces the file with the tracked version. The local changes are lost.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="at">on_conflict =</span> <span class="st">&quot;overwrite&quot;</span>)[, <span class="fu">c</span>(<span class="st">&quot;path&quot;</span>, <span class="st">&quot;before&quot;</span>, <span class="st">&quot;action&quot;</span>, <span class="st">&quot;satisfied&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># 1 of 1 rows from:
+# Replaced 1
+# on_conflict = overwrite (command line)
+# A tibble: 1 × 4
+  path        before   action   satisfied
+  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;    &lt;lgl&gt;    
+1 data/f1.csv modified replaced TRUE     </code></pre>
+</div>
+</div>
+<p>The policy can also come from the <code>DVS_GET_ON_CONFLICT</code> environment variable or from <code>[get] on_conflict</code> in <code>dvs.toml</code>. <code>dvs.toml</code> cannot set <code>&quot;overwrite&quot;</code>. That raises a <code>dvs_config_error</code>.</p>
+</section>
+<section id="on_error" class="level2">
+<h2 class="anchored" data-anchor-id="on_error"><code>on_error</code></h2>
+<p>By default <code>dvs_get()</code> returns its result even when it did not do as asked, that is when a file failed or <code>&quot;abort&quot;</code> held files back. <code>&quot;warn&quot;</code> also warns. <code>&quot;error&quot;</code> raises an error of class <code>dvs_get_incomplete</code>, which carries the result as <code>cnd$result</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(mtcars[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, ], <span class="st">&quot;data/f1.csv&quot;</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dvs_get</span>(<span class="st">&quot;data/f1.csv&quot;</span>, <span class="at">on_error =</span> <span class="st">&quot;error&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `dvs_get()`:
+! Aborted, nothing changed: 1 file has local changes
+on_conflict = abort (default)
+! data/f1.csv: local changes since dvs last wrote this file
+    keep your version: dvs add data/f1.csv (makes it the tracked version); take the tracked version: dvs get --force data/f1.csv (replaces yours)
+See the `code`, `message` and `hint` columns of `cnd$result`.</code></pre>
+</div>
+</div>
+<p>In scripts and pipelines, pass <code>on_error = &quot;error&quot;</code> or set <code>options(dvs.on_error = &quot;error&quot;)</code>, so the analysis cannot go on with data that was not updated.</p>
+</section>
 <section id="return-value" class="level2">
 <h2 class="anchored" data-anchor-id="return-value">Return value</h2>
-<p>A tibble with one row per file:</p>
+<p>A tibble of class <code>dvs_get_result</code> with one row per requested file and always the same columns:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -2525,25 +2618,94 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 <tr class="odd">
 <td><code>path</code></td>
 <td>character</td>
-<td>File path.</td>
+<td>Path relative to the project root.</td>
 </tr>
 <tr class="even">
-<td><code>outcome</code></td>
+<td><code>local_path</code></td>
 <td>character</td>
-<td><code>copied</code> (written from storage) or <code>present</code> (already on disk).</td>
+<td>Path relative to the working directory.</td>
 </tr>
 <tr class="odd">
+<td><code>before</code></td>
+<td>character</td>
+<td>State before the get: <code>absent</code>, <code>current</code>, <code>clean</code>, <code>modified</code>, <code>unknown</code>, <code>not_tracked</code>, <code>not_a_file</code> or <code>unsafe_path</code>.</td>
+</tr>
+<tr class="even">
+<td><code>action</code></td>
+<td>character</td>
+<td>What get did: <code>restored</code>, <code>replaced</code>, <code>unchanged</code>, <code>skipped</code>, <code>not_run</code>, <code>failed</code>, <code>would_restore</code> or <code>would_replace</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>satisfied</code></td>
+<td>logical</td>
+<td><code>TRUE</code> when the file is at its tracked version afterwards.</td>
+</tr>
+<tr class="even">
 <td><code>size</code></td>
 <td><code>dvs_bytes</code></td>
-<td>Retrieved size.</td>
+<td>Size of the tracked version.</td>
+</tr>
+<tr class="odd">
+<td><code>target_hash</code></td>
+<td>character</td>
+<td>blake3 hash of the tracked version.</td>
+</tr>
+<tr class="even">
+<td><code>local_hash</code></td>
+<td>character</td>
+<td>blake3 hash of the local file before the get, or <code>NA</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>stored_copy</code></td>
+<td>character</td>
+<td>For a conflict, whether the local version has a copy in storage: <code>present</code>, <code>absent</code> or <code>unknown</code>. <code>NA</code> otherwise.</td>
+</tr>
+<tr class="even">
+<td><code>code</code></td>
+<td>character</td>
+<td>The kind of problem, such as <code>local_changes</code>, or <code>NA</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>message</code></td>
+<td>character</td>
+<td>What went wrong, or <code>NA</code>.</td>
+</tr>
+<tr class="even">
+<td><code>hint</code></td>
+<td>character</td>
+<td>The next step, in CLI syntax, or <code>NA</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>duration_ms</code></td>
+<td>double</td>
+<td>Milliseconds spent on the file, <code>NA</code> when it was never hashed or copied.</td>
 </tr>
 </tbody>
 </table>
-<p>Rows that fail carry an <code>error</code> column. The <code>size</code> column is a <a href="r-bytes.html">dvs_bytes</a> value.</p>
+<p>A file that cannot be retrieved, such as an untracked path, is a row with <code>action</code> <code>failed</code>, not an R error. Outside a dvs project <code>dvs_get()</code> raises an error. The <code>size</code> column is a <a href="r-bytes.html">dvs_bytes</a> value.</p>
+<p><code>dvs_result_info()</code> returns what applies to the whole operation: <code>outcome</code> (<code>complete</code>, <code>aborted</code>, <code>partial</code> or <code>failed</code>), <code>did_as_asked</code>, <code>on_conflict</code> and its <code>source</code>, the <code>counts</code>, and the <code>summary</code> printed above the rows.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>info <span class="ot">&lt;-</span> <span class="fu">dvs_result_info</span>(res)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>info[<span class="fu">c</span>(<span class="st">&quot;outcome&quot;</span>, <span class="st">&quot;did_as_asked&quot;</span>, <span class="st">&quot;on_conflict&quot;</span>, <span class="st">&quot;source&quot;</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$outcome
+[1] &quot;aborted&quot;
+
+$did_as_asked
+[1] FALSE
+
+$on_conflict
+[1] &quot;abort&quot;
+
+$source
+[1] &quot;default&quot;</code></pre>
+</div>
+</div>
 </section>
 <section id="differences-from-the-cli" class="level2">
 <h2 class="anchored" data-anchor-id="differences-from-the-cli">Differences from the CLI</h2>
-<p>The CLI command is <a href="cli-get.html">dvs get</a>. It prints lines rather than returning a data frame, and adds <code>--threads</code> and <code>--json</code>, which the R surface does not have. Threads are set process-wide with <a href="r-threads.html">set_dvs_threads()</a>.</p>
+<p>The CLI command is <a href="cli-get.html">dvs get</a>. It prints lines rather than returning a data frame, and adds <code>--threads</code> and <code>--json</code>, which the R surface does not have. Its <code>--force</code> is short for <code>--on-conflict overwrite</code>. It has no <code>on_error</code>: its exit code is non-zero when get did not do as asked. Threads are set process-wide with <a href="r-threads.html">set_dvs_threads()</a>.</p>
 </section>
 <section id="see-also" class="level2">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>

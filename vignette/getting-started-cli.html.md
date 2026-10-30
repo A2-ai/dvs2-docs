@@ -45,14 +45,14 @@ flag.
 
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
-dvs init "$DVS_STORAGE"
+dvs init local "$DVS_STORAGE"
 ```
 
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file7518680de0cd_project"
+DVS Initialized at /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file5973c02d284_project
 ```
 
 
@@ -77,6 +77,8 @@ dvs add data/theoph.csv -m "initial Theoph data"
 
 ```
 Added: data/theoph.csv [2.9 KB] --> saved [842 B] as cdd978e51298006701f7b285aaf979933f0af6b179bbdf3347014af3bcd48c06
+
+Added 1
 ```
 
 
@@ -105,6 +107,8 @@ dvs status
 +-----------------+---------+--------+
 | data/theoph.csv | current | 2.9 KB |
 +-----------------+---------+--------+
+
+Checked 1
 ```
 
 
@@ -148,6 +152,8 @@ dvs status
 +-----------------+--------+--------+
 | data/theoph.csv | absent | 2.9 KB |
 +-----------------+--------+--------+
+
+Checked 1
 ```
 
 
@@ -156,8 +162,10 @@ dvs status
 
 
 ::: {.callout-note}
-dvs reports three states: `current`, `absent`, and `unsynced` (on disk but not
-matching the stored hash). See [Storage and meta files](intro-internals.html).
+dvs reports five statuses: `current`, `absent`, `stale` (unchanged since dvs
+wrote it, while the tracked version moved on), `modified` (edited locally) and
+`unsynced` (different, with no record of what dvs wrote). See
+[dvs status](cli-status.html) and [Storage and meta files](intro-internals.html).
 :::
 
 ## 6. Get
@@ -176,8 +184,9 @@ dvs get data/theoph.csv
 ::: {.cell-output .cell-output-stdout}
 
 ```
-data/theoph.csv [2.9 KB]
-Total: 1 files, 2.9 KB
+restored      data/theoph.csv  2.9 KB
+
+Restored 1
 ```
 
 
@@ -206,6 +215,8 @@ dvs status
 +-----------------+---------+--------+
 | data/theoph.csv | current | 2.9 KB |
 +-----------------+---------+--------+
+
+Checked 1
 ```
 
 

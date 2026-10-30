@@ -2298,22 +2298,35 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 </header>
 
 
-<p><code>dvs status</code> reports each tracked file as <code>current</code> (on disk and matching the stored hash), <code>absent</code> (tracked but missing on disk), or <code>unsynced</code> (on disk but not matching the stored hash). By default it prints a compact table.</p>
+<p><code>dvs status</code> reports each tracked file with one of five statuses:</p>
+<ul>
+<li><code>current</code>: on disk and matching the tracked version.</li>
+<li><code>absent</code>: tracked but missing on disk.</li>
+<li><code>stale</code>: on disk as dvs last wrote or added it, while the tracked version has changed since, for example after a <code>git pull</code>. <code>dvs get</code> updates it.</li>
+<li><code>modified</code>: on disk, but different from the tracked version and from what dvs last wrote or added there. This is a local edit.</li>
+<li><code>unsynced</code>: on disk and different from the tracked version, with no record of what dvs last wrote there.</li>
+</ul>
+<p>A file whose metadata cannot be read is listed with status <code>error</code>. By default <code>dvs status</code> prints a compact table and a <code>Checked N</code> summary line.</p>
 <pre class="text"><code>Usage: dvs status [OPTIONS] [PATHS]...
 
 Arguments:
   [PATHS]...  Paths (files or directories) to check status for
 
 Options:
-      --json               Output results as JSON
   -r, --recursive          Recurse into subdirectories of given directories
-  -g, --glob &lt;GLOB&gt;        Select files by glob pattern
+  -g, --glob &lt;GLOB&gt;        Only include the tracked files matching this glob
       --current            Include current files
       --absent             Include absent files
+      --stale              Include stale files
+      --modified           Include modified files
       --unsynced           Include unsynced files
       --with-metadata      Show all metadata columns
-      --threads &lt;THREADS&gt;  Threads (0 = auto-detect)
-  -h, --help               Print help</code></pre>
+  -h, --help               Print help
+
+Global Options:
+      --json               Output results as JSON
+      --emit-events        Stream results and progress as NDJSON
+      --threads &lt;THREADS&gt;  Threads (0 = auto-detect)</code></pre>
 <section id="options" class="level2">
 <h2 class="anchored" data-anchor-id="options">Options</h2>
 <table class="caption-top table">
@@ -2363,6 +2376,18 @@ Options:
 <td>Include <code>absent</code> files.</td>
 </tr>
 <tr class="even">
+<td><code>--stale</code></td>
+<td>flag</td>
+<td>off</td>
+<td>Include <code>stale</code> files.</td>
+</tr>
+<tr class="odd">
+<td><code>--modified</code></td>
+<td>flag</td>
+<td>off</td>
+<td>Include <code>modified</code> files.</td>
+</tr>
+<tr class="even">
 <td><code>--unsynced</code></td>
 <td>flag</td>
 <td>off</td>
@@ -2388,11 +2413,11 @@ Options:
 </tr>
 </tbody>
 </table>
-<p>The three status flags are independent booleans and combine. With none set, all statuses are shown.</p>
+<p>The five status flags are independent booleans and combine. With none set, all statuses are shown.</p>
 </section>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
-<p>Add three files, then delete one and edit another so all three states appear.</p>
+<p>Add three files, then delete one and edit another, so <code>current</code>, <code>absent</code> and <code>modified</code> appear.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width =</span> <span class="dv">1000</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
@@ -2408,10 +2433,10 @@ Options:
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span> <span class="op">&gt;</span>/dev/null</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local <span class="st">&quot;</span><span class="va">$DVS_STORAGE</span><span class="st">&quot;</span> <span class="op">&gt;</span>/dev/null</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> add data/f1.csv data/f2.csv data/sub/f3.csv <span class="op">&gt;</span>/dev/null</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> data/f2.csv                      <span class="co"># -&gt; absent</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;extra,row&quot;</span> <span class="op">&gt;&gt;</span> data/f1.csv     <span class="co"># -&gt; unsynced</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;extra,row&quot;</span> <span class="op">&gt;&gt;</span> data/f1.csv     <span class="co"># -&gt; modified</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="all-files" class="level2">
@@ -2424,12 +2449,14 @@ Options:
 <pre><code>+-----------------+----------+-------+
 | path            | status   | size  |
 +-----------------+----------+-------+
-| data/f1.csv     | unsynced | 488 B |
+| data/f1.csv     | modified | 488 B |
 +-----------------+----------+-------+
 | data/f2.csv     | absent   | 500 B |
 +-----------------+----------+-------+
 | data/sub/f3.csv | current  | 312 B |
-+-----------------+----------+-------+</code></pre>
++-----------------+----------+-------+
+
+Checked 3</code></pre>
 </div>
 </div>
 </section>
@@ -2444,7 +2471,9 @@ Options:
 | path            | status  | size  |
 +-----------------+---------+-------+
 | data/sub/f3.csv | current | 312 B |
-+-----------------+---------+-------+</code></pre>
++-----------------+---------+-------+
+
+Checked 1</code></pre>
 </div>
 </div>
 </section>
@@ -2458,10 +2487,12 @@ Options:
 <pre><code>+-------------+----------+-------+
 | path        | status   | size  |
 +-------------+----------+-------+
-| data/f1.csv | unsynced | 488 B |
+| data/f1.csv | modified | 488 B |
 +-------------+----------+-------+
 | data/f2.csv | absent   | 500 B |
-+-------------+----------+-------+</code></pre>
++-------------+----------+-------+
+
+Checked 2</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2471,12 +2502,14 @@ Options:
 <pre><code>+-----------------+----------+-------+
 | path            | status   | size  |
 +-----------------+----------+-------+
-| data/f1.csv     | unsynced | 488 B |
+| data/f1.csv     | modified | 488 B |
 +-----------------+----------+-------+
 | data/f2.csv     | absent   | 500 B |
 +-----------------+----------+-------+
 | data/sub/f3.csv | current  | 312 B |
-+-----------------+----------+-------+</code></pre>
++-----------------+----------+-------+
+
+Checked 3</code></pre>
 </div>
 </div>
 </section>
@@ -2490,10 +2523,12 @@ Options:
 <pre><code>+-------------+----------+-------+
 | path        | status   | size  |
 +-------------+----------+-------+
-| data/f1.csv | unsynced | 488 B |
+| data/f1.csv | modified | 488 B |
 +-------------+----------+-------+
 | data/f2.csv | absent   | 500 B |
-+-------------+----------+-------+</code></pre>
++-------------+----------+-------+
+
+Checked 2</code></pre>
 </div>
 </div>
 <p><code>--recursive</code> and <code>--glob</code> are mutually exclusive; passing both is a usage error.</p>
@@ -2509,7 +2544,9 @@ Options:
 | path            | status  | size  |
 +-----------------+---------+-------+
 | data/sub/f3.csv | current | 312 B |
-+-----------------+---------+-------+</code></pre>
++-----------------+---------+-------+
+
+Checked 1</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2520,32 +2557,38 @@ Options:
 | path        | status | size  |
 +-------------+--------+-------+
 | data/f2.csv | absent | 500 B |
-+-------------+--------+-------+</code></pre>
++-------------+--------+-------+
+
+Checked 1</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--unsynced</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--modified</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-------------+----------+-------+
 | path        | status   | size  |
 +-------------+----------+-------+
-| data/f1.csv | unsynced | 488 B |
-+-------------+----------+-------+</code></pre>
+| data/f1.csv | modified | 488 B |
++-------------+----------+-------+
+
+Checked 1</code></pre>
 </div>
 </div>
 <p>Filters combine:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--absent</span> <span class="at">--unsynced</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--absent</span> <span class="at">--modified</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+-------------+----------+-------+
 | path        | status   | size  |
 +-------------+----------+-------+
-| data/f1.csv | unsynced | 488 B |
+| data/f1.csv | modified | 488 B |
 +-------------+----------+-------+
 | data/f2.csv | absent   | 500 B |
-+-------------+----------+-------+</code></pre>
++-------------+----------+-------+
+
+Checked 2</code></pre>
 </div>
 </div>
 </section>
@@ -2559,12 +2602,14 @@ Options:
 <pre><code>+-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
 | path            | status   | size  | hash                                                             | created_by | add_time                    | compression | message |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/f1.csv     | unsynced | 488 B | 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 | elea       | 2026-08-10T19:43:44.058688Z | zstd        |         |
+| data/f1.csv     | modified | 488 B | 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65 | elea       | 2026-10-30T11:10:18.777289Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/f2.csv     | absent   | 500 B | c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 | elea       | 2026-08-10T19:43:44.058651Z | zstd        |         |
+| data/f2.csv     | absent   | 500 B | c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871 | elea       | 2026-10-30T11:10:18.777213Z | zstd        |         |
 +-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
-| data/sub/f3.csv | current  | 312 B | 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce | elea       | 2026-08-10T19:43:44.058727Z | zstd        |         |
-+-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+</code></pre>
+| data/sub/f3.csv | current  | 312 B | 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce | elea       | 2026-10-30T11:10:18.777231Z | zstd        |         |
++-----------------+----------+-------+------------------------------------------------------------------+------------+-----------------------------+-------------+---------+
+
+Checked 3</code></pre>
 </div>
 </div>
 </section>
@@ -2578,12 +2623,14 @@ Options:
 <pre><code>+-----------------+----------+-------+
 | path            | status   | size  |
 +-----------------+----------+-------+
-| data/f1.csv     | unsynced | 488 B |
+| data/f1.csv     | modified | 488 B |
 +-----------------+----------+-------+
 | data/f2.csv     | absent   | 500 B |
 +-----------------+----------+-------+
 | data/sub/f3.csv | current  | 312 B |
-+-----------------+----------+-------+</code></pre>
++-----------------+----------+-------+
+
+Checked 3</code></pre>
 </div>
 </div>
 </section>
@@ -2594,13 +2641,13 @@ Options:
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_PROJECT</span><span class="st">&quot;</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> status <span class="at">--json</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[{&quot;path&quot;:&quot;data/f1.csv&quot;,&quot;status&quot;:&quot;unsynced&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;},&quot;size&quot;:488,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T19:43:44.058688Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}},{&quot;path&quot;:&quot;data/f2.csv&quot;,&quot;status&quot;:&quot;absent&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871&quot;},&quot;size&quot;:500,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T19:43:44.058651Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}},{&quot;path&quot;:&quot;data/sub/f3.csv&quot;,&quot;status&quot;:&quot;current&quot;,&quot;metadata&quot;:{&quot;hashes&quot;:{&quot;blake3&quot;:&quot;881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce&quot;},&quot;size&quot;:312,&quot;created_by&quot;:&quot;elea&quot;,&quot;add_time&quot;:&quot;2026-08-10T19:43:44.058727Z&quot;,&quot;compression&quot;:&quot;zstd&quot;}}]</code></pre>
+<pre><code>{&quot;command&quot;:&quot;status&quot;,&quot;counts&quot;:{&quot;cancelled&quot;:0,&quot;failed&quot;:0,&quot;succeeded&quot;:3,&quot;total&quot;:3},&quot;dry_run&quot;:false,&quot;duration_ms&quot;:0,&quot;error&quot;:null,&quot;files&quot;:[{&quot;baseline&quot;:{&quot;blake3&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;,&quot;size&quot;:488},&quot;code&quot;:null,&quot;hint&quot;:null,&quot;message&quot;:null,&quot;metadata&quot;:{&quot;add_time&quot;:&quot;2026-10-30T11:10:18.777289Z&quot;,&quot;compression&quot;:&quot;zstd&quot;,&quot;created_by&quot;:&quot;elea&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65&quot;},&quot;size&quot;:488},&quot;path&quot;:&quot;data/f1.csv&quot;,&quot;status&quot;:&quot;modified&quot;,&quot;working&quot;:{&quot;hash_source&quot;:&quot;cache&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;e4296ff77df5d7d480fed68bb1104ab94a6eaa46f1913b7590a7173b379fd509&quot;},&quot;size&quot;:498,&quot;state&quot;:&quot;present&quot;}},{&quot;baseline&quot;:{&quot;blake3&quot;:&quot;c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871&quot;,&quot;size&quot;:500},&quot;code&quot;:null,&quot;hint&quot;:null,&quot;message&quot;:null,&quot;metadata&quot;:{&quot;add_time&quot;:&quot;2026-10-30T11:10:18.777213Z&quot;,&quot;compression&quot;:&quot;zstd&quot;,&quot;created_by&quot;:&quot;elea&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871&quot;},&quot;size&quot;:500},&quot;path&quot;:&quot;data/f2.csv&quot;,&quot;status&quot;:&quot;absent&quot;,&quot;working&quot;:{&quot;hash_source&quot;:null,&quot;hashes&quot;:null,&quot;size&quot;:null,&quot;state&quot;:&quot;absent&quot;}},{&quot;baseline&quot;:{&quot;blake3&quot;:&quot;881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce&quot;,&quot;size&quot;:312},&quot;code&quot;:null,&quot;hint&quot;:null,&quot;message&quot;:null,&quot;metadata&quot;:{&quot;add_time&quot;:&quot;2026-10-30T11:10:18.777231Z&quot;,&quot;compression&quot;:&quot;zstd&quot;,&quot;created_by&quot;:&quot;elea&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce&quot;},&quot;size&quot;:312},&quot;path&quot;:&quot;data/sub/f3.csv&quot;,&quot;status&quot;:&quot;current&quot;,&quot;working&quot;:{&quot;hash_source&quot;:&quot;cache&quot;,&quot;hashes&quot;:{&quot;blake3&quot;:&quot;881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce&quot;},&quot;size&quot;:312,&quot;state&quot;:&quot;present&quot;}}],&quot;finished_at&quot;:&quot;2026-10-30T11:10:19.016Z&quot;,&quot;outcome&quot;:&quot;complete&quot;,&quot;started_at&quot;:&quot;2026-10-30T11:10:19.015Z&quot;,&quot;v&quot;:1}</code></pre>
 </div>
 </div>
 </section>
 <section id="differences-from-r" class="level2">
 <h2 class="anchored" data-anchor-id="differences-from-r">Differences from R</h2>
-<p>The R function is <a href="r-status.html">dvs_status()</a>. It always returns the metadata columns as a data frame, so there is no <code>--with-metadata</code> toggle; select columns instead. Its filters are a single <code>status</code> character vector (<code>c(&quot;current&quot;, &quot;absent&quot;, &quot;unsynced&quot;)</code>) rather than independent flags, and it has no <code>--threads</code> or <code>--json</code>.</p>
+<p>The R function is <a href="r-status.html">dvs_status()</a>. It always returns the metadata columns as a data frame, so there is no <code>--with-metadata</code> toggle; select columns instead. Its filters are a single <code>status</code> character vector (<code>c(&quot;current&quot;, &quot;absent&quot;, &quot;stale&quot;, &quot;modified&quot;, &quot;unsynced&quot;)</code>) rather than independent flags, and it has no <code>--threads</code> or <code>--json</code>.</p>
 </section>
 <section id="see-also" class="level2">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>

@@ -8,17 +8,27 @@ execute:
   freeze: auto
 ---
 
-`dvs_status()` reports each tracked file as `current` (on disk and matching the
-stored hash), `absent` (tracked but missing on disk), or `unsynced` (on disk but
-not matching the stored hash). It returns a tibble that always includes the full
-metadata columns.
+`dvs_status()` reports each tracked file with one of five statuses:
+
+- `current`: on disk and matching the tracked version.
+- `absent`: tracked but missing on disk.
+- `stale`: on disk as dvs last wrote or added it, while the tracked version has
+  changed since, for example after a `git pull`. [dvs_get()](r-get.html)
+  updates it.
+- `modified`: on disk, but different from the tracked version and from what dvs
+  last wrote or added there. This is a local edit.
+- `unsynced`: on disk and different from the tracked version, with no record of
+  what dvs last wrote there.
+
+A file whose metadata cannot be read is kept, with status `error`. It returns a
+tibble that always includes the full metadata columns.
 
 ```r
 dvs_status(
   paths = character(0),
-  recursive = NULL,
+  recursive = FALSE,
   glob = NULL,
-  status = c("current", "absent", "unsynced")
+  status = c("current", "absent", "stale", "modified", "unsynced")
 )
 ```
 
@@ -27,13 +37,14 @@ dvs_status(
 | Name | Type | Default | Behavior |
 |---|---|---|---|
 | `paths` | character | `character(0)` (whole project) | Files or directories to report. |
-| `recursive` | logical(1) | `NULL` (treated as `FALSE`) | Include files in subdirectories of given directories. |
+| `recursive` | logical(1) | `FALSE` | Include files in subdirectories of given directories. |
 | `glob` | character(1) | `NULL` | Library-expanded glob, same resolution rules as the CLI `--glob`. Mutually exclusive with `recursive`. |
-| `status` | character | all three | Statuses to include. Validated with `match.arg(several.ok = TRUE)`. |
+| `status` | character | all five | Statuses to include. Validated with `match.arg(several.ok = TRUE)`. `NULL` and `character(0)` also mean all. |
 
 ## Setup
 
-Add three files, then delete one and edit another so all three states appear.
+Add three files, then delete one and edit another, so `current`, `absent` and
+`modified` appear.
 
 
 ::: {.cell}
@@ -59,7 +70,7 @@ dvs_init(store)
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                             backend_group
   <chr>       <lgl>                <chr>                                                                                    <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpKG8M0x/storage_7171252ea01a staff        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpIpkU5p/storage_5c4420359080 staff        
 ```
 
 
@@ -72,12 +83,12 @@ dvs_add(c("data/f1.csv", "data/f2.csv", "data/sub/f3.csv"), message = "initial a
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 3 × 5
-  path            outcome hash                                                                size stored_size
-  <chr>           <chr>   <chr>                                                            <bytes>     <bytes>
-1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B
-2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B
-3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B
+# A tibble: 3 × 6
+  path            outcome hash                                                                size stored_size duration_ms
+  <chr>           <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
+1 data/f1.csv     copied  5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B       306 B           0
+2 data/f2.csv     copied  c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B       275 B           0
+3 data/sub/f3.csv copied  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B       140 B           0
 ```
 
 
@@ -97,7 +108,7 @@ file.remove("data/f2.csv")                                   # -> absent
 :::
 
 ```{.r .cell-code}
-write.csv(mtcars[1:9, ], "data/f1.csv")                       # -> unsynced
+write.csv(mtcars[1:9, ], "data/f1.csv")                       # -> modified
 ```
 :::
 
@@ -117,12 +128,12 @@ dvs_status()
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 3 × 8
-  path            status   hash                                                                size created_by compression message     add_time           
-  <chr>           <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <dttm>             
-1 data/f1.csv     unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
-2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
-3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47
+# A tibble: 3 × 10
+  path            status   hash                                                                size created_by compression message     code  error add_time           
+  <chr>           <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
+1 data/f1.csv     modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
 ```
 
 
@@ -145,10 +156,10 @@ dvs_status("data/sub/f3.csv")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 8
-  path            status  hash                                                                size created_by compression message     add_time           
-  <chr>           <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>       <dttm>             
-1 data/sub/f3.csv current 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47
+# A tibble: 1 × 10
+  path            status  hash                                                                size created_by compression message     code  error add_time           
+  <chr>           <chr>   <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
+1 data/sub/f3.csv current 881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
 ```
 
 
@@ -172,11 +183,11 @@ dvs_status("data")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 2 × 8
-  path        status   hash                                                                size created_by compression message     add_time           
-  <chr>       <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <dttm>             
-1 data/f1.csv unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
-2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
+# A tibble: 2 × 10
+  path        status   hash                                                                size created_by compression message     code  error add_time           
+  <chr>       <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
+1 data/f1.csv modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
 ```
 
 
@@ -195,12 +206,12 @@ dvs_status("data", recursive = TRUE)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 3 × 8
-  path            status   hash                                                                size created_by compression message     add_time           
-  <chr>           <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <dttm>             
-1 data/f1.csv     unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
-2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
-3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add 2026-08-10 19:43:47
+# A tibble: 3 × 10
+  path            status   hash                                                                size created_by compression message     code  error add_time           
+  <chr>           <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
+1 data/f1.csv     modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+2 data/f2.csv     absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+3 data/sub/f3.csv current  881b133ef44731569b7844e1dc60f10e5fc4a9f2c2ac36fe20b2bba636d6bbce   312 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
 ```
 
 
@@ -224,10 +235,10 @@ dvs_status(status = "absent")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 8
-  path        status hash                                                                size created_by compression message     add_time           
-  <chr>       <chr>  <chr>                                                            <bytes> <chr>      <chr>       <chr>       <dttm>             
-1 data/f2.csv absent c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
+# A tibble: 1 × 10
+  path        status hash                                                                size created_by compression message     code  error add_time           
+  <chr>       <chr>  <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
+1 data/f2.csv absent c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
 ```
 
 
@@ -240,17 +251,17 @@ dvs_status(status = "absent")
 
 ```{.r .cell-code}
 setwd(proj)
-dvs_status(status = c("absent", "unsynced"))
+dvs_status(status = c("absent", "modified"))
 ```
 
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 2 × 8
-  path        status   hash                                                                size created_by compression message     add_time           
-  <chr>       <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <dttm>             
-1 data/f1.csv unsynced 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add 2026-08-10 19:43:47
-2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add 2026-08-10 19:43:47
+# A tibble: 2 × 10
+  path        status   hash                                                                size created_by compression message     code  error add_time           
+  <chr>       <chr>    <chr>                                                            <bytes> <chr>      <chr>       <chr>       <chr> <chr> <dttm>             
+1 data/f1.csv modified 5e2c49dd5c8a24a2ffe102e42804812c7eabc2c49682240480558eac390c5d65   488 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
+2 data/f2.csv absent   c9c0ca2ba19bf1d65159ba2b7300c3336fdf113c92b79901e06be4b40fcd8871   500 B elea       zstd        initial add <NA>  <NA>  2026-10-30 11:10:00
 ```
 
 
@@ -277,7 +288,7 @@ dvs_status()[, c("path", "status", "size")]
 # A tibble: 3 × 3
   path            status      size
   <chr>           <chr>    <bytes>
-1 data/f1.csv     unsynced   488 B
+1 data/f1.csv     modified   488 B
 2 data/f2.csv     absent     500 B
 3 data/sub/f3.csv current    312 B
 ```
@@ -302,9 +313,9 @@ dvs_status() |> select(path, status, message, add_time)
 # A tibble: 3 × 4
   path            status   message     add_time           
   <chr>           <chr>    <chr>       <dttm>             
-1 data/f1.csv     unsynced initial add 2026-08-10 19:43:47
-2 data/f2.csv     absent   initial add 2026-08-10 19:43:47
-3 data/sub/f3.csv current  initial add 2026-08-10 19:43:47
+1 data/f1.csv     modified initial add 2026-10-30 11:10:00
+2 data/f2.csv     absent   initial add 2026-10-30 11:10:00
+3 data/sub/f3.csv current  initial add 2026-10-30 11:10:00
 ```
 
 
@@ -319,15 +330,18 @@ A tibble with one row per file:
 | Column | Type | Description |
 |---|---|---|
 | `path` | character | File path. |
-| `status` | character | `current`, `absent`, or `unsynced`. |
+| `status` | character | `current`, `absent`, `stale`, `modified`, `unsynced`, or `error`. |
 | `hash` | character | blake3 content hash. |
 | `size` | `dvs_bytes` | File size recorded in the meta file (uncompressed). |
 | `created_by` | character | User who added the file. |
 | `compression` | character | `zstd` or `none`, recorded per file. |
 | `message` | character | Message from `dvs_add()`, or `NA`. |
-| `add_time` | POSIXct | When the file was added. |
+| `code` | character | The kind of failure, such as `bad_metadata`, or `NA`. |
+| `error` | character | The reason for the failure, or `NA`. |
+| `add_time` | POSIXct | When the file was added (UTC). |
 
-Rows that fail carry an `error` column. The `size` column is a
+The columns are the same in every result, even an empty one. A row with status
+`error` has `NA` in the metadata columns. The `size` column is a
 [dvs_bytes](r-bytes.html) value.
 
 ## Differences from the CLI
@@ -335,8 +349,9 @@ Rows that fail carry an `error` column. The `size` column is a
 The CLI command is [dvs status](cli-status.html). It shows a compact `path`,
 `status`, `size` table by default and only adds the metadata columns with
 `--with-metadata`; `dvs_status()` always returns them. Its filters are
-independent `--current` / `--absent` / `--unsynced` flags rather than a single
-`status` vector, and it adds `--threads` and `--json`.
+independent `--current`, `--absent`, `--stale`, `--modified` and `--unsynced`
+flags rather than a single `status` vector, and it adds `--threads` and
+`--json`.
 
 ## See also
 

@@ -85,7 +85,7 @@ dvs_init(here::here(storage), compression = "none")
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                              backend_group
   <chr>       <lgl>                <chr>                                                                     <chr>        
-1 none        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file75ac4d223d8b_storage staff        
+1 none        NA                   /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file7dfc4122e3f5_storage staff        
 ```
 
 
@@ -98,10 +98,10 @@ dvs_add("data/large/large_1.csv", message = "add one large dataset")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 1 × 5
-  path                   outcome hash                                                                size stored_size
-  <chr>                  <chr>   <chr>                                                            <bytes>     <bytes>
-1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     25.0 MB
+# A tibble: 1 × 6
+  path                   outcome hash                                                                size stored_size duration_ms
+  <chr>                  <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
+1 data/large/large_1.csv copied  3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 25.0 MB     25.0 MB          14
 ```
 
 
@@ -114,12 +114,12 @@ dvs_add(paths = fs::dir_ls("data/small", type = "file"), message = "add small co
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 3 × 5
-  path                   outcome hash                                                                  size stored_size
-  <chr>                  <chr>   <chr>                                                              <bytes>     <bytes>
-1 data/small/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB   1024.0 KB
-2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB   1024.0 KB
-3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB   1024.0 KB
+# A tibble: 3 × 6
+  path                   outcome hash                                                                  size stored_size duration_ms
+  <chr>                  <chr>   <chr>                                                              <bytes>     <bytes>       <dbl>
+1 data/small/small_1.csv copied  e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937 1024.0 KB   1024.0 KB           1
+2 data/small/small_2.csv copied  1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04 1024.0 KB   1024.0 KB           1
+3 data/small/small_3.csv copied  9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a 1024.0 KB   1024.0 KB           1
 ```
 
 
@@ -132,19 +132,19 @@ dvs_add(glob = "data/individual/individual_*.csv", message = "add individual dat
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 50 × 5
-   path                              outcome hash                                                                size stored_size
-   <chr>                             <chr>   <chr>                                                            <bytes>     <bytes>
- 1 data/individual/individual_01.csv copied  57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB      3.0 MB
- 2 data/individual/individual_02.csv copied  85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB      3.0 MB
- 3 data/individual/individual_03.csv copied  cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB      3.0 MB
- 4 data/individual/individual_04.csv copied  388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB      3.0 MB
- 5 data/individual/individual_05.csv copied  0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB      3.0 MB
- 6 data/individual/individual_06.csv copied  e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB      3.0 MB
- 7 data/individual/individual_07.csv copied  e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB      3.0 MB
- 8 data/individual/individual_08.csv copied  93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB      3.0 MB
- 9 data/individual/individual_09.csv copied  26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB      3.0 MB
-10 data/individual/individual_10.csv copied  804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB      3.0 MB
+# A tibble: 50 × 6
+   path                              outcome hash                                                                size stored_size duration_ms
+   <chr>                             <chr>   <chr>                                                            <bytes>     <bytes>       <dbl>
+ 1 data/individual/individual_01.csv copied  57856e362f74d4319cdb81f0454e205a91e7ad8c83e3442aee7da4c676902d53  3.0 MB      3.0 MB           5
+ 2 data/individual/individual_02.csv copied  85ee4a308973f2ef5cda8d4a1a6228a4ff69e0f72de5c2dfd1aa8f9a409e2b5c  3.0 MB      3.0 MB           8
+ 3 data/individual/individual_03.csv copied  cd648605e42fddc1c08fc761b3683021e0be3a4578b0ec9e02e84e9645db8d58  3.0 MB      3.0 MB           8
+ 4 data/individual/individual_04.csv copied  388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee  3.0 MB      3.0 MB           5
+ 5 data/individual/individual_05.csv copied  0dbb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92  3.0 MB      3.0 MB           4
+ 6 data/individual/individual_06.csv copied  e3d9340328668ac4a61180c62664fa53726de78410ac7b90679b9f81cee2b852  3.0 MB      3.0 MB           4
+ 7 data/individual/individual_07.csv copied  e755c66eba55a05f0cb10a6c068f29a373de0baaed2649f0b8828ff302c65d61  3.0 MB      3.0 MB           3
+ 8 data/individual/individual_08.csv copied  93cb8aaac5d09feba55d44274f96b3b67f81fd66fce959e86e6b5af80b670d61  3.0 MB      3.0 MB           5
+ 9 data/individual/individual_09.csv copied  26af472b0caf28693778231ceacf48504b4c09d2cc877dd9c4a7f1a21144d72f  3.0 MB      3.0 MB           7
+10 data/individual/individual_10.csv copied  804e10256f674fbb79860959dc612b3f73171c96871a6707278eaea594f9d470  3.0 MB      3.0 MB           5
 # ℹ 40 more rows
 ```
 
@@ -171,8 +171,7 @@ fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 .dvs
 ├── .cache
-│   ├── dvs.db
-│   └── dvs.db-journal
+│   └── dvs.db
 └── data
     ├── individual
     │   ├── individual_01.csv.dvs
@@ -252,20 +251,20 @@ fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 56 × 3
+# A tibble: 55 × 3
           size path                                       type 
    <fs::bytes> <fs::path>                                 <fct>
- 1         20K .dvs/.cache/dvs.db                         file 
- 2           0 .dvs/.cache/dvs.db-journal                 file 
- 3         264 .dvs/data/individual/individual_01.csv.dvs file 
- 4         263 .dvs/data/individual/individual_02.csv.dvs file 
- 5         264 .dvs/data/individual/individual_03.csv.dvs file 
- 6         264 .dvs/data/individual/individual_04.csv.dvs file 
- 7         264 .dvs/data/individual/individual_05.csv.dvs file 
- 8         264 .dvs/data/individual/individual_06.csv.dvs file 
- 9         264 .dvs/data/individual/individual_07.csv.dvs file 
-10         264 .dvs/data/individual/individual_08.csv.dvs file 
-# ℹ 46 more rows
+ 1         36K .dvs/.cache/dvs.db                         file 
+ 2         264 .dvs/data/individual/individual_01.csv.dvs file 
+ 3         264 .dvs/data/individual/individual_02.csv.dvs file 
+ 4         264 .dvs/data/individual/individual_03.csv.dvs file 
+ 5         264 .dvs/data/individual/individual_04.csv.dvs file 
+ 6         264 .dvs/data/individual/individual_05.csv.dvs file 
+ 7         264 .dvs/data/individual/individual_06.csv.dvs file 
+ 8         264 .dvs/data/individual/individual_07.csv.dvs file 
+ 9         263 .dvs/data/individual/individual_08.csv.dvs file 
+10         264 .dvs/data/individual/individual_09.csv.dvs file 
+# ℹ 45 more rows
 ```
 
 
@@ -291,7 +290,7 @@ fs::dir_info(".dvs", recurse = TRUE, all = TRUE, type = "file") |>
 # A tibble: 4 × 3
   subdir          n_files        size
   <fs::path>        <int> <fs::bytes>
-1 .cache                2         20K
+1 .cache                1         36K
 2 data/individual      50       12.9K
 3 data/large            1         254
 4 data/small            3         771
@@ -372,7 +371,7 @@ cat(jsonlite::toJSON(jsonlite::fromJSON(large_meta, simplifyVector = FALSE), pre
   },
   "size": 26214390,
   "created_by": "elea",
-  "add_time": "2026-08-10T19:44:25.791254Z",
+  "add_time": "2026-10-30T11:11:00.831265Z",
   "compression": "none",
   "message": "add one large dataset"
 }
@@ -394,7 +393,7 @@ fs::dir_tree(here::here(storage), all = TRUE, regexp = "\\.git", invert = TRUE)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file75ac4d223d8b_storage
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file7dfc4122e3f5_storage
 ├── 0d
 │   └── bb9776c7188194995a8ddc0dca67a9814ef7fa165cc035518386c6e51cbb92
 ├── 15
@@ -569,7 +568,7 @@ $created_by
 [1] "elea"
 
 $add_time
-[1] "2026-08-10T19:44:25.791254Z"
+[1] "2026-10-30T11:11:00.831265Z"
 
 $compression
 [1] "none"
@@ -610,7 +609,7 @@ large_blob
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[1] "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file75ac4d223d8b_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838"
+[1] "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file7dfc4122e3f5_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838"
 ```
 
 
@@ -623,7 +622,7 @@ fs::file_exists(large_blob)
 ::: {.cell-output .cell-output-stdout}
 
 ```
-/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file75ac4d223d8b_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 
+/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file7dfc4122e3f5_storage/3c/77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 
                                                                                                                                        TRUE 
 ```
 
@@ -769,8 +768,7 @@ fs::dir_tree(".dvs", all = TRUE, regexp = "\\.git", invert = TRUE)
 ```
 .dvs
 ├── .cache
-│   ├── dvs.db
-│   └── dvs.db-journal
+│   └── dvs.db
 └── data
     ├── individual
     │   ├── individual_01.csv.dvs
@@ -903,7 +901,8 @@ dvs_status("data/large/large_1.csv")
 ::: {.cell-output .cell-output-stdout}
 
 ```
-# A tibble: 0 × 0
+# A tibble: 0 × 10
+# ℹ 10 variables: path <chr>, status <chr>, hash <chr>, size <bytes>, created_by <chr>, compression <chr>, message <chr>, code <chr>, error <chr>, add_time <dttm>
 ```
 
 

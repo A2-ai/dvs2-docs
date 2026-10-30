@@ -73,7 +73,7 @@ Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(stora
 
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
-dvs init "$DVS_STORAGE"
+dvs init local "$DVS_STORAGE"
 cat dvs.toml
 ```
 
@@ -81,11 +81,11 @@ cat dvs.toml
 ::: {.cell-output .cell-output-stdout}
 
 ```
-DVS Initialized at "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file897a32623b5a_project"
+DVS Initialized at /Users/elea/Documents/a2ai_github/dvs2-demo-repo/file871f465edab1_project
 compression = "zstd"
 
 [backend]
-path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file897a474b920f_storage"
+path = "/Users/elea/Documents/a2ai_github/dvs2-demo-repo/file871f6ee81399_storage"
 group = "staff"
 ```
 
@@ -113,6 +113,8 @@ dvs add data/large/large_1.csv -m "one large dataset"
 
 ```
 Added: data/large/large_1.csv [25.0 MB] --> saved [10.5 MB] as 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838
+
+Added 1
 ```
 
 
@@ -142,9 +144,11 @@ dvs add --glob "data/individual/individual_*.csv" -m "individual datasets" | tai
 Added: data/small/small_1.csv [1024.0 KB] --> saved [427.8 KB] as e0fb0b7aac778f07ba37105d2e2a70d1cee429f50d77c3b0c9dd4ad4d2222937
 Added: data/small/small_2.csv [1024.0 KB] --> saved [427.9 KB] as 1574af6b3e5cfd7fdba90c4f819fbd2bd128cd573c304588623fc09d49ae6b04
 Added: data/small/small_3.csv [1024.0 KB] --> saved [428.1 KB] as 9d97b050e954474b51c5b3f06eafd07bc33366b9f3b09ea1211ac75c2704357a
-Added: data/individual/individual_48.csv [3.0 MB] --> saved [1.3 MB] as 7d62b45f3c50dcaf1f3143a9c67d5a1606b58660359405f533483713157d3ce2
-Added: data/individual/individual_49.csv [3.0 MB] --> saved [1.3 MB] as d855539255e6bcef2bdb7b3be9c727312db4c8eb6229851bb2ddd71667bde6e3
+
+Added 3
 Added: data/individual/individual_50.csv [3.0 MB] --> saved [1.3 MB] as b05327be23b5f7172df2b5c2a19ba2a214b6d8c01d87f6231563a2b2dd9f464b
+
+Added 50
 ```
 
 
@@ -172,6 +176,11 @@ dvs add --glob "data/small/*.csv" --dry-run
 
 ```
 To add: data/small/new_file.csv [6 B] as 8ebd15e1b413963410d68a325723e4bc165afcd389a860e601b5aee8731e570e
+Unchanged: data/small/small_1.csv [1024.0 KB] already tracked
+Unchanged: data/small/small_2.csv [1024.0 KB] already tracked
+Unchanged: data/small/small_3.csv [1024.0 KB] already tracked
+
+Would add 1, 3 unchanged
 ```
 
 
@@ -202,7 +211,7 @@ cat .dvs/data/large/large_1.csv.dvs
   },
   "size": 26214390,
   "created_by": "elea",
-  "add_time": "2026-08-10T19:48:36.161915Z",
+  "add_time": "2026-10-30T11:11:57.682029Z",
   "compression": "zstd",
   "message": "one large dataset"
 }
@@ -241,6 +250,8 @@ dvs status data/large data/small
 +------------------------+---------+-----------+
 | data/small/small_3.csv | current | 1024.0 KB |
 +------------------------+---------+-----------+
+
+Checked 4
 ```
 
 
@@ -261,8 +272,8 @@ echo "99,0,0,0,0,0" >> data/large/large_1.csv
 :::
 
 
-The `--absent` and `--unsynced` flags filter; without flags you get all
-states:
+The `--absent` and `--modified` flags filter. Without flags you get all
+statuses:
 
 
 ::: {.cell}
@@ -270,7 +281,7 @@ states:
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
 dvs status --absent
-dvs status --unsynced
+dvs status --modified
 ```
 
 
@@ -286,11 +297,15 @@ dvs status --unsynced
 +-----------------------------------+--------+--------+
 | data/individual/individual_15.csv | absent | 3.0 MB |
 +-----------------------------------+--------+--------+
+
+Checked 3
 +------------------------+----------+---------+
 | path                   | status   | size    |
 +------------------------+----------+---------+
-| data/large/large_1.csv | unsynced | 25.0 MB |
+| data/large/large_1.csv | modified | 25.0 MB |
 +------------------------+----------+---------+
+
+Checked 1
 ```
 
 
@@ -306,7 +321,7 @@ compression, and message:
 
 ```{.bash .cell-code}
 cd "$DVS_PROJECT"
-dvs status --unsynced --with-metadata
+dvs status --modified --with-metadata
 ```
 
 
@@ -316,8 +331,10 @@ dvs status --unsynced --with-metadata
 +------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
 | path                   | status   | size    | hash                                                             | created_by | add_time                    | compression | message           |
 +------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
-| data/large/large_1.csv | unsynced | 25.0 MB | 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 | elea       | 2026-08-10T19:48:36.161915Z | zstd        | one large dataset |
+| data/large/large_1.csv | modified | 25.0 MB | 3c77885f59933a6334a438d0a77d2adcd06873bed58a00fc9807fce3d13ed838 | elea       | 2026-10-30T11:11:57.682029Z | zstd        | one large dataset |
 +------------------------+----------+---------+------------------------------------------------------------------+------------+-----------------------------+-------------+-------------------+
+
+Checked 1
 ```
 
 
@@ -342,26 +359,26 @@ dvs status --absent --json | python3 -m json.tool | head -20
 ::: {.cell-output .cell-output-stdout}
 
 ```
-[
-    {
-        "path": "data/individual/individual_04.csv",
-        "status": "absent",
-        "metadata": {
-            "hashes": {
-                "blake3": "388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee"
-            },
-            "size": 3145709,
-            "created_by": "elea",
-            "add_time": "2026-08-10T19:48:36.410722Z",
-            "compression": "zstd",
-            "message": "individual datasets"
-        }
+{
+    "command": "status",
+    "counts": {
+        "cancelled": 0,
+        "failed": 0,
+        "succeeded": 3,
+        "total": 3
     },
-    {
-        "path": "data/individual/individual_08.csv",
-        "status": "absent",
-        "metadata": {
-            "hashes": {
+    "dry_run": false,
+    "duration_ms": 12,
+    "error": null,
+    "files": [
+        {
+            "baseline": {
+                "blake3": "388c35ea1e0f0f55cd73c6d6e84ad7659b3954f271103b51bcc868f9f07d1aee",
+                "size": 3145709
+            },
+            "code": null,
+            "hint": null,
+            "message": null,
 ```
 
 
@@ -385,10 +402,11 @@ dvs get --glob "data/individual/individual_*.csv"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-data/individual/individual_04.csv [3.0 MB]
-data/individual/individual_08.csv [3.0 MB]
-data/individual/individual_15.csv [3.0 MB]
-Total: 3 files, 9.0 MB
+restored      data/individual/individual_04.csv  3.0 MB
+restored      data/individual/individual_08.csv  3.0 MB
+restored      data/individual/individual_15.csv  3.0 MB
+
+Restored 3, 47 already current
 ```
 
 
@@ -411,6 +429,8 @@ dvs add data/large/large_1.csv -m "append row 99"
 
 ```
 Added: data/large/large_1.csv [25.0 MB] --> saved [10.5 MB] as 5e21922b470b3f9850c69729e53eb73df300672e6f43279aa43c7f252e54d03c
+
+Added 1
 ```
 
 
@@ -440,9 +460,9 @@ dvs status --absent
 ::: {.cell-output .cell-output-stdout}
 
 ```
-data/small/small_2.csv [1024.0 KB]
-data/small/small_3.csv [1024.0 KB]
-Total: 54 files, 178.0 MB
+restored      data/small/small_3.csv             1024.0 KB
+
+Restored 54
 No tracked files matching the filter
 ```
 
@@ -471,8 +491,10 @@ dvs get data/no_such_file.csv || echo "exit code: $?"
 ::: {.cell-output .cell-output-stdout}
 
 ```
-Error: The following paths are not tracked by DVS:
-  data/no_such_file.csv
+failed        data/no_such_file.csv  not tracked by dvs
+
+Aborted, nothing changed: 1 file cannot be retrieved
+  data/no_such_file.csv: check the path; list tracked files with: dvs status
 exit code: 1
 ```
 
@@ -502,6 +524,8 @@ dvs status data/large data/no_such_dir && echo "exit code: 0"
 +------------------------+---------+---------+
 | data/large/large_1.csv | current | 25.0 MB |
 +------------------------+---------+---------+
+
+Checked 1
 exit code: 0
 ```
 
@@ -529,8 +553,8 @@ dvs status --threads 2 | tail -3
 
 ```
 +-----------------------------------+---------+-----------+
-| data/small/small_3.csv            | current | 1024.0 KB |
-+-----------------------------------+---------+-----------+
+
+Checked 54
 ```
 
 

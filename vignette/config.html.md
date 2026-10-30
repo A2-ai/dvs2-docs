@@ -51,7 +51,7 @@ dvs_init(store, root_dir = proj)
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                              backend_group
   <chr>       <lgl>                <chr>                                                                                                     <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/default-store staff        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/default-store staff        
 ```
 
 
@@ -67,7 +67,7 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 compression = "zstd"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/default-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/default-store"
 group = "staff"
 ```
 
@@ -82,6 +82,7 @@ group = "staff"
 | `[backend] path` | Storage directory for blobs. Any path reachable from this machine: a local path or a network mount. |
 | `[backend] group` | Unix group set on the storage directory and stored files. Defaults to the creating user's group. |
 | `metadata_folder_name` | Name of the metadata folder (default `.dvs`). Only written when set to a non-default value. |
+| `[get] on_conflict` | `"abort"` or `"skip"`: what `get` does with files that have local changes. Not written by `init`. See below. |
 
 ## Non-default fields
 
@@ -105,7 +106,7 @@ dvs_init(store, root_dir = proj, metadata_folder_name = ".datalock", compression
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                             backend_group
   <chr>       <chr>                <chr>                                                                                                    <chr>        
-1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/custom-store staff        
+1 none        .datalock            /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/custom-store staff        
 ```
 
 
@@ -122,7 +123,7 @@ compression = "none"
 metadata_folder_name = ".datalock"
 
 [backend]
-path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/custom-store"
+path = "/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/custom-store"
 group = "staff"
 ```
 
@@ -130,6 +131,44 @@ group = "staff"
 :::
 :::
 
+
+## `[get] on_conflict`
+
+`get` takes its conflict policy from the argument or flag first, then the
+`DVS_GET_ON_CONFLICT` environment variable, then `[get] on_conflict` in
+`dvs.toml`, then `"abort"`. A project can make `"skip"` its default:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+setwd(proj)
+cat('\n[get]\non_conflict = "skip"\n', file = "dvs.toml", append = TRUE)
+writeLines("a", "f.csv")
+invisible(dvs_add("f.csv"))
+writeLines("b", "f.csv")
+res <- dvs_get("f.csv")
+dvs_result_info(res)[c("on_conflict", "source")]
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+$on_conflict
+[1] "skip"
+
+$source
+[1] "config"
+```
+
+
+:::
+:::
+
+
+`on_conflict = "overwrite"` in `dvs.toml` is a configuration error, so that a
+committed file cannot discard someone's local changes. Pass it as an argument,
+a flag or the environment variable instead.
 
 ## Project discovery
 
@@ -156,7 +195,7 @@ dvs_init(file.path(base, "repo-store"), root_dir = root)
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                           backend_group
   <chr>       <lgl>                <chr>                                                                                                  <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/repo-store staff        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/repo-store staff        
 ```
 
 
@@ -172,7 +211,7 @@ dvs_init(file.path(base, "sub-store"), root_dir = sub)
 # A tibble: 1 × 4
   compression metadata_folder_name backend_path                                                                                          backend_group
   <chr>       <lgl>                <chr>                                                                                                 <chr>        
-1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpFESTFj/dvs_config_df3132ec2bc9/sub-store staff        
+1 zstd        NA                   /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpRRo9c1/dvs_config_80cf7609314a/sub-store staff        
 ```
 
 

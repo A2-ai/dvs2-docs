@@ -2299,19 +2299,23 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRqlBtK8AAARoAAACiEdQT1N5IAFFAA
 
 
 <p><code>dvs init</code> creates a <code>dvs.toml</code> project file in the root directory and a metadata folder (<code>.dvs</code> by default). It records where file contents are stored and how they are compressed.</p>
-<pre class="text"><code>Usage: dvs init [OPTIONS] &lt;PATH&gt;
+<p>The first argument names the storage backend. <code>dvs init local &lt;PATH&gt;</code> stores file contents in a directory, such as a shared drive. <code>dvs init server</code> stores them on a dvs server, and is not covered on this page. A plain <code>dvs init &lt;PATH&gt;</code> stops with “dvs init needs a backend before the storage path”.</p>
+<pre class="text"><code>Usage: dvs init local [OPTIONS] &lt;PATH&gt;
 
 Arguments:
   &lt;PATH&gt;  Where the data will be stored
 
 Options:
-      --json                                          Output results as JSON
       --root-dir &lt;ROOT_DIR&gt;                           Project root (default: cwd)
       --metadata-folder-name &lt;METADATA_FOLDER_NAME&gt;   Metadata folder (default: .dvs)
-      --threads &lt;THREADS&gt;                             Threads (0 = auto-detect)
       --group &lt;GROUP&gt;                                 Unix group for storage and files
       --no-compression                                Disable compression (default: zstd)
-  -h, --help                                          Print help</code></pre>
+  -h, --help                                          Print help
+
+Global Options:
+      --json                                          Output results as JSON
+      --emit-events                                   Stream results and progress as NDJSON
+      --threads &lt;THREADS&gt;                             Threads (0 = auto-detect)</code></pre>
 <section id="options" class="level2">
 <h2 class="anchored" data-anchor-id="options">Options</h2>
 <table class="caption-top table">
@@ -2392,14 +2396,14 @@ Options:
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_BASE</span><span class="st">&quot;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> basic/proj basic/store</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> basic/proj</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init ../store</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local ../store</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> dvs.toml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized at &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/basic/proj&quot;
+<pre><code>DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/basic/proj
 compression = &quot;zstd&quot;
 
 [backend]
-path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/basic/store&quot;
+path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/basic/store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2410,10 +2414,10 @@ group = &quot;staff&quot;</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_BASE</span><span class="st">&quot;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> rootdir/proj rootdir/store</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init rootdir/store <span class="at">--root-dir</span> rootdir/proj</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local rootdir/store <span class="at">--root-dir</span> rootdir/proj</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> rootdir/proj/dvs.toml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized at &quot;rootdir/proj&quot;
+<pre><code>DVS Initialized at rootdir/proj
 rootdir/proj/dvs.toml</code></pre>
 </div>
 </div>
@@ -2425,10 +2429,10 @@ rootdir/proj/dvs.toml</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_BASE</span><span class="st">&quot;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> meta/proj meta/store</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> meta/proj</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init ../store <span class="at">--metadata-folder-name</span> .meta</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local ../store <span class="at">--metadata-folder-name</span> .meta</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-a</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized at &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/meta/proj&quot;
+<pre><code>DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/meta/proj
 .
 ..
 .meta
@@ -2443,9 +2447,9 @@ dvs.toml</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_BASE</span><span class="st">&quot;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> group/proj group/store</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> group/proj</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init ../store <span class="at">--group</span> rstudio</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local ../store <span class="at">--group</span> rstudio</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<pre class="text"><code>DVS Initialized at &quot;/path/to/group/proj&quot;</code></pre>
+<pre class="text"><code>DVS Initialized at /path/to/group/proj</code></pre>
 <p>The chosen group is written to <code>dvs.toml</code> under <code>[backend]</code>.</p>
 </section>
 <section id="no-compression" class="level2">
@@ -2455,14 +2459,14 @@ dvs.toml</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_BASE</span><span class="st">&quot;</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> nocomp/proj nocomp/store</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> nocomp/proj</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init ../store <span class="at">--no-compression</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local ../store <span class="at">--no-compression</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> dvs.toml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized at &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/nocomp/proj&quot;
+<pre><code>DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/nocomp/proj
 compression = &quot;none&quot;
 
 [backend]
-path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/nocomp/store&quot;
+path = &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/nocomp/store&quot;
 group = &quot;staff&quot;</code></pre>
 </div>
 </div>
@@ -2487,22 +2491,22 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_BASE</span><span class="st">&quot;</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> threads/proj threads/store</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> threads/proj</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init ../store <span class="at">--threads</span> 2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local ../store <span class="at">--threads</span> 2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DVS Initialized at &quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpVdkJ7G/dvs_init_d50e2541af03/threads/proj&quot;</code></pre>
+<pre><code>DVS Initialized at /private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/threads/proj</code></pre>
 </div>
 </div>
 </section>
 <section id="json" class="level2">
 <h2 class="anchored" data-anchor-id="json"><code>--json</code></h2>
-<p>Emit the result as JSON instead of a status line.</p>
+<p>Emit the result as JSON instead of a status line. Every command prints one versioned object with the same top-level fields: <code>v</code> (the format version), <code>command</code>, <code>outcome</code>, <code>error</code> (<code>null</code> unless the command failed) and timings. The commands that act on files add <code>counts</code> and a <code>files</code> list.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$DVS_BASE</span><span class="st">&quot;</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> jsonex/proj jsonex/store</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> jsonex/proj</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init ../store <span class="at">--json</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dvs</span> init local ../store <span class="at">--json</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>{&quot;status&quot;:&quot;initialized&quot;}</code></pre>
+<pre><code>{&quot;command&quot;:&quot;init&quot;,&quot;dry_run&quot;:false,&quot;duration_ms&quot;:1,&quot;error&quot;:null,&quot;finished_at&quot;:&quot;2026-10-30T11:10:09.871Z&quot;,&quot;outcome&quot;:&quot;complete&quot;,&quot;project_root&quot;:&quot;/private/var/folders/_x/bq8vb1b156sgl363l71by61h0000gn/T/RtmpiutLRg/dvs_init_66601274b747/jsonex/proj&quot;,&quot;started_at&quot;:&quot;2026-10-30T11:10:09.869Z&quot;,&quot;v&quot;:1}</code></pre>
 </div>
 </div>
 </section>
