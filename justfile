@@ -1,6 +1,6 @@
-# The dvs CLI is installed into ./bin from the local .dvs2 clone (see
-# install-cli). Prepending it here means every recipe (and the bash chunks in
-# rendered vignettes) uses the same build the R package was compiled from.
+# The dvs CLI is installed into ./bin from the dvs2 commit that rv.lock records
+# for the R package (see install-cli). Prepending it here means every recipe
+# (and the bash chunks in rendered vignettes) uses the same dvs as the R chunks.
 export PATH := justfile_directory() / "bin:" + env_var('PATH')
 
 default:
@@ -86,26 +86,35 @@ site-build:
     echo "==> zola build"
     cd site && zola build
 
-# Build the dvs rustdoc into site/static/rustdoc using the local .dvs2 clone,
-# mirroring the CI step in .github/workflows/pages.yml (deps included for the
-# complete picture). Placed in static/ so zola build/serve/check all pick it up
-# at /rustdoc/ automatically. The dir is gitignored; CI builds its own copy.
+# Build the dvs rustdoc into site/static/rustdoc, mirroring the CI step in
+# .github/workflows/pages.yml (deps included for the complete picture). The
+# source is the dvs2 commit in rv.lock, fetched into .dvs2-src (gitignored, a
+# cache the recipe resets). Placed in static/ so zola build/serve/check all
+# pick it up at /rustdoc/ automatically. The dir is gitignored. CI builds its
+# own copy.
 #
 # Nightly + -Z unstable-options theme the docs to match the Zola site:
 # --extend-css overrides rustdoc's per-theme color/font variables, and
 # --html-before-content injects a "back to docs" banner (site/rustdoc/).
-site-rustdoc dvs_src=".dvs2":
+site-rustdoc:
     #!/usr/bin/env bash
     set -euo pipefail
+    dvs_src=.dvs2-src
+    [ -d "$dvs_src/.git" ] || git init -q "$dvs_src"
+    git -C "$dvs_src" fetch -q --depth 1 https://github.com/A2-ai/dvs2 "$(just dvs-sha)"
+    git -C "$dvs_src" checkout -q --force --detach FETCH_HEAD
+    # Keep the build next to the source. A target-dir in the user's cargo
+    # config would otherwise get the docs, and the clean below.
+    export CARGO_TARGET_DIR="$PWD/$dvs_src/target"
     export RUSTDOCFLAGS="-Z unstable-options --default-setting use-system-theme=true \
       --extend-css $PWD/site/rustdoc/zola.css \
       --html-before-content $PWD/site/rustdoc/banner.html"
     # cargo fingerprints RUSTDOCFLAGS but not the css/banner file contents, so
     # editing them alone won't trigger a rebuild. Clean the doc output first.
-    cargo +nightly clean --doc --manifest-path {{dvs_src}}/Cargo.toml
-    cargo +nightly doc -p dvs --manifest-path {{dvs_src}}/Cargo.toml
+    cargo +nightly clean --doc --manifest-path "$dvs_src/Cargo.toml"
+    cargo +nightly doc -p dvs --manifest-path "$dvs_src/Cargo.toml"
     rm -rf site/static/rustdoc && mkdir -p site/static/rustdoc
-    cp -r {{dvs_src}}/target/doc/. site/static/rustdoc/
+    cp -r "$dvs_src/target/doc/." site/static/rustdoc/
 
 # Build the Starlight (Astro) R-package reference into site/static/r, mirroring
 # the CI step in .github/workflows/pages.yml. Placed in static/ so zola
@@ -129,7 +138,7 @@ site-check: site-rustdoc site-r site-build
     cd site && zola check
 
 # Build the Starlight R docs (/r/) and the site, then live-preview in a browser.
-# Rustdoc (/rustdoc/) is heavier (nightly + dvs2 clone); run `just site-rustdoc`
+# Rustdoc (/rustdoc/) is heavier (nightly + a dvs2 checkout). Run `just site-rustdoc`
 # separately if you need it in the preview.
 site-serve: site-r site-build
     cd site && zola serve --open
@@ -219,9 +228,9 @@ showcase:
 rv-init:
     rv init
 
-# rv add the dvs package from a local clone at .dvs2/dvs-rpkg
-add-dvs:
-    rv add dvs --git https://github.com/a2-ai/dvs2 --directory dvs-rpkg --branch main
+# rv add the dvs package from dvs2 at a commit (rproject.toml pins it the same way)
+add-dvs commit:
+    rv add dvs --git https://github.com/A2-ai/dvs2 --directory dvs-rpkg --commit {{commit}}
 
 # rv add vignette + helper dependencies
 add-deps:
@@ -231,26 +240,43 @@ add-deps:
 sync:
     rv sync
 
-# === dvs source repo ===
+# === dvs version ===
+# rproject.toml pins the dvs R package to a dvs2 commit (a git dependency with
+# `directory = "dvs-rpkg"`, so rv runs dvs-rpkg's bootstrap.R in its checkout
+# to stage the core crate). rv.lock records the commit. The CLI and the
+# rustdoc build read it from there, so all three show the same dvs.
 
-# Clone dvs2 into .dvs2 (required to build dvs-rpkg from source via rv)
-clone-dvs:
-    gh repo clone A2-ai/dvs2 .dvs2 -- --single-branch --depth=1
-    echo '*' > .dvs2/.gitignore
+# Print the dvs2 commit that rv.lock records for the dvs R package
+[private]
+dvs-sha:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    sha=$(grep -A2 '^name = "dvs"$' rv.lock | grep -o 'sha = "[0-9a-f]*"' | cut -d'"' -f2)
+    [ -n "$sha" ] || { echo "rv.lock has no git commit for dvs. Is rproject.toml pointing at a path?" >&2; exit 1; }
+    echo "$sha"
 
-# Pull the latest dvs2 source. rv builds the R package from .dvs2 with
-# `directory = "dvs-rpkg"` (rproject.toml), which runs dvs-rpkg's bootstrap.R
-# in the clone to stage the core crate, so there is no vendor step.
-update-dvs:
-    git -C .dvs2 checkout -- . && git -C .dvs2 pull --rebase
+# Move the dvs pin to the tip of a dvs2 branch: rewrite the commit in
+# rproject.toml, rebuild the R package (R 4.5 on PATH), then the CLI.
+update-dvs branch="main":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    sha=$(git ls-remote https://github.com/A2-ai/dvs2 "refs/heads/{{branch}}" | cut -f1)
+    [ -n "$sha" ] || { echo "dvs2 has no branch {{branch}}" >&2; exit 1; }
+    perl -pi -e "s{(name = \"dvs\", git = \"https://github.com/A2-ai/dvs2\", commit = \")[0-9a-f]+}{\${1}$sha}" rproject.toml
+    grep -q "commit = \"$sha\"" rproject.toml || { echo "rproject.toml has no dvs commit pin to move" >&2; exit 1; }
+    rv sync
+    just install-cli
 
-# Install the dvs CLI from the local clone into ./bin (kept on PATH above)
-install-cli:
-    cargo install --locked --force --path .dvs2/dvs-cli --root .
-
-# Install the cargo-revendor build helper
-install-cargo-revendor:
-    cargo install --locked --force --git https://github.com/A2-ai/miniextendr cargo-revendor
+# Install the dvs CLI into ./bin (kept on PATH above) from the dvs2 commit in
+# rv.lock. With a path (a local dvs2 checkout), install from that instead.
+install-cli path="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -n "{{path}}" ]; then
+        cargo install --locked --force --path "{{path}}/dvs-cli" --root .
+    else
+        cargo install --locked --git https://github.com/A2-ai/dvs2 --rev "$(just dvs-sha)" --root . dvs-cli
+    fi
 
 # === Bootstrap ===
 
@@ -259,17 +285,14 @@ new-project NAME:
     mkdir {{NAME}}
     cd {{NAME}} && Rscript -e 'usethis::create_project(".")'
     cd {{NAME}} && rv init
-    cd {{NAME}} && rv add dvs --git https://github.com/a2-ai/dvs2 --directory dvs-rpkg --branch main
+    cd {{NAME}} && rv add dvs --git https://github.com/A2-ai/dvs2 --directory dvs-rpkg --commit "$(just dvs-sha)"
     cd {{NAME}} && rv add usethis quarto here stringr stringi dplyr
-    cd {{NAME}} && gh repo clone A2-ai/dvs2 .dvs -- --single-branch --depth=1
-    cd {{NAME}} && echo '*' > .dvs/.gitignore
     cd {{NAME}} && rv sync
 
-# Bootstrap the current project from scratch (clone dvs, install tooling, sync)
+# Bootstrap the current project from scratch (R packages, then the CLI)
 bootstrap:
-    just clone-dvs
-    just install-cargo-revendor
     just sync
+    just install-cli
 
 # === Housekeeping ===
 
@@ -277,9 +300,9 @@ bootstrap:
 clean:
     rm -rf vignette/*.html vignette/*_files tmp_random_files _freeze .quarto
 
-# Full reset: clean + drop .dvs clone
+# Full reset: clean + drop the installed CLI and the rustdoc source
 reset: clean
-    rm -rf .dvs
+    rm -rf bin .crates.toml .crates2.json .dvs2-src
 
 # Show tree respecting .treeignore
 tree *ARGS:

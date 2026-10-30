@@ -9,6 +9,7 @@ on:
       - 'vignette/**'
       - 'tools/htmlmd_to_zola.py'
       - 'justfile'
+      - 'rv.lock'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -41,12 +42,15 @@ jobs:
       - name: Build site
         run: just site-build
 
-      # Rustdoc for the dvs library, deps included ("complete picture"). The
-      # dvs2 source is not vendored here, so clone it fresh and document it.
-      # Pin the ref to a release tag to freeze the docs to a version.
+      # Rustdoc for the dvs library, deps included ("complete picture"), from
+      # the dvs2 commit that rv.lock records for the R package and the CLI, so
+      # /rustdoc/ documents the same dvs as the vignettes.
       # cargo/rustup are preinstalled on ubuntu-latest.
-      - name: Clone dvs2 source
-        run: git clone --depth 1 https://github.com/A2-ai/dvs2 dvs2-src
+      - name: Fetch dvs2 source at the rv.lock commit
+        run: |
+          git init -q dvs2-src
+          git -C dvs2-src fetch -q --depth 1 https://github.com/A2-ai/dvs2 "$(just dvs-sha)"
+          git -C dvs2-src checkout -q --detach FETCH_HEAD
 
       # Cache the cargo registry + compiled deps so the rustdoc build doesn't
       # recompile the whole dependency tree on every docs push (the dominant
