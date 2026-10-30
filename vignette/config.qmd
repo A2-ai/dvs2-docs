@@ -44,6 +44,7 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 | `[backend] path` | Storage directory for blobs. Any path reachable from this machine: a local path or a network mount. |
 | `[backend] group` | Unix group set on the storage directory and stored files. Defaults to the creating user's group. |
 | `metadata_folder_name` | Name of the metadata folder (default `.dvs`). Only written when set to a non-default value. |
+| `[get] on_conflict` | `"abort"` or `"skip"`: what `get` does with files that have local changes. Not written by `init`. See below. |
 
 ## Non-default fields
 
@@ -58,6 +59,26 @@ dir.create(store)
 dvs_init(store, root_dir = proj, metadata_folder_name = ".datalock", compression = "none")
 cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 ```
+
+## `[get] on_conflict`
+
+`get` takes its conflict policy from the argument or flag first, then the
+`DVS_GET_ON_CONFLICT` environment variable, then `[get] on_conflict` in
+`dvs.toml`, then `"abort"`. A project can make `"skip"` its default:
+
+```{r}
+setwd(proj)
+cat('\n[get]\non_conflict = "skip"\n', file = "dvs.toml", append = TRUE)
+writeLines("a", "f.csv")
+invisible(dvs_add("f.csv"))
+writeLines("b", "f.csv")
+res <- dvs_get("f.csv")
+dvs_result_info(res)[c("on_conflict", "source")]
+```
+
+`on_conflict = "overwrite"` in `dvs.toml` is a configuration error, so that a
+committed file cannot discard someone's local changes. Pass it as an argument,
+a flag or the environment variable instead.
 
 ## Project discovery
 

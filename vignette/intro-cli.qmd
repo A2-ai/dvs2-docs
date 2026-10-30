@@ -114,13 +114,13 @@ rm data/individual/individual_04.csv data/individual/individual_08.csv data/indi
 echo "99,0,0,0,0,0" >> data/large/large_1.csv
 ```
 
-The `--absent` and `--unsynced` flags filter; without flags you get all
-states:
+The `--absent` and `--modified` flags filter. Without flags you get all
+statuses:
 
 ```{bash}
 cd "$DVS_PROJECT"
 dvs status --absent
-dvs status --unsynced
+dvs status --modified
 ```
 
 `--with-metadata` widens the table with the hash, author, timestamp,
@@ -128,7 +128,7 @@ compression, and message:
 
 ```{bash}
 cd "$DVS_PROJECT"
-dvs status --unsynced --with-metadata
+dvs status --modified --with-metadata
 ```
 
 ### JSON output

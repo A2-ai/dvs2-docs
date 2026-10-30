@@ -81,8 +81,10 @@ dvs_status()
 ```
 
 ::: {.callout-note}
-dvs reports three states: `current`, `absent`, and `unsynced` (on disk but not
-matching the stored hash). See [Storage and meta files](intro-internals.html).
+dvs reports five statuses: `current`, `absent`, `stale` (unchanged since dvs
+wrote it, while the tracked version moved on), `modified` (edited locally) and
+`unsynced` (different, with no record of what dvs wrote). See
+[dvs_status()](r-status.html) and [Storage and meta files](intro-internals.html).
 :::
 
 ## 6. Get

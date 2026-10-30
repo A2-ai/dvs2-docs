@@ -41,6 +41,19 @@ Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(stora
 
 # `init` errors
 
+## No storage backend given
+
+The CLI needs a backend before the storage path: `dvs init local <PATH>` for a
+directory, or `dvs init server` for a dvs server. A plain `dvs init <PATH>`, the
+form from before the server backend, exits 2 and suggests the `local` form.
+`dvs_init()` in R always uses a local directory.
+
+```{bash}
+#| error: true
+cd "$DVS_PROJECT"
+dvs init "$DVS_STORAGE"
+```
+
 ## Storage path is inside the repository
 
 Passing a storage path that resolves to a subdirectory of the project root is
@@ -178,7 +191,7 @@ dvs add nonexistent_file.csv
 
 Passing a bare directory name with no glob is an invalid input, not an empty
 match. Both surfaces refuse the batch with the same message (`path is a
-directory`); the CLI exits 1. Directories only make sense combined with a
+directory`), and the CLI exits 2. Directories only make sense combined with a
 glob, or via `--recursive` on `status` and `get`.
 
 ```{r}
@@ -310,7 +323,9 @@ dvs status present.csv missing.csv
 
 If a `.dvs` meta file is corrupted (non-JSON content), the parse error
 surfaces as a per-file row in the result rather than a top-level abort. The
-rest of the tree still resolves.
+rest of the tree still resolves. In R the row has status `error`, the kind of
+failure in `code` (`bad_metadata`) and the reason in `error`. The CLI prints
+the reason, leaves the file out of the table and counts it as failed.
 
 ```{r}
 #| error: true
@@ -361,7 +376,9 @@ rm -rf "$OUTSIDE3"
 
 ## No files to get: empty glob
 
-When the glob resolves to zero tracked files, `dvs get` aborts.
+When the glob resolves to zero tracked files, there is nothing to get.
+`dvs_get()` returns an empty result under the line `no tracked files matched`,
+not an R error. The CLI prints the same line and exits 1.
 
 ```{r}
 #| error: true
@@ -377,7 +394,10 @@ dvs get --glob "data/nope_*.csv"
 
 ## File is not tracked by DVS
 
-Requesting a file that exists on disk but has never been `dvs add`-ed.
+Requesting a file that exists on disk but has never been `dvs add`-ed. This
+is a result, not an R error: the row has `action` `failed` and `code`
+`not_tracked`, and no other requested file is changed. The CLI prints the same
+and exits 1.
 
 ```{r}
 #| error: true
@@ -395,7 +415,8 @@ dvs get untracked.csv
 
 ## File is not found at all
 
-Requesting a path that neither exists on disk nor has metadata.
+Requesting a path that neither exists on disk nor has metadata. dvs does not
+tell it apart from an untracked file: it is `not_tracked` too.
 
 ```{r}
 #| error: true
@@ -412,7 +433,9 @@ dvs get ghost.csv
 ## Storage blob missing for tracked file
 
 The metadata `.dvs` file exists but the corresponding blob has been deleted
-from storage, simulating a corrupted or partially-synced store.
+from storage, simulating a corrupted or partially-synced store. The row has
+`code` `source_missing` and a hint on what to do. The local file is left
+alone.
 
 ```{r}
 #| error: true
@@ -448,7 +471,9 @@ dvs get tracked.csv
 
 The blob exists and decompresses successfully, but its content hashes to
 something other than the hash recorded in the meta file. Simulates
-content-level corruption of the blob.
+content-level corruption of the blob. `get` verifies the bytes before it
+writes the file, so the row has `code` `hash_mismatch` and no file is
+written.
 
 ```{r}
 #| error: true
@@ -466,8 +491,9 @@ dvs_add(paths = "tampered.csv")
 # Replace the stored blob with zstd-compressed different content under the
 # same filename (so the hash-keyed path resolves, but the decompressed bytes
 # no longer match the recorded hash).
-blob <- list.files(hm_storage, recursive = TRUE, full.names = TRUE)
+blob <- list.files(here::here(hm_storage), recursive = TRUE, full.names = TRUE)
 blob <- blob[!grepl("audit", blob)]
+stopifnot(length(blob) == 1)
 Sys.chmod(blob, mode = "0644")
 # zstd -q reads stdin and writes compressed bytes to stdout
 system2("bash", c("-c",

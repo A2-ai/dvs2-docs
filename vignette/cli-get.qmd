@@ -13,19 +13,28 @@ the contents back to their original paths. It is the inverse of `add`: the loop
 to run after re-cloning a project whose data is not on disk. Pass paths, a glob,
 or both.
 
+A local file that differs from the tracked version is replaced without asking
+only when dvs itself put it there, for example after switching git branches.
+Otherwise it is a conflict, handled by `--on-conflict`.
+
 ```text
 Usage: dvs get [OPTIONS] [PATHS]...
 
 Arguments:
-  [PATHS]...
+  [PATHS]...  Tracked files or directories to retrieve
 
 Options:
-  -g, --glob <GLOB>        Select files by glob pattern
-  -r, --recursive          Recurse into subdirectories of directory inputs
-      --json               Output results as JSON
-      --dry-run            Show what would be retrieved without writing files
-      --threads <THREADS>  Threads (0 = auto-detect)
-  -h, --help               Print help
+  -g, --glob <GLOB>           Only retrieve the tracked files matching this glob
+  -r, --recursive             Recurse into subdirectories of directory inputs
+      --dry-run               Show what would be retrieved without writing files
+      --on-conflict <POLICY>  abort, skip or overwrite files with local changes
+  -f, --force                 Same as --on-conflict overwrite
+  -h, --help                  Print help
+
+Global Options:
+      --json                  Output results as JSON
+      --emit-events           Stream results and progress as NDJSON
+      --threads <THREADS>     Threads (0 = auto-detect)
 ```
 
 ## Options
@@ -35,7 +44,9 @@ Options:
 | `[PATHS]...` | paths | none | Files to retrieve. |
 | `-g`, `--glob` | pattern | none | Library-expanded glob, literal path separator (use `**` to recurse). |
 | `-r`, `--recursive` | flag | off | Walk subdirectories of directory inputs. Without it, a directory retrieves only its direct children. |
-| `--dry-run` | flag | off | Report what would be retrieved; write nothing. |
+| `--dry-run` | flag | off | Report what would be retrieved. Write nothing. |
+| `--on-conflict` | `abort`, `skip`, `overwrite` | `DVS_GET_ON_CONFLICT`, then `[get] on_conflict` in `dvs.toml`, then `abort` | What to do with files that have local changes. `abort` changes nothing, `skip` leaves them and gets the rest, `overwrite` replaces them. |
+| `-f`, `--force` | flag | off | Same as `--on-conflict overwrite`. |
 | `--threads` | integer | `0` (auto) | Thread pool size for this command. |
 | `--json` | flag | off | Emit results as JSON. |
 
@@ -75,7 +86,7 @@ dvs status --absent
 
 ## Paths
 
-Restore a single file. Output lists each retrieved file and a total.
+Restore a single file. Output lists each retrieved file and a summary line.
 
 ```{bash}
 cd "$DVS_PROJECT"
@@ -151,6 +162,35 @@ cd "$DVS_PROJECT"
 dvs status --absent
 ```
 
+## `--on-conflict`, `-f`
+
+Edit a tracked file, so it is `modified`. With the default, `abort`, `get`
+changes no file at all, not even the absent `data/f2.csv`, and exits non-zero.
+It says why and what to do.
+
+```{bash}
+cd "$DVS_PROJECT"
+echo "extra,row" >> data/f1.csv
+dvs get data/f1.csv data/f2.csv
+echo "exit code: $?"
+```
+
+`--on-conflict skip` leaves the conflicting file and gets the rest:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs get data/f1.csv data/f2.csv --on-conflict skip
+```
+
+`--force` (or `--on-conflict overwrite`) replaces it with the tracked version.
+The local changes are lost.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs get data/f1.csv --force
+dvs status data/f1.csv
+```
+
 ## `--threads`
 
 Override the auto-detected thread count for this command.
@@ -162,7 +202,10 @@ dvs get data/f2.csv --threads 2
 
 ## `--json`
 
-Each result row carries `path`, `outcome` (`copied` or `present`), and `size`.
+The result is one versioned object: `command`, `outcome`, `counts`, `bytes`,
+timings, and a `files` list with a row per file (`path`, `before`, `action`,
+`satisfied`, `size`, the hashes, and `code`, `message` and `hint` for a
+problem).
 
 ```{bash}
 cd "$DVS_PROJECT"
@@ -173,7 +216,9 @@ dvs get data/f1.csv --json
 
 The R function is [dvs_get()](r-get.html). It returns a data frame rather than
 printed lines, has no `--threads` or `--json`, and shows a progress bar only in
-interactive sessions.
+interactive sessions. It takes `on_conflict` like `--on-conflict` but has no
+`--force`. Where the CLI exits non-zero, it returns the result, and its
+`on_error` argument can make it warn or raise an error instead.
 
 ## See also
 

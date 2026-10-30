@@ -129,14 +129,14 @@ dvs_status(status = "current") |> nrow()
 ## When data changes
 
 Append a row to the large file. Its hash no longer matches the meta file, so
-its status flips to `unsynced`:
+its status flips to `modified`:
 
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
 
 cat("99,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
-dvs_status(status = "unsynced")
+dvs_status(status = "modified")
 ```
 
 Re-add it with a message that says why. dvs writes the new content to storage
@@ -148,7 +148,7 @@ to the old meta file still resolve.
 setwd(here::here(new_project))
 
 dvs_add("data/large/large_1.csv", message = "append row 99, corrected dataset")
-dvs_status(status = "unsynced")
+dvs_status(status = "modified")
 ```
 
 ## Dry runs
@@ -163,10 +163,10 @@ setwd(here::here(new_project))
 
 cat("100,0,0,0,0,0\n", file = "data/large/large_1.csv", append = TRUE)
 dvs_add("data/large/large_1.csv", message = "preview only", dry_run = TRUE)
-dvs_status(status = "unsynced")
+dvs_status(status = "modified")
 ```
 
-Still `unsynced`: no blob was written, no meta file updated. The same works
+Still `modified`: no blob was written, no meta file updated. The same works
 for retrieval:
 
 ```{r}

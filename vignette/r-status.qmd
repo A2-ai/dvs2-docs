@@ -8,17 +8,27 @@ execute:
   freeze: auto
 ---
 
-`dvs_status()` reports each tracked file as `current` (on disk and matching the
-stored hash), `absent` (tracked but missing on disk), or `unsynced` (on disk but
-not matching the stored hash). It returns a tibble that always includes the full
-metadata columns.
+`dvs_status()` reports each tracked file with one of five statuses:
+
+- `current`: on disk and matching the tracked version.
+- `absent`: tracked but missing on disk.
+- `stale`: on disk as dvs last wrote or added it, while the tracked version has
+  changed since, for example after a `git pull`. [dvs_get()](r-get.html)
+  updates it.
+- `modified`: on disk, but different from the tracked version and from what dvs
+  last wrote or added there. This is a local edit.
+- `unsynced`: on disk and different from the tracked version, with no record of
+  what dvs last wrote there.
+
+A file whose metadata cannot be read is kept, with status `error`. It returns a
+tibble that always includes the full metadata columns.
 
 ```r
 dvs_status(
   paths = character(0),
-  recursive = NULL,
+  recursive = FALSE,
   glob = NULL,
-  status = c("current", "absent", "unsynced")
+  status = c("current", "absent", "stale", "modified", "unsynced")
 )
 ```
 
@@ -27,13 +37,14 @@ dvs_status(
 | Name | Type | Default | Behavior |
 |---|---|---|---|
 | `paths` | character | `character(0)` (whole project) | Files or directories to report. |
-| `recursive` | logical(1) | `NULL` (treated as `FALSE`) | Include files in subdirectories of given directories. |
+| `recursive` | logical(1) | `FALSE` | Include files in subdirectories of given directories. |
 | `glob` | character(1) | `NULL` | Library-expanded glob, same resolution rules as the CLI `--glob`. Mutually exclusive with `recursive`. |
-| `status` | character | all three | Statuses to include. Validated with `match.arg(several.ok = TRUE)`. |
+| `status` | character | all five | Statuses to include. Validated with `match.arg(several.ok = TRUE)`. `NULL` and `character(0)` also mean all. |
 
 ## Setup
 
-Add three files, then delete one and edit another so all three states appear.
+Add three files, then delete one and edit another, so `current`, `absent` and
+`modified` appear.
 
 ```{r}
 options(width = 1000)
@@ -50,7 +61,7 @@ setwd(proj)
 dvs_init(store)
 dvs_add(c("data/f1.csv", "data/f2.csv", "data/sub/f3.csv"), message = "initial add")
 file.remove("data/f2.csv")                                   # -> absent
-write.csv(mtcars[1:9, ], "data/f1.csv")                       # -> unsynced
+write.csv(mtcars[1:9, ], "data/f1.csv")                       # -> modified
 ```
 
 ## All files
@@ -98,7 +109,7 @@ dvs_status(status = "absent")
 
 ```{r}
 setwd(proj)
-dvs_status(status = c("absent", "unsynced"))
+dvs_status(status = c("absent", "modified"))
 ```
 
 ## Selecting columns
@@ -124,15 +135,18 @@ A tibble with one row per file:
 | Column | Type | Description |
 |---|---|---|
 | `path` | character | File path. |
-| `status` | character | `current`, `absent`, or `unsynced`. |
+| `status` | character | `current`, `absent`, `stale`, `modified`, `unsynced`, or `error`. |
 | `hash` | character | blake3 content hash. |
 | `size` | `dvs_bytes` | File size recorded in the meta file (uncompressed). |
 | `created_by` | character | User who added the file. |
 | `compression` | character | `zstd` or `none`, recorded per file. |
 | `message` | character | Message from `dvs_add()`, or `NA`. |
-| `add_time` | POSIXct | When the file was added. |
+| `code` | character | The kind of failure, such as `bad_metadata`, or `NA`. |
+| `error` | character | The reason for the failure, or `NA`. |
+| `add_time` | POSIXct | When the file was added (UTC). |
 
-Rows that fail carry an `error` column. The `size` column is a
+The columns are the same in every result, even an empty one. A row with status
+`error` has `NA` in the metadata columns. The `size` column is a
 [dvs_bytes](r-bytes.html) value.
 
 ## Differences from the CLI
@@ -140,8 +154,9 @@ Rows that fail carry an `error` column. The `size` column is a
 The CLI command is [dvs status](cli-status.html). It shows a compact `path`,
 `status`, `size` table by default and only adds the metadata columns with
 `--with-metadata`; `dvs_status()` always returns them. Its filters are
-independent `--current` / `--absent` / `--unsynced` flags rather than a single
-`status` vector, and it adds `--threads` and `--json`.
+independent `--current`, `--absent`, `--stale`, `--modified` and `--unsynced`
+flags rather than a single `status` vector, and it adds `--threads` and
+`--json`.
 
 ## See also
 

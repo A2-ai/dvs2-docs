@@ -13,7 +13,7 @@ meta file next to each one, and returns a tibble of results. Pass paths, a glob,
 or both.
 
 ```r
-dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
+dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = FALSE)
 ```
 
 ## Parameters
@@ -23,7 +23,7 @@ dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = NULL)
 | `paths` | character | `character(0)` | Files to add. |
 | `message` | character(1) | `NULL` | Message recorded in each meta file. |
 | `glob` | character(1) | `NULL` | Library-expanded glob. Uses a literal path separator (use `**` to recurse). |
-| `dry_run` | logical(1) | `NULL` (treated as `FALSE`) | Report what would be added; write nothing. |
+| `dry_run` | logical(1) | `FALSE` | Report what would be added. Write nothing. |
 
 In interactive sessions a progress bar is shown while files are processed. It is
 not a parameter, and no bar appears in scripts, rendered documents, or dry runs.
@@ -123,10 +123,15 @@ A tibble with one row per file:
 | `outcome` | character | `copied` (new content stored) or `present` (already stored). |
 | `hash` | character | blake3 content hash. |
 | `size` | `dvs_bytes` | On-disk size. |
-| `stored_size` | `dvs_bytes` | Stored (compressed) size. |
+| `stored_size` | `dvs_bytes` | Stored (compressed) size. In a dry run, `size`. |
+| `duration_ms` | double | Milliseconds spent on the file. |
 
-Rows that fail carry an `error` column instead. The `size` and `stored_size`
-columns are [dvs_bytes](r-bytes.html) values that print as human-readable sizes.
+A file that fails does not stop the others. When one fails, the result also has
+the columns `code` (the kind of failure, for example `io_error`) and `error`
+(the reason), and that row has `NA` in `outcome`, `hash`, `size` and
+`stored_size`. A path that does not exist raises an error and adds nothing. The
+`size` and `stored_size` columns are [dvs_bytes](r-bytes.html) values that
+print as human-readable sizes.
 
 ## Differences from the CLI
 

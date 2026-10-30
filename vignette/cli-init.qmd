@@ -12,20 +12,29 @@ execute:
 metadata folder (`.dvs` by default). It records where file contents are stored
 and how they are compressed.
 
+The first argument names the storage backend. `dvs init local <PATH>` stores
+file contents in a directory, such as a shared drive. `dvs init server` stores
+them on a dvs server, and is not covered on this page. A plain
+`dvs init <PATH>` stops with "dvs init needs a backend before the storage
+path".
+
 ```text
-Usage: dvs init [OPTIONS] <PATH>
+Usage: dvs init local [OPTIONS] <PATH>
 
 Arguments:
   <PATH>  Where the data will be stored
 
 Options:
-      --json                                          Output results as JSON
       --root-dir <ROOT_DIR>                           Project root (default: cwd)
       --metadata-folder-name <METADATA_FOLDER_NAME>   Metadata folder (default: .dvs)
-      --threads <THREADS>                             Threads (0 = auto-detect)
       --group <GROUP>                                 Unix group for storage and files
       --no-compression                                Disable compression (default: zstd)
   -h, --help                                          Print help
+
+Global Options:
+      --json                                          Output results as JSON
+      --emit-events                                   Stream results and progress as NDJSON
+      --threads <THREADS>                             Threads (0 = auto-detect)
 ```
 
 ## Options
@@ -105,7 +114,7 @@ dvs init local ../store --group rstudio
 ```
 
 ```text
-DVS Initialized at "/path/to/group/proj"
+DVS Initialized at /path/to/group/proj
 ```
 
 The chosen group is written to `dvs.toml` under `[backend]`.
@@ -141,7 +150,10 @@ dvs init local ../store --threads 2
 
 ## `--json`
 
-Emit the result as JSON instead of a status line.
+Emit the result as JSON instead of a status line. Every command prints one
+versioned object with the same top-level fields: `v` (the format version),
+`command`, `outcome`, `error` (`null` unless the command failed) and timings.
+The commands that act on files add `counts` and a `files` list.
 
 ```{bash}
 cd "$DVS_BASE"

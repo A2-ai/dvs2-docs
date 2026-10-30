@@ -16,15 +16,18 @@ meta file next to each one. Pass paths, a glob, or both. At least one path or
 Usage: dvs add [OPTIONS] [PATHS]...
 
 Arguments:
-  [PATHS]...
+  [PATHS]...  Files to add, or directories to search with --glob
 
 Options:
-      --glob <GLOB>        Select files by glob pattern
-      --json               Output results as JSON
+      --glob <GLOB>        Add the files matching this glob
   -m, --message <MESSAGE>  An optional message to record
-      --threads <THREADS>  Threads (0 = auto-detect)
       --dry-run            Show what would be added without changing anything
   -h, --help               Print help
+
+Global Options:
+      --json               Output results as JSON
+      --emit-events        Stream results and progress as NDJSON
+      --threads <THREADS>  Threads (0 = auto-detect)
 ```
 
 ## Options
@@ -34,7 +37,7 @@ Options:
 | `[PATHS]...` | paths | none | Files to add. Shell expands any globs before dvs sees them. |
 | `--glob` | pattern | none | Library-expanded glob. Uses a literal path separator (see below). |
 | `-m`, `--message` | text | none | Message recorded in each meta file. |
-| `--dry-run` | flag | off | Report what would be added; write nothing. |
+| `--dry-run` | flag | off | Report what would be added. Write nothing. |
 | `--threads` | integer | `0` (auto) | Thread pool size for this command. |
 | `--json` | flag | off | Emit results as JSON. |
 
@@ -133,8 +136,10 @@ dvs add data/threaded.csv --threads 2
 
 ## `--json`
 
-Each result row carries `path`, `outcome` (`copied` or `present`), `hash`,
-`size`, and `stored_size`.
+The result is one versioned object: `command`, `outcome`, `counts`, `bytes`,
+timings, and a `files` list with a row per file (`path`, `outcome` (`copied` or
+`present`), `hash`, `size`, `stored_size`, `duration_ms`, and `code`, `message`
+and `hint` for a failure).
 
 ```{bash}
 cd "$DVS_PROJECT"
@@ -144,10 +149,17 @@ dvs add data/as_json.csv --json
 
 ## Invalid paths refuse the batch
 
-Input paths are validated before anything is written. If a path cannot be
-resolved to a file to add, because it is missing, is a directory passed without
-a glob, or lands outside the project root, the whole batch is refused: nothing
-is added, and `add` exits 1.
+Input paths are validated before anything is written. A directory passed
+without a glob, or a path outside the project root, refuses the whole batch:
+nothing is added, and `add` exits 2.
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs add data data/threaded.csv; echo "exit code: $?"
+```
+
+A path that does not exist stops `add` the same way, with "Path not found" and
+exit code 1.
 
 ```{bash}
 cd "$DVS_PROJECT"
