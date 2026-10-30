@@ -1,5 +1,8 @@
 .Rproj.user
 .dvs/
+# dvs2 source for `just site-rustdoc`, fetched at the rv.lock commit
+.dvs2-src/
+# the local dvs2 clone the build used before dvs became a git dependency
 .dvs2/
 tmp_random_files/
 vignette/*_files/
@@ -10,7 +13,7 @@ _freeze/
 .DS_Store
 rv/library/
 .alexandria-cli/
-# dvs CLI installed from .dvs2 via `cargo install --path .dvs2/dvs-cli --root .`
+# dvs CLI installed by `just install-cli` (cargo install --root .)
 bin/
 .crates.toml
 .crates2.json

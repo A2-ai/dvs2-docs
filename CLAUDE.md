@@ -15,11 +15,11 @@ Documentation and demo repo for [dvs2](https://github.com/A2-ai/dvs2). Two roles
 
 - `vignette/` — quarto `.qmd` sources; each renders to `.html` + `.html.md` (keep-md: true)
 - `R/` — helper scripts used by vignettes (`mkdatasetfiles.R` test-data generator)
-- `bin/` — dvs CLI installed from `.dvs2` via `just install-cli` (gitignored;
-  the justfile prepends it to PATH for every recipe, so rendered bash chunks
-  use the same build as the R package)
+- `bin/` — dvs CLI installed by `just install-cli` from the dvs2 commit in
+  `rv.lock` (gitignored). The justfile prepends it to PATH for every recipe, so
+  rendered bash chunks use the same dvs as the R package
 - `.alx/` — Alexandria config (project ID `22c331d9-0bd0-4e36-b5fd-df81a841a628`, remote https://alx.dev.a2-ai.cloud/api)
-- `rproject.toml` — rv config. The dvs R package is built from source from `.dvs2`, subdirectory `dvs-rpkg`
+- `rproject.toml` — rv config. The dvs R package is a git dependency on dvs2 at a pinned commit, subdirectory `dvs-rpkg`
 
 ## Key workflows
 
@@ -38,38 +38,44 @@ PRISM binaries and old packages fail to compile under it):
 export PATH="/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/bin:$PATH"
 ```
 
-## Updating .dvs2 (the local dvs2 clone)
+## Which dvs (the pinned dvs2 commit)
 
-`.dvs2/` is the dvs2 source clone used for local builds of both the R package
-and the CLI. It is **not** tracked by git (`.dvs2/.gitignore` contains `*`).
-
-```bash
-just update-dvs    # pull latest main
-just install-cli   # cargo install --path .dvs2/dvs-cli --root .  ->  ./bin/dvs
-just sync          # rebuild the R package from .dvs2 (R 4.5 on PATH)
-```
-
-dvs-rpkg depends on the dvs core crate by the path `../../../dvs`, which is
-outside `dvs-rpkg/`. So the `rproject.toml` entry names the repository root
-and the package's subdirectory:
+`rproject.toml` pins dvs to one dvs2 commit, the way ncakit's consumers pin
+ncakit:
 
 ```toml
-{ name = "dvs", path = ".dvs2", directory = "dvs-rpkg" }
+{ name = "dvs", git = "https://github.com/A2-ai/dvs2", commit = "<sha>", directory = "dvs-rpkg" }
 ```
 
-With `directory`, rv runs dvs-rpkg's `bootstrap.R` in the clone, which stages
-the core crate for the build. There is no vendor step. The older entry
-`path = ".dvs2/dvs-rpkg"` fails at configure with "Path dependencies outside
-the package directory are missing".
+`rv.lock` records the commit. `just install-cli` builds the CLI into `./bin`
+from that commit, and `just site-rustdoc` and the Pages workflow document it.
+So the R chunks, the bash chunks and `/rustdoc/` all show the same dvs.
+
+```bash
+just update-dvs        # move the pin to the tip of dvs2 main, rv sync, install-cli
+just update-dvs NAME   # the same for another dvs2 branch
+just install-cli       # rebuild ./bin/dvs from the rv.lock commit (no-op if current)
+```
+
+`update-dvs` and `sync` need R 4.5 on PATH. After moving the pin, clear the
+freeze cache (`rm -rf _freeze`) and re-render, or `freeze: auto` serves the
+old output for every vignette whose `.qmd` did not change.
+
+dvs-rpkg depends on the dvs core crate by the path `../../../dvs`, which is
+outside `dvs-rpkg/`. With `directory`, rv checks out the whole repository and
+runs dvs-rpkg's `bootstrap.R` there, which stages the core crate for the
+build. A dependency on `dvs-rpkg/` alone (the old `path = ".dvs2/dvs-rpkg"`)
+fails at configure with "Path dependencies outside the package directory are
+missing". This needs rv newer than 0.22.2.
 
 The CLI needs `dvs init local <path>` since dvs2 added the server backend.
 `dvs init <path>` stops with "dvs init needs a backend before the storage
 path".
 
-To test a dvs2 branch instead, point `path` at a worktree of that branch
-(keep `directory = "dvs-rpkg"`), `rv sync`, reinstall the CLI from the same
-worktree, then clear the freeze cache (`rm -rf _freeze/vignette/<name>`) and
-re-render.
+To test an unpushed dvs2 worktree, replace the entry with
+`{ name = "dvs", path = "/path/to/worktree", directory = "dvs-rpkg" }`,
+`rv sync`, and `just install-cli /path/to/worktree`. Restore the commit pin
+before committing.
 
 ## Adding a new vignette
 

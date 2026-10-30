@@ -19,11 +19,11 @@ R/              Helper scripts used by vignettes
 site/           Zola static site (config.toml, templates, sass, content/)
 tools/          htmlmd_to_zola.py, converts vignette .html.md to Zola pages
 .alx/           Alexandria config (project ID 22c331d9-0bd0-4e36-b5fd-df81a841a628)
-rproject.toml   rv-managed R environment, dvs built from .dvs2 (directory dvs-rpkg)
+rproject.toml   rv-managed R environment, dvs from dvs2 at a pinned commit (directory dvs-rpkg)
 justfile        All build recipes
 ```
 
-`.dvs/` holds a local clone of the dvs2 source used to build the R package. It is not tracked by git.
+`rproject.toml` pins the dvs R package to one dvs2 commit, and `rv.lock` records it. `just install-cli` builds the dvs CLI from the same commit into `bin/`, which every recipe puts first on `PATH`. So the R chunks and the bash chunks in the vignettes run the same dvs.
 
 ## Docs pipeline
 
@@ -42,44 +42,50 @@ just site-build          # generate site/content from .html.md files, then zola 
 just site-serve          # site-build + zola serve --open (local preview)
 just publish             # publish all vignettes to alx
 just sync                # rv sync (install/update R packages)
-just bootstrap           # clone .dvs, install cargo-revendor, run rv sync
-just clone-dvs           # clone dvs2 source into .dvs/
-just update-dvs          # pull latest dvs2 source (git -C .dvs pull --rebase)
-just install-cli         # cargo install the dvs CLI from .dvs/dvs-cli
+just bootstrap           # rv sync, then install-cli
+just update-dvs          # move the dvs pin to the tip of dvs2 main, rv sync, install-cli
+just install-cli         # build the dvs CLI from the rv.lock commit into bin/
 just clean               # remove rendered artefacts and generated data
-just reset               # clean + drop .dvs clone
+just reset               # clean + drop bin/ and the rustdoc source in .dvs2-src/
 ```
+
+Building dvs from source needs Rust and rv newer than 0.22.2 (git dependencies with a `directory`).
 
 ## Rendering and previewing locally
 
 ```bash
-just bootstrap           # first-time setup: clones .dvs, syncs R packages
+just bootstrap           # first-time setup: R packages and the dvs CLI
 just render-one intro    # render one vignette
 just site-serve          # build the Zola site and open it in the browser
 ```
 
 ## Testing a dvs2 branch
 
-Point `rproject.toml` at the branch worktree instead of `.dvs`:
+For a pushed branch, move the pin to its tip. This rewrites the commit in `rproject.toml`, runs `rv sync`, and reinstalls the CLI:
+
+```bash
+just update-dvs <branch>
+```
+
+For an unpushed worktree, point `rproject.toml` at it and install the CLI from it:
 
 ```toml
 { name = "dvs", path = "/path/to/dvs2-worktrees/<branch>", directory = "dvs-rpkg" }
 ```
 
-Install the CLI from the same worktree:
-
 ```bash
-cd /path/to/dvs2-worktrees/<branch> && just install-cli
+rv sync
+just install-cli /path/to/dvs2-worktrees/<branch>
 ```
 
-Clear the freeze cache for the vignette and re-render:
+Then clear the freeze cache and re-render. With `freeze: auto`, a vignette whose `.qmd` did not change is otherwise served from its old output.
 
 ```bash
 rm -rf _freeze/vignette/<name>
 just render-one <name>
 ```
 
-Always run `rv sync` after changing the path in `rproject.toml` before rendering.
+Restore the commit pin in `rproject.toml` before committing.
 
 ## Adding a vignette
 

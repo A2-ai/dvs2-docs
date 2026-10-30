@@ -17,8 +17,11 @@ repositories = [
     # {name = "dplyr", git = "https://github.com/tidyverse/dplyr.git", tag = "v1.1.4"},
 dependencies = [
     "quarto",
-    # { name = "dvs", git = "https://github.com/a2-ai/dvs2", branch = "main", directory = "dvs-rpkg" },
-    { name = "dvs", path = ".dvs2", directory = "dvs-rpkg" },
+    # dvs at the dvs2 commit the vignettes are rendered against, built from
+    # source: needs Rust and rv newer than 0.22.2 (git dependencies with a
+    # `directory`). `just install-cli` builds the dvs CLI from the commit
+    # rv.lock records, and `just update-dvs` moves both to the tip of dvs2 main.
+    { name = "dvs", git = "https://github.com/A2-ai/dvs2", commit = "7ff0aa0300a108197ecbc8bbb287c7a1cf34f54a", directory = "dvs-rpkg" },
     "usethis",
     "here",
     "stringr",
