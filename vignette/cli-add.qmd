@@ -9,8 +9,9 @@ execute:
 ---
 
 `dvs add` hashes files, copies their contents into storage, and writes a `.dvs`
-meta file next to each one. Pass paths, a glob, or both. At least one path or
-`--glob` is required.
+meta file next to each one. Pass files, a glob, or directories with a glob to
+search them. A glob given only with files is an error, as it would select
+nothing. At least one path or `--glob` is required.
 
 ```text
 Usage: dvs add [OPTIONS] [PATHS]...
@@ -107,6 +108,11 @@ dvs add --glob "glob/*.csv"
 ::: {.callout-tip}
 Use `**` to cross directory boundaries. `glob/**/*.csv` matches the nested file
 that `glob/*.csv` skipped.
+:::
+
+::: {.callout-warning}
+Quote the glob. Unquoted, the shell expands `--glob *.csv` into
+`--glob a.csv b.csv`, and dvs refuses a glob given only with files.
 :::
 
 ```{bash}

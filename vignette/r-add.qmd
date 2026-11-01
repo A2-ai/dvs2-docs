@@ -9,8 +9,9 @@ execute:
 ---
 
 `dvs_add()` hashes files, copies their contents into storage, writes a `.dvs`
-meta file next to each one, and returns a tibble of results. Pass paths, a glob,
-or both.
+meta file next to each one, and returns a tibble of results. Pass files, a
+glob, or directories with a glob to search them. A glob given only with files
+is an error, as it would select nothing.
 
 ```r
 dvs_add(paths = character(0), message = NULL, glob = NULL, dry_run = FALSE)

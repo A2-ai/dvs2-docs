@@ -10,8 +10,9 @@ execute:
 
 `dvs get` reads the meta files, finds the matching blobs in storage, and writes
 the contents back to their original paths. It is the inverse of `add`: the loop
-to run after re-cloning a project whose data is not on disk. Pass paths, a glob,
-or both.
+to run after re-cloning a project whose data is not on disk. Pass tracked
+files, a glob, or directories with a glob to search them. A glob given only
+with files is an error, as it would select nothing.
 
 A local file that differs from the tracked version is replaced without asking
 only when dvs itself put it there, for example after switching git branches.
