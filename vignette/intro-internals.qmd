@@ -230,6 +230,9 @@ file.remove(large_meta)
 dvs_status("data/large/large_1.csv")
 ```
 
+In a git repository, also remove the file's line from its `.gitignore` and
+commit both changes. See [Untracking a file](intro-r.html#untracking-a-file).
+
 # Cleanup
 
 ```{r}
