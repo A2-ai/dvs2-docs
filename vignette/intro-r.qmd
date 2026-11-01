@@ -270,7 +270,8 @@ retrieved, and `dvs_get()` raises an error.
 
 ## Untracking a file
 
-There is no `dvs_remove()`. To stop tracking a file, delete its meta file:
+There is no `dvs_remove()`. dvs tracks a file through its meta file, so to stop
+tracking a file, delete its meta file:
 
 ```{r}
 #| warning: false
@@ -280,8 +281,28 @@ fs::file_delete(".dvs/data/large/large_1.csv.dvs")
 dvs_status() |> nrow()
 ```
 
-The data file stays on disk; dvs simply no longer has an opinion about it.
-Its blobs remain in storage (other projects may reference them).
+The data file stays on disk, and dvs no longer reports it. Its stored copy
+stays in storage, since other meta files may share the same content, and the
+audit log keeps its entries.
+
+In a git repository, two more steps finish it. Remove the file's line from the
+`.gitignore` next to it, so that git no longer ignores the data file:
+
+```r
+gitignore <- "data/large/.gitignore"
+lines <- readLines(gitignore)
+writeLines(lines[lines != "/large_1.csv"], gitignore)
+```
+
+Then commit both changes, so that your collaborators stop tracking it too:
+
+```shell
+git add .dvs/data/large/large_1.csv.dvs data/large/.gitignore
+git commit -m "Stop tracking data/large/large_1.csv with dvs"
+```
+
+git now sees the data file. Commit it to git, delete it, or ignore it another
+way.
 
 ## Cleanup
 
