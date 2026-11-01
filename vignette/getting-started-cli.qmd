@@ -22,18 +22,18 @@ the `dvs` binary.
 #| message: false
 options(width = 1000)
 library(here)
-storage     <- basename(tempfile(fileext = "_storage"))
+storage     <- tempfile("dvs_storage_")
 new_project <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(storage))
+dir.create(storage)
 dir.create(here::here(new_project))
 dir.create(here::here(new_project, "data"))
 write.csv(Theoph, here::here(new_project, "data/theoph.csv"), row.names = FALSE)
-Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(storage))
+Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = storage)
 ```
 
 ## 1. Initialize
 
-Point storage at the sibling directory. See [dvs init](cli-init.html) for every
+Point dvs at the storage directory. See [dvs init](cli-init.html) for every
 flag.
 
 ```{bash}
@@ -107,7 +107,7 @@ dvs status
 
 ```{r}
 unlink(here::here(new_project), recursive = TRUE)
-unlink(here::here(storage),     recursive = TRUE)
+unlink(storage, recursive = TRUE)
 ```
 
 ## Next steps

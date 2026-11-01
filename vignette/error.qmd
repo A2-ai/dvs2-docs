@@ -28,15 +28,15 @@ Create a temporary storage directory and project root, then expose them to the
 shell so the bash chunks below can use `$DVS_PROJECT` and `$DVS_STORAGE`.
 
 ```{r}
-storage     <- basename(tempfile(fileext = "_storage"))
+storage     <- tempfile("dvs_storage_")
 new_project <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(storage))
+dir.create(storage)
 dir.create(here::here(new_project))
 
 # Make it a git repo so dvs can find the project root
 system2("git", c("init", here::here(new_project)), stdout = FALSE, stderr = FALSE)
 
-Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(storage))
+Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = storage)
 ```
 
 # `init` errors
@@ -80,10 +80,10 @@ Once `dvs.toml` is present a second `init` call fails immediately.
 #| error: true
 # First init succeeds
 setwd(here::here(new_project))
-dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
+dvs_init(storage_path = storage, root_dir = here::here(new_project))
 
 # Second init fails
-dvs_init(storage_path = here::here(storage), root_dir = here::here(new_project))
+dvs_init(storage_path = storage, root_dir = here::here(new_project))
 ```
 
 ```{bash}
@@ -102,19 +102,19 @@ backend.
 ```{r}
 #| error: true
 # Use fresh temp dirs so we don't disrupt the main demo project
-bse_storage <- basename(tempfile(fileext = "_storage"))
+bse_storage <- tempfile("dvs_storage_")
 bse_project <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(bse_storage)); dir.create(here::here(bse_project))
+dir.create(bse_storage); dir.create(here::here(bse_project))
 system2("git", c("init", here::here(bse_project)), stdout = FALSE, stderr = FALSE)
 
 setwd(here::here(bse_project))
-dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_project))
+dvs_init(storage_path = bse_storage, root_dir = here::here(bse_project))
 
 # Remove dvs.toml but leave the storage intact
 file.remove(here::here(bse_project, "dvs.toml"))
 
 # Second init detects the existing backend
-dvs_init(storage_path = here::here(bse_storage), root_dir = here::here(bse_project))
+dvs_init(storage_path = bse_storage, root_dir = here::here(bse_project))
 ```
 
 ```{bash}
@@ -330,13 +330,13 @@ the reason, leaves the file out of the table and counts it as failed.
 ```{r}
 #| error: true
 # Fresh project so we can corrupt one meta file without affecting the rest
-ump_storage <- basename(tempfile(fileext = "_storage"))
+ump_storage <- tempfile("dvs_storage_")
 ump_project <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(ump_storage)); dir.create(here::here(ump_project))
+dir.create(ump_storage); dir.create(here::here(ump_project))
 system2("git", c("init", here::here(ump_project)), stdout = FALSE, stderr = FALSE)
 
 setwd(here::here(ump_project))
-dvs_init(storage_path = here::here(ump_storage), root_dir = here::here(ump_project))
+dvs_init(storage_path = ump_storage, root_dir = here::here(ump_project))
 writeLines("x", here::here(ump_project, "corrupt.csv"))
 dvs_add(paths = "corrupt.csv")
 
@@ -441,19 +441,19 @@ alone.
 #| error: true
 # Use a fresh project; the main demo project still has live state we don't
 # want to wreck for downstream chunks.
-bm_storage <- basename(tempfile(fileext = "_storage"))
+bm_storage <- tempfile("dvs_storage_")
 bm_project <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(bm_storage)); dir.create(here::here(bm_project))
+dir.create(bm_storage); dir.create(here::here(bm_project))
 system2("git", c("init", here::here(bm_project)), stdout = FALSE, stderr = FALSE)
 
 setwd(here::here(bm_project))
-dvs_init(storage_path = here::here(bm_storage), root_dir = here::here(bm_project))
+dvs_init(storage_path = bm_storage, root_dir = here::here(bm_project))
 writeLines("x,y,z", here::here(bm_project, "tracked.csv"))
 dvs_add(paths = "tracked.csv")
 
 # Remove the local copy and delete every blob from storage
 file.remove(here::here(bm_project, "tracked.csv"))
-blob_files <- list.files(here::here(bm_storage), recursive = TRUE, full.names = TRUE)
+blob_files <- list.files(bm_storage, recursive = TRUE, full.names = TRUE)
 invisible(file.remove(blob_files[!grepl("audit", blob_files)]))
 
 dvs_get(paths = "tracked.csv") |> print(width = Inf, n = Inf)
@@ -478,20 +478,20 @@ written.
 ```{r}
 #| error: true
 # Fresh project + storage
-hm_storage <- basename(tempfile(fileext = "_storage"))
+hm_storage <- tempfile("dvs_storage_")
 hm_project <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(hm_storage)); dir.create(here::here(hm_project))
+dir.create(hm_storage); dir.create(here::here(hm_project))
 system2("git", c("init", here::here(hm_project)), stdout = FALSE, stderr = FALSE)
 
 setwd(here::here(hm_project))
-dvs_init(storage_path = here::here(hm_storage), root_dir = here::here(hm_project))
+dvs_init(storage_path = hm_storage, root_dir = here::here(hm_project))
 writeLines("original", here::here(hm_project, "tampered.csv"))
 dvs_add(paths = "tampered.csv")
 
 # Replace the stored blob with zstd-compressed different content under the
 # same filename (so the hash-keyed path resolves, but the decompressed bytes
 # no longer match the recorded hash).
-blob <- list.files(here::here(hm_storage), recursive = TRUE, full.names = TRUE)
+blob <- list.files(hm_storage, recursive = TRUE, full.names = TRUE)
 blob <- blob[!grepl("audit", blob)]
 stopifnot(length(blob) == 1)
 Sys.chmod(blob, mode = "0644")
@@ -519,10 +519,12 @@ dvs get tampered.csv
 ```{r}
 setwd(here::here())
 unlink(here::here(new_project), recursive = TRUE)
-unlink(here::here(storage),     recursive = TRUE)
-for (d in c("bse_project", "bse_storage", "ump_project", "ump_storage",
-            "bm_project", "bm_storage", "hm_project", "hm_storage",
+unlink(storage, recursive = TRUE)
+for (d in c("bse_project", "ump_project", "bm_project", "hm_project",
             "outside", "outside2", "outside3")) {
   if (exists(d)) unlink(here::here(get(d)), recursive = TRUE)
+}
+for (d in c("bse_storage", "ump_storage", "bm_storage", "hm_storage")) {
+  if (exists(d)) unlink(get(d), recursive = TRUE)
 }
 ```

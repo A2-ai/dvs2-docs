@@ -32,9 +32,9 @@ source(here::here("R/mkdatasetfiles.R"))
 ```
 
 ```{r}
-storage     <- basename(tempfile(fileext = "_storage"))
+storage     <- tempfile("dvs_storage_")
 new_project <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(storage))
+dir.create(storage)
 dir.create(here::here(new_project))
 ```
 
@@ -59,7 +59,7 @@ About 180 MB that git should never see.
 ```{r}
 #| warning: false
 setwd(here::here(new_project))
-dvs_init(here::here(storage))
+dvs_init(storage)
 ```
 
 ## Adding files three ways
@@ -253,7 +253,7 @@ setwd(here::here(new_project))
 
 meta <- jsonlite::fromJSON(".dvs/data/small/small_2.csv.dvs")
 hash <- meta$hashes$blake3
-blob <- here::here(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
+blob <- file.path(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
 fs::file_delete(blob)
 
 unlink("data/small/small_2.csv")
@@ -287,7 +287,7 @@ Its blobs remain in storage (other projects may reference them).
 
 ```{r}
 unlink(here::here(new_project), recursive = TRUE)
-unlink(here::here(storage),     recursive = TRUE)
+unlink(storage, recursive = TRUE)
 ```
 
 ## Where to go next

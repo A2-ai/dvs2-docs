@@ -48,7 +48,7 @@ Global Options:
 options(width = 1000)
 library(here)
 proj    <- here::here(basename(tempfile(fileext = "_project")))
-storage <- here::here(basename(tempfile(fileext = "_storage")))
+storage <- tempfile("dvs_storage_")
 dir.create(proj)
 dir.create(storage)
 dir.create(file.path(proj, "data"))

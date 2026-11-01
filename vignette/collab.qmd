@@ -41,10 +41,10 @@ source(here::here("R/mkdatasetfiles.R"))
 ```
 
 ```{r}
-shared_storage <- basename(tempfile(fileext = "_storage"))
+shared_storage <- tempfile("dvs_storage_")
 project_a      <- basename(tempfile(fileext = "_project"))
 project_b      <- basename(tempfile(fileext = "_project"))
-dir.create(here::here(shared_storage))
+dir.create(shared_storage)
 dir.create(here::here(project_a))
 dir.create(here::here(project_b))
 ```
@@ -56,7 +56,7 @@ dir.create(here::here(project_b))
 setwd(here::here(project_a))
 mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data", show_progress = FALSE)
 
-dvs_init(here::here(shared_storage))
+dvs_init(shared_storage)
 dvs_add(paths = fs::dir_ls("data", type = "file"), message = "small corpus v1")
 ```
 
@@ -122,7 +122,7 @@ file from a third project would move zero bytes.
 
 ```{r}
 #| warning: false
-fs::dir_tree(here::here(shared_storage))
+fs::dir_tree(shared_storage)
 ```
 
 ## The audit trail
@@ -134,7 +134,7 @@ from":
 
 ```{r}
 #| warning: false
-log_lines <- readLines(here::here(shared_storage, "audit.log.jsonl"))
+log_lines <- readLines(file.path(shared_storage, "audit.log.jsonl"))
 cat(tail(log_lines, 2), sep = "\n\n")
 ```
 
@@ -152,7 +152,7 @@ cat(tail(log_lines, 2), sep = "\n\n")
 ```{r}
 unlink(here::here(project_a),      recursive = TRUE)
 unlink(here::here(project_b),      recursive = TRUE)
-unlink(here::here(shared_storage), recursive = TRUE)
+unlink(shared_storage, recursive = TRUE)
 ```
 
 ## Where to go next
