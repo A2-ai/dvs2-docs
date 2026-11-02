@@ -79,9 +79,9 @@ shared <- file.path(base, "shared-store")
 for (dir in c("a/analysis", "b/analysis", "c/other")) {
   dir.create(file.path(base, dir), recursive = TRUE)
 }
-dvs_init(shared, root_dir = file.path(base, "a/analysis"))$backend_name
+dvs_init(shared, root_dir = file.path(base, "a/analysis"))[c("backend_name", "joined")]
 dvs_init(shared, root_dir = file.path(base, "b/analysis"))
-dvs_init(shared, root_dir = file.path(base, "c/other"), name = "analysis")$backend_name
+dvs_init(shared, root_dir = file.path(base, "c/other"), name = "analysis")[c("backend_name", "joined")]
 list.files(shared)
 ```
 
@@ -105,10 +105,10 @@ dvs_init(store, root_dir = proj, group = "rstudio")
 ```
 
 ```r
-# A tibble: 1 × 5
-  compression metadata_folder_name backend_path                                        backend_name backend_group
-  <chr>       <lgl>                <chr>                                               <chr>        <chr>
-1 zstd        NA                   /tmp/Rtmp0oQgN3/dvs_init_d13e1444c8b2/grouped-store grouped      rstudio
+# A tibble: 1 × 6
+  compression metadata_folder_name backend_path                                        backend_name backend_group joined
+  <chr>       <lgl>                <chr>                                               <chr>        <chr>         <lgl>
+1 zstd        NA                   /tmp/Rtmp0oQgN3/dvs_init_d13e1444c8b2/grouped-store grouped      rstudio       FALSE
 ```
 
 The chosen group is written to `dvs.toml` under `[backend]`.
@@ -158,8 +158,10 @@ There is no `no_compression` argument. The CLI flag `--no-compression` maps to
 
 `dvs_init()` returns a one-row tibble describing the resulting configuration:
 the compression mode, the metadata folder name (`NA` when the default `.dvs`
-is used), and the backend path, project name and group. The call's purpose is the side effect
-of creating the project; the return value describes what was written.
+is used), and the backend path, project name and group. `joined` is `TRUE`
+when the project was in the storage directory already. The call's purpose is
+the side effect of creating the project. The return value describes what was
+written.
 
 ```{r}
 proj  <- file.path(base, "ret")
