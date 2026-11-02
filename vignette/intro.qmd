@@ -178,8 +178,9 @@ status any time you want to know where you stand.
 ## Going back to an older version
 
 The meta files in git are the history of the data. To use an older version of
-a data file, check out its older meta file with git, then get. dvs itself never
-deletes stored content, so every version that was added can be retrieved.
+a data file, check out its older meta file with git, then get. A version can be
+retrieved as long as storage still holds it. `dvs availability` checks that for
+a hash.
 
 First, a history to go back in. Commit the project as it is. The git commands
 run in a terminal at the project folder, or in RStudio's Terminal tab:
