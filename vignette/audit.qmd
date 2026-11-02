@@ -12,8 +12,8 @@ execute:
 This page is implementation detail, beyond what normal use requires.
 :::
 
-Every `init` and `add` is appended to `audit.log.jsonl` in the storage
-directory. The log is append-only and newline-delimited JSON, with one operation
+Every `init` and `add` is appended to `audit.log.jsonl` in the project's
+folder of the storage directory, so each project has its own log. The log is append-only and newline-delimited JSON, with one operation
 per line.
 
 # Setup
@@ -76,10 +76,12 @@ invisible(dvs_add("data/file_2.csv", message = "updated file 2, added row 99"))
 # Reading the log
 
 The audit log is a newline-delimited JSON file (`audit.log.jsonl`) in the
-storage directory. Each line is one operation:
+project's folder of the storage directory. The folder is named by the blake3
+hash of the project's name. Each line is one operation:
 
 ```{r}
-audit_path <- here::here(storage, "audit.log.jsonl")
+project_dir <- list.files(here::here(storage), pattern = "^[0-9a-f]{64}$", full.names = TRUE)
+audit_path <- file.path(project_dir, "audit.log.jsonl")
 ```
 
 Raw file, one JSON object per line:

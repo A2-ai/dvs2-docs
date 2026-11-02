@@ -152,12 +152,15 @@ hash <- meta$hashes$blake3
 hash
 ```
 
-Blobs are split into `<first-2>/<rest>`:
+The project keeps its blobs in its own folder of the storage directory, named
+by the blake3 hash of the project's name. Blobs are split into `<first-2>/<rest>`
+there:
 
 ```{r}
 #| warning: false
 
-large_blob <- here::here(storage, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
+project_dir <- list.files(here::here(storage), pattern = "^[0-9a-f]{64}$", full.names = TRUE)
+large_blob <- file.path(project_dir, substr(hash, 1, 2), substr(hash, 3, nchar(hash)))
 large_blob
 fs::file_exists(large_blob)
 ```

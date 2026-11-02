@@ -41,7 +41,8 @@ cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 | Field | Meaning |
 |---|---|
 | `compression` | `"zstd"` (default) or `"none"`. Recorded per file in the meta files, so changing this later does not break old retrievals. |
-| `[backend] path` | Storage directory for blobs. Any path reachable from this machine: a local path or a network mount. |
+| `[backend] path` | Storage directory for blobs. Any path reachable from this machine: a local path or a network mount. Several projects can share it. |
+| `[backend] name` | The project's name. Its blobs and audit log are in a folder of the storage directory named by the blake3 hash of the name. Absent in a `dvs.toml` from before projects, whose blobs are in the storage directory itself. |
 | `[backend] group` | Unix group set on the storage directory and stored files. Defaults to the creating user's group. |
 | `metadata_folder_name` | Name of the metadata folder (default `.dvs`). Only written when set to a non-default value. |
 | `[get] on_conflict` | `"abort"` or `"skip"`: what `get` does with files that have local changes. Not written by `init`. See below. |

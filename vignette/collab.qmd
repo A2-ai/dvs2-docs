@@ -127,14 +127,15 @@ fs::dir_tree(here::here(shared_storage))
 
 ## The audit trail
 
-The storage directory keeps an append-only log, `audit.log.jsonl`, recording
-every `init` and `add` that touched it: who, when, which file, which hash.
+The project's folder in the storage directory keeps an append-only log,
+`audit.log.jsonl`, recording every `init` and `add` that touched it: who, when, which file, which hash.
 On a shared drive this is the team's answer to "where did this dataset come
 from":
 
 ```{r}
 #| warning: false
-log_lines <- readLines(here::here(shared_storage, "audit.log.jsonl"))
+project_dir <- list.files(here::here(shared_storage), pattern = "^[0-9a-f]{64}$", full.names = TRUE)
+log_lines <- readLines(file.path(project_dir, "audit.log.jsonl"))
 cat(tail(log_lines, 2), sep = "\n\n")
 ```
 

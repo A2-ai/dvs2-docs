@@ -17,7 +17,8 @@ dvs_init(
   root_dir = NULL,
   group = NULL,
   metadata_folder_name = NULL,
-  compression = c("zstd", "none")
+  compression = c("zstd", "none"),
+  name = NULL
 )
 ```
 
@@ -25,11 +26,12 @@ dvs_init(
 
 | Name | Type | Default | Behavior |
 |---|---|---|---|
-| `storage_path` | character(1) | required | Directory where file contents are stored. |
+| `storage_path` | character(1) | required | Directory where file contents are stored. Several projects can share it. |
 | `root_dir` | character(1) | `NULL` (current directory) | Where `dvs.toml` and the metadata folder are created. |
 | `group` | character(1) | `NULL` | Unix group set on the storage directory and stored files. |
 | `metadata_folder_name` | character(1) | `NULL` (`.dvs`) | Name of the metadata folder. |
 | `compression` | character(1) | `"zstd"` | Compression for stored files. One of `"zstd"` or `"none"`. |
+| `name` | character(1) | `NULL` (folder name) | The project's name in the storage directory. A given name joins the project of that name. |
 
 ## Setup
 
@@ -56,11 +58,36 @@ dir.create(store)
 dvs_init(store, root_dir = proj)
 ```
 
-`dvs.toml` is written in `root_dir` and records the storage path:
+`dvs.toml` is written in `root_dir` and records the storage path and the
+project's name, here `basic`, the name of the project folder:
 
 ```{r}
 cat(readLines(file.path(proj, "dvs.toml")), sep = "\n")
 ```
+
+## `name`
+
+Several projects can share one storage directory. Each keeps its files and its
+audit log in its own folder there, named by the blake3 hash of the project's
+name, as on a dvs server. A folder name that is already a project there is an
+error, since two unrelated projects can have the same folder name. Giving the
+name joins that project:
+
+```{r}
+#| error: true
+shared <- file.path(base, "shared-store")
+for (dir in c("a/analysis", "b/analysis", "c/other")) {
+  dir.create(file.path(base, dir), recursive = TRUE)
+}
+dvs_init(shared, root_dir = file.path(base, "a/analysis"))[c("backend_name", "joined")]
+dvs_init(shared, root_dir = file.path(base, "b/analysis"))
+dvs_init(shared, root_dir = file.path(base, "c/other"), name = "analysis")[c("backend_name", "joined")]
+list.files(shared)
+```
+
+Names follow the rule of dvs-server: lowercase letters, digits and dashes,
+starting with a letter or a digit. Every user of a project with a name needs a
+dvs that knows projects.
 
 ## `group`
 
@@ -78,10 +105,10 @@ dvs_init(store, root_dir = proj, group = "rstudio")
 ```
 
 ```r
-# A tibble: 1 × 4
-  compression metadata_folder_name backend_path                                        backend_group
-  <chr>       <lgl>                <chr>                                               <chr>
-1 zstd        NA                   /tmp/Rtmp0oQgN3/dvs_init_d13e1444c8b2/grouped-store rstudio
+# A tibble: 1 × 6
+  compression metadata_folder_name backend_path                                        backend_name backend_group joined
+  <chr>       <lgl>                <chr>                                               <chr>        <chr>         <lgl>
+1 zstd        NA                   /tmp/Rtmp0oQgN3/dvs_init_d13e1444c8b2/grouped-store grouped      rstudio       FALSE
 ```
 
 The chosen group is written to `dvs.toml` under `[backend]`.
@@ -131,8 +158,10 @@ There is no `no_compression` argument. The CLI flag `--no-compression` maps to
 
 `dvs_init()` returns a one-row tibble describing the resulting configuration:
 the compression mode, the metadata folder name (`NA` when the default `.dvs`
-is used), and the backend path and group. The call's purpose is the side effect
-of creating the project; the return value describes what was written.
+is used), and the backend path, project name and group. `joined` is `TRUE`
+when the project was in the storage directory already. The call's purpose is
+the side effect of creating the project. The return value describes what was
+written.
 
 ```{r}
 proj  <- file.path(base, "ret")
