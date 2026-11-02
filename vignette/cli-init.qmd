@@ -46,7 +46,7 @@ Global Options:
 | `--metadata-folder-name` | name | `.dvs` | Name of the metadata folder. |
 | `--group` | group name | current group | Unix group set on the storage directory and stored files. |
 | `--no-compression` | flag | off (zstd) | Store blobs uncompressed. |
-| `--threads` | integer | `0` (auto) | Thread pool size for this command. |
+| `--threads` | integer | `0` (auto) | Thread pool size for this command, from 1 to 32. `0` sets no count. A count above 32 or below 0 is refused with exit code 2. See [set_dvs_threads()](r-threads.html) for the rule. |
 | `--json` | flag | off | Emit the result as JSON. |
 
 ## Setup

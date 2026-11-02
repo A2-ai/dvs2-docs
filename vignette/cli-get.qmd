@@ -47,7 +47,7 @@ Global Options:
 | `--dry-run` | flag | off | Report what would be retrieved. Write nothing. |
 | `--on-conflict` | `abort`, `skip`, `overwrite` | `DVS_GET_ON_CONFLICT`, then `[get] on_conflict` in `dvs.toml`, then `abort` | What to do with files that have local changes. `abort` changes nothing, `skip` leaves them and gets the rest, `overwrite` replaces them. |
 | `-f`, `--force` | flag | off | Same as `--on-conflict overwrite`. |
-| `--threads` | integer | `0` (auto) | Thread pool size for this command. |
+| `--threads` | integer | `0` (auto) | Thread pool size for this command, from 1 to 32. `0` sets no count. A count above 32 or below 0 is refused with exit code 2. See [set_dvs_threads()](r-threads.html) for the rule. |
 | `--json` | flag | off | Emit results as JSON. |
 
 `--recursive` and `--glob` are mutually exclusive. At least one path or
