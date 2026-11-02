@@ -175,6 +175,146 @@ dvs_status()
 That is the whole loop: add when data changes, get after a clone or checkout,
 status any time you want to know where you stand.
 
+## Going back to an older version
+
+The meta files in git are the history of the data. To use an older version of
+a data file, check out its older meta file with git, then get. dvs itself never
+deletes stored content, so every version that was added can be retrieved.
+
+First, a history to go back in. Commit the project as it is. The git commands
+run in a terminal at the project folder, or in RStudio's Terminal tab:
+
+```{r}
+#| include: false
+Sys.setenv(DVS_INTRO_PROJECT = here::here(new_project))
+```
+
+```{bash}
+#| include: false
+# The rendered page commits as a placeholder user. Yours is your git config.
+cd "$DVS_INTRO_PROJECT"
+git config user.name "dvs docs"
+git config user.email "docs@example.com"
+```
+
+```{bash}
+cd "$DVS_INTRO_PROJECT"
+git add -A
+git commit --quiet -m "PK data, data cut 2026-06"
+```
+
+Then a new data cut: subject 12 is dropped from the PK table, and a new
+derived file is added. Commit that too.
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+pk <- read.csv("data/pk_profiles.csv")
+write.csv(pk[pk$Subject != 12, ], "data/pk_profiles.csv", row.names = FALSE)
+write.csv(
+  data.frame(Dose = sort(unique(pk$Dose))),
+  "data/derived/doses.csv",
+  row.names = FALSE
+)
+dvs_add(c("data/pk_profiles.csv", "data/derived/doses.csv"),
+        message = "data cut 2026-07, subject 12 withdrawn")
+```
+
+```{bash}
+cd "$DVS_INTRO_PROJECT"
+git add -A
+git commit --quiet -m "PK data, data cut 2026-07"
+git log --oneline -- .dvs/data/pk_profiles.csv.dvs
+```
+
+`git log -- <meta file>` lists the commits that changed one data file, and
+[`dvs history`](audit.html#dvs-history) lists every version in storage.
+
+### One file
+
+Check out the older meta file of one data file. `HEAD~1` is the commit before
+the last one. A commit hash from `git log` works the same.
+
+```{bash}
+cd "$DVS_INTRO_PROJECT"
+git checkout HEAD~1 -- .dvs/data/pk_profiles.csv.dvs
+```
+
+The data file is now `stale`: dvs wrote it, and the tracked version moved. Get
+replaces it without asking, since no local change is lost:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+dvs_status()
+dvs_get("data/pk_profiles.csv")
+nrow(read.csv("data/pk_profiles.csv"))
+```
+
+The older table, with subject 12, is back on disk. `git checkout` also staged
+the older meta file. To return to the latest version, check out the meta file
+from `HEAD` and get again:
+
+```{bash}
+cd "$DVS_INTRO_PROJECT"
+git checkout HEAD -- .dvs/data/pk_profiles.csv.dvs
+```
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+dvs_get("data/pk_profiles.csv")
+nrow(read.csv("data/pk_profiles.csv"))
+```
+
+### The whole project
+
+To put every data file at an older commit, check out the commit, then get
+every tracked file. At the project root that is `dvs_get(recursive = TRUE)`,
+and `dvs get . -r` in a terminal. A bare `dvs_get()` covers only the files
+directly in the current folder.
+
+```{bash}
+cd "$DVS_INTRO_PROJECT"
+git checkout --quiet HEAD~1
+```
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+dvs_get(recursive = TRUE)
+```
+
+::: {.callout-warning}
+Do not commit at an older commit. Its `.gitignore` files do not list the data
+files that were added later, so git sees them:
+
+```{bash}
+cd "$DVS_INTRO_PROJECT"
+git status --short --untracked-files=all
+```
+
+A `git add -A` here would commit `doses.csv` to git.
+:::
+
+`doses.csv` stays on disk, and dvs no longer reports it, since this commit has
+no meta file for it. Go back to the branch with `git checkout -`, then get
+again:
+
+```{bash}
+cd "$DVS_INTRO_PROJECT"
+git checkout --quiet -
+```
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+dvs_get(recursive = TRUE)
+```
+
+If a data file has local changes, get treats it as a conflict and changes
+nothing. See [dvs_get()](r-get.html).
+
 ## The same project, from the terminal
 
 The CLI operates on the exact same project; the two surfaces are
