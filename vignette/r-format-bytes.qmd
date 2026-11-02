@@ -8,7 +8,8 @@ execute:
   freeze: auto
 ---
 
-`format_byte_size()` formats a byte count as a human-readable size string. It is
+`format_byte_size()` formats byte counts as human-readable size strings, one per
+count. It is
 the same formatter used to print the `size` columns returned by
 [dvs_add()](r-add.html), [dvs_status()](r-status.html), and
 [dvs_get()](r-get.html).
@@ -21,14 +22,14 @@ format_byte_size(size_bytes)
 
 | Name | Type | Default | Behavior |
 |---|---|---|---|
-| `size_bytes` | numeric(1) | required | A single non-negative byte count. |
+| `size_bytes` | numeric | required | Non-negative whole byte counts. `NA` is an error. |
 
 ## Usage
 
 ```{r}
 options(width = 1000)
 library(dvs)
-sapply(c(0, 512, 2048, 5e6, 3e9), format_byte_size)
+format_byte_size(c(0, 512, 2048, 5e6, 3e9))
 ```
 
 ## See also
