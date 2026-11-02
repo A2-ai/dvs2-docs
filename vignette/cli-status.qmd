@@ -58,7 +58,7 @@ Global Options:
 | `--modified` | flag | off | Include `modified` files. |
 | `--unsynced` | flag | off | Include `unsynced` files. |
 | `--with-metadata` | flag | off | Add hash, created_by, add_time, compression, message columns. |
-| `--threads` | integer | `0` (auto) | Thread pool size for this command. |
+| `--threads` | integer | `0` (auto) | Thread pool size for this command, from 1 to 32. `0` sets no count. A count above 32 or below 0 is refused with exit code 2. See [set_dvs_threads()](r-threads.html) for the rule. |
 | `--json` | flag | off | Emit results as JSON. |
 
 The five status flags are independent booleans and combine. With none set, all

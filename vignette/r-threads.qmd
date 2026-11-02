@@ -11,7 +11,7 @@ execute:
 `set_dvs_threads()` sets how many threads dvs uses for parallel file operations
 (`dvs_add()`, `dvs_get()`, `dvs_status()`). The value is stored as the
 `dvs.num_threads` option and synced to the dvs core before each operation. It is
-process-wide; there is no per-call thread argument in R.
+process-wide. There is no per-call thread argument in R.
 
 ```r
 set_dvs_threads(threads)
@@ -21,9 +21,23 @@ set_dvs_threads(threads)
 
 | Name | Type | Default | Behavior |
 |---|---|---|---|
-| `threads` | integer(1) or `NULL` | required | Number of threads (must be a positive integer), or `NULL` to revert to automatic detection. |
+| `threads` | integer(1) or `NULL` | required | A whole number of threads from 1 to 32, or `NULL` or `0` to set no thread count. `NA`, a negative or fractional number, a number above 32, `TRUE`, `FALSE`, a string or more than one value raises a `dvs_error_argument`. |
 
 Returns the previous value invisibly.
+
+## Which thread count an operation uses
+
+Each `dvs_add()`, `dvs_get()` and `dvs_status()` takes its thread count from
+the first rule that applies:
+
+1. A thread count set with `set_dvs_threads()` or in the `dvs.num_threads`
+   option: that many threads.
+2. The `DVS_NUM_THREADS` environment variable, when it is a whole number above
+   0: that many threads, at most 32. A larger value uses 32. Any other value is
+   ignored.
+3. Otherwise 4 threads per CPU, at most 16.
+
+An operation never uses more threads than it has files.
 
 ## Setup
 
@@ -41,10 +55,29 @@ set_dvs_threads(2)
 getOption("dvs.num_threads")
 ```
 
+## More than 32
+
+A count above 32 is refused. `set_dvs_threads(33)` raises a
+`dvs_error_argument` with `` `threads` must be at most 32 ``, and the option
+keeps its value:
+
+```{r}
+#| eval: false
+set_dvs_threads(33)
+#> Error in `set_dvs_threads()`:
+#> ! `threads` must be at most 32
+getOption("dvs.num_threads")
+#> [1] 2
+```
+
+A `dvs.num_threads` above 32 set with `options()` is refused the same way, by
+the next `dvs_add()`, `dvs_get()` or `dvs_status()`:
+`` `options(dvs.num_threads)` must be at most 32 ``.
+
 ## Reset to automatic
 
-Pass `NULL` to revert to automatic detection. The automatic default is
-`min(parallelism * 4, 16)`.
+Pass `NULL` or `0` to set no thread count. The next operation then takes
+`DVS_NUM_THREADS`, or else 4 threads per CPU, at most 16.
 
 ```{r}
 set_dvs_threads(NULL)
@@ -53,8 +86,11 @@ getOption("dvs.num_threads")
 
 ## Differences from the CLI
 
-The CLI sets threads per call with `--threads <N>`; the R setting is
-process-wide. Threads set directly on either surface win. The
+The CLI sets threads per call with `--threads <N>`, and the R setting is
+process-wide. `--threads` takes the same values: 1 to 32, or `0` for no count.
+A count above 32 or below 0 exits with code 2, for example
+`33 is not in 0..=32`, and is `invalid_arguments` under `--json`. Threads set
+directly on either surface win. The
 `DVS_NUM_THREADS` environment variable applies only when neither the CLI flag
 nor `set_dvs_threads()` has set a count. See the `--threads` flag on any
 [CLI command](cli-init.html).
