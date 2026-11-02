@@ -57,12 +57,17 @@ getOption("dvs.num_threads")
 
 ## More than 32
 
-A count above 32 is refused, and the option keeps its value:
+A count above 32 is refused. `set_dvs_threads(33)` raises a
+`dvs_error_argument` with `` `threads` must be at most 32 ``, and the option
+keeps its value:
 
 ```{r}
-#| error: true
+#| eval: false
 set_dvs_threads(33)
+#> Error in `set_dvs_threads()`:
+#> ! `threads` must be at most 32
 getOption("dvs.num_threads")
+#> [1] 2
 ```
 
 A `dvs.num_threads` above 32 set with `options()` is refused the same way, by
