@@ -212,6 +212,69 @@ cd "$DVS_PROJECT"
 dvs get data/f1.csv --json
 ```
 
+The per-file result has a different key in each command: `outcome` in
+`dvs add` (`copied`, `present`), `status` in `dvs status`, and `before` and
+`action` in `dvs get`.
+
+## `before` and the `dvs status` names
+
+`dvs get` names two states differently from `dvs status`. The words differ, the
+states are the same. Filter `get` JSON with the get names: `.before == "clean"`,
+not `"stale"`.
+
+| `dvs status` | `dvs get` `before` | `code` | What `get` does |
+|---|---|---|---|
+| `current` | `current` | `null` | Nothing. |
+| `absent` | `absent` | `null` | Restores the file. |
+| `stale` | `clean` | `null` | Replaces the file. dvs wrote or added this local version, so no local change is lost. |
+| `modified` | `modified` | `local_changes` | Conflict, handled by `--on-conflict`. |
+| `unsynced` | `unknown` | `unknown_local` | Conflict, handled by `--on-conflict`. |
+| `error` | `unknown` | `bad_metadata` | Known problem: the meta file cannot be read, for example after a git merge conflict. |
+
+Three states exist only in `get`, for a requested path that `dvs status` does
+not list: `not_tracked` (no meta file), `not_a_file` (a directory or special
+file is in the way) and `unsafe_path` (a parent is a symlink, or the path leaves
+the project). These three and `bad_metadata` are known problems. `get` never
+writes over them, and they hold the whole get back unless `--on-conflict` is
+`skip`.
+
+## `stored_copy`
+
+`stored_copy` is about your local version, not the tracked one. It is set only
+on conflict rows, those with `code` `local_changes` or `unknown_local`, and is
+`null` on every other row. It says whether storage holds a copy of the local
+file, the version that `--force` would replace:
+
+- `present`: storage has content with the local file's hash. dvs checks that it
+  exists, not that it is intact.
+- `absent`: storage has no copy of the local version. Replacing the file loses
+  that version for good. To keep it, `dvs add` it, or copy the file elsewhere,
+  before you overwrite.
+- `unknown`: dvs could not check, for example because storage could not be
+  reached.
+
+A local edit that was never added is `absent`:
+
+```{bash}
+cd "$DVS_PROJECT"
+echo "extra,row" >> data/f1.csv
+dvs get data/f1.csv --json | jq -c '.files[] | {path, before, code, stored_copy}'
+```
+
+A local file whose content is stored, here a copy of the tracked `f2.csv`, is
+`present`. The human output says so at the end of the conflict line:
+
+```{bash}
+cd "$DVS_PROJECT"
+cp data/f2.csv data/f1.csv
+dvs get data/f1.csv --json | jq -c '.files[] | {path, before, code, stored_copy}'
+dvs get data/f1.csv
+echo "exit code: $?"
+```
+
+The row keeps `stored_copy` after `--force`. On a `replaced` row, `absent`
+means the version that was replaced is gone.
+
 ## Differences from R
 
 The R function is [dvs_get()](r-get.html). It returns a data frame rather than
