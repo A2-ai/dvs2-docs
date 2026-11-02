@@ -100,7 +100,9 @@ setwd(here::here(new_project))
 gert::git_ignore_path_is_ignored("data/theoph.csv")
 ```
 
-Commit:
+Commit. If git has no name and email for you yet, the commit stops and asks.
+Set them once, with `git config --global user.name "Your Name"` and
+`git config --global user.email "you@example.com"`.
 
 ```{r}
 setwd(here::here(new_project))

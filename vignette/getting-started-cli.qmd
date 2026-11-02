@@ -93,7 +93,9 @@ cd "$DVS_PROJECT"
 git check-ignore -v data/theoph.csv
 ```
 
-Commit:
+Commit. If git has no name and email for you yet, the commit stops and asks.
+Set them once, with `git config --global user.name "Your Name"` and
+`git config --global user.email "you@example.com"`.
 
 ```{bash}
 cd "$DVS_PROJECT"
