@@ -34,10 +34,17 @@ b <- new_dvs_bytes(c(512, 1048576, 1073741824))
 class(b)
 ```
 
-## Printing in a tibble
+## Printing
 
-A bare `dvs_bytes` vector prints as plain numbers, but as a tibble column it
-renders via `pillar_shaft()` and `type_sum()` as right-aligned, human-readable
+A `dvs_bytes` vector prints its sizes as the CLI prints them. `format()` gives
+the same strings. The units are powers of 1024.
+
+```{r}
+b
+format(b)
+```
+
+In a tibble it renders via `pillar_shaft()` and `type_sum()` as right-aligned
 sizes (the `<bytes>` column type).
 
 ```{r}
@@ -48,10 +55,12 @@ tibble::tibble(file = c("small", "medium", "large"), size = b)
 
 The `Ops` group generic keeps the `dvs_bytes` class for `+` and `-` (the result
 is still bytes) and drops it for other operators. The `Summary` group generic
-keeps it for `sum`, `min`, `max`, and `range`. A summed column stays a
-`dvs_bytes` value in a tibble.
+keeps it for `sum`, `min`, `max`, and `range`. `[` and `[[` keep it, so the
+difference of two elements is also bytes. A negative difference prints with a
+minus sign. A summed column stays a `dvs_bytes` value in a tibble.
 
 ```{r}
+b[2] - b[3]
 suppressMessages(library(dplyr))
 tibble::tibble(size = b) |> summarise(total = sum(size))
 ```
