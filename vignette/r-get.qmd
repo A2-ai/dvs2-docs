@@ -220,6 +220,63 @@ info <- dvs_result_info(res)
 info[c("outcome", "did_as_asked", "on_conflict", "source")]
 ```
 
+## `before` and the `dvs_status()` names
+
+`dvs_get()` names two states differently from `dvs_status()`. The words
+differ, the states are the same. Filter a get result with the get names:
+`before == "clean"`, not `"stale"`.
+
+| `dvs_status()` `status` | `dvs_get()` `before` | `code` | What `dvs_get()` does |
+|---|---|---|---|
+| `current` | `current` | `NA` | Nothing. |
+| `absent` | `absent` | `NA` | Restores the file. |
+| `stale` | `clean` | `NA` | Replaces the file. dvs wrote or added this local version, so no local change is lost. |
+| `modified` | `modified` | `local_changes` | Conflict, handled by `on_conflict`. |
+| `unsynced` | `unknown` | `unknown_local` | Conflict, handled by `on_conflict`. |
+| `error` | `unknown` | `bad_metadata` | Known problem: the meta file cannot be read, for example after a git merge conflict. |
+
+Three states exist only in a get result, for a requested path that
+`dvs_status()` does not list: `not_tracked` (no meta file), `not_a_file` (a
+directory or special file is in the way) and `unsafe_path` (a parent is a
+symlink, or the path leaves the project). These three and `bad_metadata` are
+known problems. `dvs_get()` never writes over them, and they hold the whole get
+back unless `on_conflict` is `"skip"`.
+
+## `stored_copy`
+
+`stored_copy` is about your local version, not the tracked one. It is set only
+on conflict rows, those with `code` `local_changes` or `unknown_local`, and is
+`NA` on every other row. It says whether storage holds a copy of the local file,
+the version that `on_conflict = "overwrite"` would replace:
+
+- `present`: storage has content with the local file's hash. dvs checks that it
+  exists, not that it is intact.
+- `absent`: storage has no copy of the local version. Replacing the file loses
+  that version for good. To keep it, `dvs_add()` it, or copy the file
+  elsewhere, before you overwrite.
+- `unknown`: dvs could not check, for example because storage could not be
+  reached.
+
+A local edit that was never added is `absent`:
+
+```{r}
+setwd(proj)
+write.csv(mtcars[1:11, ], "data/f1.csv")
+dvs_get("data/f1.csv")[, c("path", "before", "code", "stored_copy")]
+```
+
+A local file whose content is stored, here a copy of the tracked `f2.csv`, is
+`present`:
+
+```{r}
+setwd(proj)
+invisible(file.copy("data/f2.csv", "data/f1.csv", overwrite = TRUE))
+dvs_get("data/f1.csv")[, c("path", "before", "code", "stored_copy")]
+```
+
+The row keeps `stored_copy` after an overwrite. On a `replaced` row, `absent`
+means the version that was replaced is gone.
+
 ## Differences from the CLI
 
 The CLI command is [dvs get](cli-get.html). It prints lines rather than
