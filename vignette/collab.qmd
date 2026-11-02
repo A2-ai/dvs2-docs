@@ -14,18 +14,23 @@ dvs splits a project into two halves that travel differently: code and
 metadata move through git, data bytes move through a shared storage
 directory. The team workflow is:
 
-1. User A adds data files. dvs copies the bytes to shared storage and writes
-   one small meta file per data file under `.dvs/`.
-2. User A commits `dvs.toml` and the `.dvs/` tree. The data files themselves
-   are gitignored (dvs wrote those entries during the add).
+1. User A adds data files. dvs copies the bytes to shared storage, writes
+   one small meta file per data file under `.dvs/`, and gitignores the data
+   files.
+2. User A commits `dvs.toml`, the `.dvs/` tree and the `.gitignore` files, and
+   pushes.
 3. User B clones the repo and gets the metadata but no data.
 4. User B runs `dvs_get()`. dvs reads each meta file, finds the blob in
    shared storage by its hash, and materializes the file.
 
+From then on, the daily loop for everyone is: pull, `dvs_status()`,
+`dvs_get()`, work, `dvs_add()`, commit, push.
+
 The storage directory lives on infrastructure both users can reach, typically
-an NFS mount. This demo simulates the two users with two project directories
-on one machine, pointing at the same storage path; nothing else about the
-flow changes.
+an NFS mount. This demo simulates the two users with two clones on one
+machine. They push to one git remote and point at the same storage path.
+Nothing else about the flow changes. Both run as one operating system user, so
+the `created_by` column and the audit log show the same name for both.
 
 ## Setup
 
@@ -40,56 +45,92 @@ library(here)
 source(here::here("R/mkdatasetfiles.R"))
 ```
 
+The team's git remote is a bare repository, and each user has a clone of it.
+The git steps run in a shell, in the folder of the user who runs them. The
+variables below name the folders for those shell steps.
+
 ```{r}
 shared_storage <- basename(tempfile(fileext = "_storage"))
-project_a      <- basename(tempfile(fileext = "_project"))
-project_b      <- basename(tempfile(fileext = "_project"))
 dir.create(here::here(shared_storage))
-dir.create(here::here(project_a))
-dir.create(here::here(project_b))
+team_remote <- tempfile("team_remote_")
+project_a   <- tempfile("user_a_")
+project_b   <- tempfile("user_b_")
+Sys.setenv(TEAM_REMOTE = team_remote, PROJECT_A = project_a, PROJECT_B = project_b)
 ```
 
-## User A: init, add, commit
+```{bash}
+git init --quiet --bare --initial-branch=main "$TEAM_REMOTE"
+```
+
+## User A: init, add, commit, push
+
+User A makes the project a git repository with the team remote, then
+initializes dvs and adds three files:
+
+```{bash}
+mkdir "$PROJECT_A"
+cd "$PROJECT_A"
+git init --quiet --initial-branch=main
+git remote add origin "$TEAM_REMOTE"
+```
+
+```{bash}
+#| include: false
+# The rendered page commits as placeholder users. Yours is your git config.
+cd "$PROJECT_A"
+git config user.name "User A"
+git config user.email "a@example.com"
+git config rerere.enabled false
+```
 
 ```{r}
 #| warning: false
-setwd(here::here(project_a))
+setwd(project_a)
 mkdatasetfiles(n_files = 3, size_mb = 1, prefix = "small_", dir = "data", show_progress = FALSE)
 
 dvs_init(here::here(shared_storage))
 dvs_add(paths = fs::dir_ls("data", type = "file"), message = "small corpus v1")
 ```
 
-What user A now commits to git is the configuration plus the meta tree, a
-few hundred bytes per tracked file:
+What user A commits is the configuration, the meta files and the `.gitignore`
+entries, a few hundred bytes per tracked file. The data files are not in the
+list:
 
-```{r}
-#| warning: false
-setwd(here::here(project_a))
-fs::dir_tree(".dvs")
+```{bash}
+cd "$PROJECT_A"
+git add -A
+git status --short
+git commit --quiet -m "Track the small corpus with dvs"
+git push --quiet --set-upstream origin main
 ```
 
+Every clone reads the storage path from the committed `dvs.toml`:
+
 ```{r}
-cat(readLines(here::here(project_a, "dvs.toml")), sep = "\n")
+cat(readLines(file.path(project_a, "dvs.toml")), sep = "\n")
 ```
 
 ## User B: clone, then get
 
-Copying `dvs.toml` and `.dvs/` into the second project directory stands in
-for `git clone`; the data files are gitignored, so a real clone would not
-carry them either:
+User B clones the repository. The clone carries the metadata, not the data:
 
-```{r}
-#| warning: false
-fs::file_copy(here::here(project_a, "dvs.toml"), here::here(project_b, "dvs.toml"))
-fs::dir_copy( here::here(project_a, ".dvs"),     here::here(project_b, ".dvs"))
+```{bash}
+git clone --quiet "$TEAM_REMOTE" "$PROJECT_B"
+```
+
+```{bash}
+#| include: false
+cd "$PROJECT_B"
+git config user.name "User B"
+git config user.email "b@example.com"
+git config rerere.enabled false
 ```
 
 User B's status: everything tracked, nothing on disk.
 
 ```{r}
 #| warning: false
-setwd(here::here(project_b))
+setwd(project_b)
 dvs_status()
 ```
 
@@ -97,8 +138,8 @@ One call materializes the project:
 
 ```{r}
 #| warning: false
-setwd(here::here(project_b))
-dvs_get(glob = "data/*.csv")
+setwd(project_b)
+dvs_get("data")
 dvs_status()
 ```
 
@@ -108,16 +149,287 @@ retrieval:
 ```{r}
 #| warning: false
 identical(
-  unname(lapply(sort(fs::dir_ls(here::here(project_a, "data"), type = "file")), read.csv)),
-  unname(lapply(sort(fs::dir_ls(here::here(project_b, "data"), type = "file")), read.csv))
+  unname(lapply(sort(fs::dir_ls(file.path(project_a, "data"), type = "file")), read.csv)),
+  unname(lapply(sort(fs::dir_ls(file.path(project_b, "data"), type = "file")), read.csv))
 )
+```
+
+## The daily loop: pull, status, get
+
+User A appends a row to `small_1.csv`, adds it, commits and pushes:
+
+```{r}
+#| warning: false
+setwd(project_a)
+cat("999,0,0,0,0,0,0,0,0,0,0,0,0,0\n", file = "data/small_1.csv", append = TRUE)
+dvs_add("data/small_1.csv", message = "small_1: add row 999")
+```
+
+```{bash}
+cd "$PROJECT_A"
+git add -A
+git commit --quiet -m "small_1: add row 999"
+git push --quiet origin main
+```
+
+User B pulls:
+
+```{bash}
+cd "$PROJECT_B"
+git pull --quiet --no-rebase
+```
+
+`small_1.csv` is now `stale`: it is what dvs last wrote there, and the tracked
+version moved on. `dvs_get()` replaces it without asking, since no local change
+is lost:
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_status()
+dvs_get("data")
+```
+
+## Commit what you add
+
+`dvs_add()` changes the meta file in your clone only. Until it is committed and
+pushed, nobody else can get the new version. User A adds a new file and does
+not commit. In user A's clone, everything is `current`:
+
+```{r}
+#| warning: false
+setwd(project_a)
+write.csv(data.frame(visit = 1:3, day = c(1, 8, 15)), "data/visits.csv", row.names = FALSE)
+invisible(dvs_add("data/visits.csv", message = "visit schedule"))
+dvs_status()
+```
+
+User B pulls and asks for the file. User B's clone has no meta file for it, so
+it is not tracked there:
+
+```{bash}
+cd "$PROJECT_B"
+git pull --quiet --no-rebase
+```
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_get("data/visits.csv")
+```
+
+`git status` in user A's clone shows what is not committed: the new meta file
+and the changed `.gitignore`.
+
+```{bash}
+cd "$PROJECT_A"
+git status --short
+```
+
+Commit and push after every add. Then user B pulls and gets the file:
+
+```{bash}
+cd "$PROJECT_A"
+git add -A
+git commit --quiet -m "Add the visit schedule"
+git push --quiet origin main
+cd "$PROJECT_B"
+git pull --quiet --no-rebase
+```
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_get("data")
+```
+
+## When a teammate changed a file you edited
+
+User B edits `small_3.csv` and does not add it yet. Meanwhile user A pushes a
+new version of the same file:
+
+```{r}
+#| warning: false
+setwd(project_b)
+cat("1000,0,0,0,0,0,0,0,0,0,0,0,0,0\n", file = "data/small_3.csv", append = TRUE)
+
+setwd(project_a)
+cat("2000,0,0,0,0,0,0,0,0,0,0,0,0,0\n", file = "data/small_3.csv", append = TRUE)
+invisible(dvs_add("data/small_3.csv", message = "small_3: add row 2000"))
+```
+
+```{bash}
+cd "$PROJECT_A"
+git add -A
+git commit --quiet -m "small_3: add row 2000"
+git push --quiet origin main
+cd "$PROJECT_B"
+git pull --quiet --no-rebase
+```
+
+For user B, the file is `modified`, and a get is a conflict:
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_get("data")
+```
+
+`stored_copy` is `absent`: user B's edit is not in storage, so an overwrite
+would lose it. `modified` says only that the file differs from what dvs last
+wrote there. It looks the same whether or not a teammate moved the tracked
+version. Here the hint "keep your version: dvs add" would make user B's edit of
+the older version the tracked version, and drop user A's row. Before you add
+over a pull, check who changed the meta file:
+
+```{bash}
+cd "$PROJECT_B"
+git log --format='%h %an: %s' -- .dvs/data/small_3.csv.dvs
+```
+
+User A changed it. To keep both changes, user B sets the edited file aside,
+takes user A's version, and redoes the edit on it:
+
+```{r}
+#| warning: false
+setwd(project_b)
+mine <- file.path(tempdir(), "small_3_user_b.csv")
+invisible(file.copy("data/small_3.csv", mine, overwrite = TRUE))
+invisible(dvs_get("data/small_3.csv", on_conflict = "overwrite"))
+cat("1000,0,0,0,0,0,0,0,0,0,0,0,0,0\n", file = "data/small_3.csv", append = TRUE)
+dvs_add("data/small_3.csv", message = "small_3: add row 1000")
+```
+
+```{bash}
+cd "$PROJECT_B"
+git add -A
+git commit --quiet -m "small_3: add row 1000"
+git push --quiet origin main
+```
+
+## Merge conflicts in `.gitignore` and `.dvs` files
+
+Two people who add different new files to one folder both change that folder's
+`.gitignore`. Two people who add different versions of one file both change its
+meta file. git then stops the pull with a conflict. Here user A and user B each
+add a new file to `data/`, and each a new version of `small_2.csv`. User A
+pulls first, to be up to date:
+
+```{bash}
+cd "$PROJECT_A"
+git pull --quiet --no-rebase
+```
+
+```{r}
+#| warning: false
+setwd(project_a)
+write.csv(data.frame(site = c("north", "south")), "data/sites.csv", row.names = FALSE)
+cat("3000,0,0,0,0,0,0,0,0,0,0,0,0,0\n", file = "data/small_2.csv", append = TRUE)
+invisible(dvs_add(c("data/sites.csv", "data/small_2.csv"), message = "sites, small_2 row 3000"))
+
+setwd(project_b)
+write.csv(data.frame(arm = c("placebo", "active")), "data/arms.csv", row.names = FALSE)
+cat("4000,0,0,0,0,0,0,0,0,0,0,0,0,0\n", file = "data/small_2.csv", append = TRUE)
+invisible(dvs_add(c("data/arms.csv", "data/small_2.csv"), message = "arms, small_2 row 4000"))
+```
+
+User A pushes first. User B commits, then pulls:
+
+```{bash}
+cd "$PROJECT_A"
+git add -A
+git commit --quiet -m "Add sites, small_2 row 3000"
+git push --quiet origin main
+cd "$PROJECT_B"
+git add -A
+git commit --quiet -m "Add arms, small_2 row 4000"
+git pull --quiet --no-rebase
+echo "exit code: $?"
+git status --short
+```
+
+While the meta file holds conflict markers, dvs cannot read it.
+`dvs_status()` reports the file as `error`, with code `bad_metadata`:
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_status()[, c("path", "status", "code")]
+```
+
+### `.gitignore`: keep both sides
+
+Each line of a dvs `.gitignore` keeps one data file out of git. Keep the lines
+of both sides, and delete only the three conflict marker lines:
+
+```{bash}
+cd "$PROJECT_B"
+cat data/.gitignore
+```
+
+In an editor, or here with `grep`:
+
+```{bash}
+cd "$PROJECT_B"
+grep -v -e '^<<<<<<<' -e '^=======' -e '^>>>>>>>' data/.gitignore > data/.gitignore.new
+mv data/.gitignore.new data/.gitignore
+cat data/.gitignore
+```
+
+If you keep one side only, the other side's data file is no longer ignored, and
+the next `git add -A` commits it. To have git keep both sides of every
+`.gitignore` without asking, add this line to `.gitattributes` at the
+repository root, and commit it:
+
+```text
+.gitignore merge=union
+```
+
+### A `.dvs` file: pick one version
+
+A meta file records one version. Do not merge its lines. Pick one side:
+`--theirs` is the version you pulled, `--ours` is yours. Here user B takes user
+A's version:
+
+```{bash}
+cd "$PROJECT_B"
+git checkout --theirs .dvs/data/small_2.csv.dvs
+git add data/.gitignore .dvs/data/small_2.csv.dvs
+git commit --quiet --no-edit
+```
+
+User B's `small_2.csv` is now `stale`: user B added it, and the tracked version
+is user A's. `dvs_get()` replaces it without asking, and restores user A's new
+file. User B's version stays in storage, and
+[dvs history](audit.html) lists it.
+
+```{r}
+#| warning: false
+setwd(project_b)
+dvs_status()[, c("path", "status")]
+dvs_get("data")
+```
+
+User B pushes the merge. User A pulls and gets user B's new file:
+
+```{bash}
+cd "$PROJECT_B"
+git push --quiet origin main
+cd "$PROJECT_A"
+git pull --quiet --no-rebase
+```
+
+```{r}
+#| warning: false
+setwd(project_a)
+dvs_get("data")
 ```
 
 ## Deduplication comes free
 
 Storage is content-addressed: the blob's name is its hash, so identical
 content stored from anywhere on the team lands in the same place exactly
-once. Both projects above reference the same three blobs; adding the same
+once. Both clones reference the same blobs, one per version. Adding the same
 file from a third project would move zero bytes.
 
 ```{r}
@@ -138,20 +450,25 @@ log_lines <- readLines(here::here(shared_storage, "audit.log.jsonl"))
 cat(tail(log_lines, 2), sep = "\n\n")
 ```
 
+`user` is the operating system account of whoever ran the add, not the git
+identity. In a terminal, `dvs history <file>` lists the adds of a file. See
+[The audit log](audit.html).
+
 ## What belongs in git
 
 | Path | Commit? | Why |
 |------|:-------:|-----|
-| `dvs.toml` | yes | points every clone at the shared storage |
+| `dvs.toml` | yes | points every clone at the shared storage, at the same path on every machine |
 | `.dvs/**/*.dvs` | yes | the version ledger, one meta file per data file |
-| `.gitignore` entries | yes | written by dvs during add, keep data out of git |
+| `.gitignore` entries next to the data | yes | written by dvs during add, keep data out of git |
+| `.dvs/.gitignore` | yes | written by dvs, keeps `.dvs/.cache/` out of git |
+| `.dvs/.cache/` | no | this clone's hash cache and its record of what dvs wrote |
 | `data/` | no | the bytes live in dvs storage |
 
 ## Cleanup
 
 ```{r}
-unlink(here::here(project_a),      recursive = TRUE)
-unlink(here::here(project_b),      recursive = TRUE)
+unlink(c(project_a, project_b, team_remote), recursive = TRUE)
 unlink(here::here(shared_storage), recursive = TRUE)
 ```
 
