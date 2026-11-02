@@ -8,14 +8,18 @@ execute:
   freeze: auto
 ---
 
-`dvs status` reports each tracked file with one of five statuses:
+`dvs status` reports each tracked file with one of six statuses:
 
 - `current`: on disk and matching the tracked version.
 - `absent`: tracked but missing on disk.
 - `stale`: on disk as dvs last wrote or added it, while the tracked version has
   changed since, for example after a `git pull`. `dvs get` updates it.
 - `modified`: on disk, but different from the tracked version and from what dvs
-  last wrote or added there. This is a local edit.
+  last wrote or added there, while the tracked version has not changed since.
+  This is a local edit.
+- `both_modified`: on disk and different from what dvs last wrote or added
+  there, while the tracked version has changed since too, for example an edit
+  made before a `git pull`. Compare the two before keeping either.
 - `unsynced`: on disk and different from the tracked version, with no record of
   what dvs last wrote there.
 
@@ -35,6 +39,7 @@ Options:
       --absent             Include absent files
       --stale              Include stale files
       --modified           Include modified files
+      --both-modified      Include both_modified files
       --unsynced           Include unsynced files
       --with-metadata      Show all metadata columns
   -h, --help               Print help
@@ -56,12 +61,13 @@ Global Options:
 | `--absent` | flag | off | Include `absent` files. |
 | `--stale` | flag | off | Include `stale` files. |
 | `--modified` | flag | off | Include `modified` files. |
+| `--both-modified` | flag | off | Include `both_modified` files. |
 | `--unsynced` | flag | off | Include `unsynced` files. |
 | `--with-metadata` | flag | off | Add hash, created_by, add_time, compression, message columns. |
 | `--threads` | integer | `0` (auto) | Thread pool size for this command. |
 | `--json` | flag | off | Emit results as JSON. |
 
-The five status flags are independent booleans and combine. With none set, all
+The six status flags are independent booleans and combine. With none set, all
 statuses are shown.
 
 ## Setup
@@ -198,7 +204,7 @@ dvs status --json
 The R function is [dvs_status()](r-status.html). It always returns the metadata
 columns as a data frame, so there is no `--with-metadata` toggle; select columns
 instead. Its filters are a single `status` character vector
-(`c("current", "absent", "stale", "modified", "unsynced")`) rather than
+(`c("current", "absent", "stale", "modified", "both_modified", "unsynced")`) rather than
 independent flags, and it has
 no `--threads` or `--json`.
 

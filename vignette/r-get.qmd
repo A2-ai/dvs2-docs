@@ -194,7 +194,7 @@ the same columns:
 |---|---|---|
 | `path` | character | Path relative to the project root. |
 | `local_path` | character | Path relative to the working directory. |
-| `before` | character | State before the get: `absent`, `current`, `clean`, `modified`, `unknown`, `not_tracked`, `not_a_file` or `unsafe_path`. |
+| `before` | character | State before the get: `absent`, `current`, `clean`, `modified`, `both_modified`, `unknown`, `not_tracked`, `not_a_file` or `unsafe_path`. |
 | `action` | character | What get did: `restored`, `replaced`, `unchanged`, `skipped`, `not_run`, `failed`, `would_restore` or `would_replace`. |
 | `satisfied` | logical | `TRUE` when the file is at its tracked version afterwards. |
 | `size` | `dvs_bytes` | Size of the tracked version. |
