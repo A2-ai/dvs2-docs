@@ -79,8 +79,9 @@ dvs status
 ```
 
 ::: {.callout-note}
-dvs reports five statuses: `current`, `absent`, `stale` (unchanged since dvs
-wrote it, while the tracked version moved on), `modified` (edited locally) and
+dvs reports six statuses: `current`, `absent`, `stale` (unchanged since dvs
+wrote it, while the tracked version moved on), `modified` (edited locally),
+`both_modified` (edited locally, while the tracked version moved on too) and
 `unsynced` (different, with no record of what dvs wrote). See
 [dvs status](cli-status.html) and [Storage and meta files](intro-internals.html).
 :::

@@ -8,7 +8,7 @@ execute:
   freeze: auto
 ---
 
-`dvs_status()` reports each tracked file with one of five statuses:
+`dvs_status()` reports each tracked file with one of six statuses:
 
 - `current`: on disk and matching the tracked version.
 - `absent`: tracked but missing on disk.
@@ -16,7 +16,11 @@ execute:
   changed since, for example after a `git pull`. [dvs_get()](r-get.html)
   updates it.
 - `modified`: on disk, but different from the tracked version and from what dvs
-  last wrote or added there. This is a local edit.
+  last wrote or added there, while the tracked version has not changed since.
+  This is a local edit.
+- `both_modified`: on disk and different from what dvs last wrote or added
+  there, while the tracked version has changed since too, for example an edit
+  made before a `git pull`. Compare the two before keeping either.
 - `unsynced`: on disk and different from the tracked version, with no record of
   what dvs last wrote there.
 
@@ -28,7 +32,7 @@ dvs_status(
   paths = character(0),
   recursive = FALSE,
   glob = NULL,
-  status = c("current", "absent", "stale", "modified", "unsynced")
+  status = c("current", "absent", "stale", "modified", "both_modified", "unsynced")
 )
 ```
 
@@ -39,7 +43,7 @@ dvs_status(
 | `paths` | character | `character(0)` (whole project) | Files or directories to report. |
 | `recursive` | logical(1) | `FALSE` | Include files in subdirectories of given directories. |
 | `glob` | character(1) | `NULL` | Library-expanded glob, same resolution rules as the CLI `--glob`. Mutually exclusive with `recursive`. |
-| `status` | character | all five | Statuses to include. Validated with `match.arg(several.ok = TRUE)`. `NULL` and `character(0)` also mean all. |
+| `status` | character | all six | Statuses to include. Validated with `match.arg(several.ok = TRUE)`. `NULL` and `character(0)` also mean all. |
 
 ## Setup
 
@@ -135,7 +139,7 @@ A tibble with one row per file:
 | Column | Type | Description |
 |---|---|---|
 | `path` | character | File path. |
-| `status` | character | `current`, `absent`, `stale`, `modified`, `unsynced`, or `error`. |
+| `status` | character | `current`, `absent`, `stale`, `modified`, `both_modified`, `unsynced`, or `error`. |
 | `hash` | character | blake3 content hash. |
 | `size` | `dvs_bytes` | File size recorded in the meta file (uncompressed). |
 | `created_by` | character | User who added the file. |
@@ -154,7 +158,7 @@ The columns are the same in every result, even an empty one. A row with status
 The CLI command is [dvs status](cli-status.html). It shows a compact `path`,
 `status`, `size` table by default and only adds the metadata columns with
 `--with-metadata`; `dvs_status()` always returns them. Its filters are
-independent `--current`, `--absent`, `--stale`, `--modified` and `--unsynced`
+independent `--current`, `--absent`, `--stale`, `--modified`, `--both-modified` and `--unsynced`
 flags rather than a single `status` vector, and it adds `--threads` and
 `--json`.
 
