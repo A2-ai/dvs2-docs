@@ -9,8 +9,8 @@ execute:
 ---
 
 This walkthrough runs the everyday loop from the terminal: initialize a project,
-add a file, check its status, delete it, then get it back. It is the "I
-re-cloned a project and need its data" sequence. The
+add a file and commit its metadata to git, check its status, delete it, then get
+it back. It is the "I re-cloned a project and need its data" sequence. The
 [R walkthrough](getting-started.html) covers the same steps from R.
 
 ## Setup
@@ -36,12 +36,31 @@ Sys.setenv(DVS_PROJECT = here::here(new_project), DVS_STORAGE = here::here(stora
 Point storage at the sibling directory. See [dvs init](cli-init.html) for every
 flag.
 
+Make the project folder a git repository too, before the first add.
+
 ```{bash}
 cd "$DVS_PROJECT"
+git init --quiet --initial-branch=main
 dvs init local "$DVS_STORAGE"
 ```
 
-## 2. Add
+```{bash}
+#| include: false
+# The rendered page commits as a placeholder user. Yours is your git config.
+cd "$DVS_PROJECT"
+git config user.name "dvs docs"
+git config user.email "docs@example.com"
+```
+
+::: {.callout-important}
+dvs keeps the data out of git with `.gitignore` entries that it writes during
+`dvs add`, and only when the project folder itself holds the `.git` folder. A
+dvs project in a subfolder of a git repository gets no entries, and neither
+does a file added before `git init`. git then sees the data. Before your first
+commit, check what git would commit, as in step 2.
+:::
+
+## 2. Add and commit
 
 Track the CSV with a message. See [dvs add](cli-add.html).
 
@@ -49,6 +68,45 @@ Track the CSV with a message. See [dvs add](cli-add.html).
 cd "$DVS_PROJECT"
 dvs add data/theoph.csv -m "initial Theoph data"
 ```
+
+List what git would commit. `--untracked-files=all` lists the files inside new
+folders. Plain `git status` shows only the folders `data/` and `.dvs/`, which
+looks as if the data would be committed.
+
+```{bash}
+cd "$DVS_PROJECT"
+git status --short --untracked-files=all
+```
+
+| File | What it is |
+|---|---|
+| `dvs.toml` | The project configuration: where the storage is. |
+| `.dvs/data/theoph.csv.dvs` | The meta file: hash, size, who added the file, when, and the message. |
+| `data/.gitignore` | The entry `/theoph.csv`, which keeps the data out of git. |
+| `.dvs/.gitignore` | The entry `/.cache`, which keeps dvs's local cache out of git. |
+
+`data/theoph.csv` is not in the list. `git check-ignore -v` names the line that
+ignores it:
+
+```{bash}
+cd "$DVS_PROJECT"
+git check-ignore -v data/theoph.csv
+```
+
+Commit. If git has no name and email for you yet, the commit stops and asks.
+Set them once, with `git config --global user.name "Your Name"` and
+`git config --global user.email "you@example.com"`.
+
+```{bash}
+cd "$DVS_PROJECT"
+git add -A
+git commit --quiet -m "Track data/theoph.csv with dvs"
+git show --name-only --format=%s HEAD
+```
+
+Commit the meta file each time you add or update data, and push it. A clone
+knows only the meta files that were committed. In a colleague's clone, a file
+whose meta file you did not commit is "not tracked by dvs".
 
 ## 3. Status
 
