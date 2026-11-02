@@ -239,9 +239,11 @@ dvs_status("data/small", recursive = TRUE)
 
 ## When things fail
 
-dvs collects per-file failures instead of aborting the batch. A file that
-fails after the batch starts becomes a row with its `error` column set,
-sitting next to the rows that succeeded.
+A file that cannot be retrieved is a row of the result, not an R error. A file
+that fails while it is retrieved has `action` `failed`, and its `code` and
+`message` say why. The other files still complete. `dvs_get()` raises an error
+right away for invalid arguments, outside a dvs project, and for a
+configuration error.
 
 The classic failure: a blob missing from storage. Simulate it by deleting
 one blob directly (the meta file knows the hash, and the hash is the storage
@@ -260,13 +262,27 @@ unlink("data/small/small_2.csv")
 dvs_get("data/small/small_2.csv")
 ```
 
-The get returns normally, reports the failure in `error`, and leaves
-everything else intact. Note what it did not do: write a corrupt file.
+The get returns normally, reports the failure in `code` and `message`, and
+leaves everything else intact. Note what it did not do: write a corrupt file.
 Retrieval verifies the hash before the file is moved into place.
 
-Batch validation is stricter up front: if any requested path is not tracked
-at all (a typo, say), the whole request is refused before anything is
-retrieved, and `dvs_get()` raises an error.
+A path that is not tracked at all (a typo, say) is caught before anything is
+retrieved, and the whole request is refused. `dvs_get()` still raises no
+error. It returns every row: the untracked path with `before` `not_tracked`
+and `action` `failed`, the other files with `action` `not_run`. Nothing is
+written, so the deleted file below stays deleted:
+
+```{r}
+#| warning: false
+setwd(here::here(new_project))
+
+unlink("data/small/small_3.csv")
+dvs_get(c("data/small/small_3.csv", "data/small/no_such_file.csv"))
+file.exists("data/small/small_3.csv")
+```
+
+Pass `on_error = "error"` to raise an error instead, of class
+`dvs_get_incomplete`. See [dvs_get()](r-get.html).
 
 ## Untracking a file
 
