@@ -208,8 +208,10 @@ with your code and records the hash needed to retrieve the data.
 /large_1.csv
 ```
 
-If there is no `.git`, this step is skipped. A failure to write `.gitignore` is
-a warning, not an error.
+The project can be the root of the repository or a subfolder of it: dvs looks
+for `.git` in the project folder and in every folder above it. If there is no
+`.git`, this step is skipped. A failure to write `.gitignore` is a warning, not
+an error.
 
 # Untracking a file
 
