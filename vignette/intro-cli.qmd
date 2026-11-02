@@ -153,6 +153,13 @@ dvs get --glob "data/individual/individual_*.csv"
 Re-add the modified file to bring the project back to all `current`:
 
 ```{bash}
+#| include: false
+# The audit log records whole seconds. Keep the two adds of large_1.csv apart,
+# so that dvs history orders them.
+sleep 1.1
+```
+
+```{bash}
 cd "$DVS_PROJECT"
 dvs add data/large/large_1.csv -m "append row 99"
 ```
@@ -204,6 +211,21 @@ variable does it globally:
 cd "$DVS_PROJECT"
 dvs status --threads 2 | tail -3
 ```
+
+## dvs history
+
+`dvs history` lists every add of the given files, newest first, from the
+audit log in storage: when, who, which version and the message. `large_1.csv`
+was added twice on this page:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs history data/large/large_1.csv
+```
+
+It takes files, not folders. The table shows the first 12 characters of each
+hash, and `--json` the full hash. [The audit log](audit.html#dvs-history)
+covers what it shows and how to script it.
 
 ## Cleanup
 

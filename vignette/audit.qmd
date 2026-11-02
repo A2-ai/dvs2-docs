@@ -9,7 +9,8 @@ execute:
 ---
 
 ::: {.callout-note}
-This page is implementation detail, beyond what normal use requires.
+[`dvs history`](#dvs-history) is all that normal use requires. The rest of
+this page is implementation detail.
 :::
 
 Every `init` and `add` is appended to `audit.log.jsonl` in the storage
@@ -67,11 +68,69 @@ dvs_get("data/file_1.csv")
 Modify `file_2.csv` and re-add:
 
 ```{r}
+#| include: false
+# The log records whole seconds. Keep the two adds of file_2 apart, so that
+# dvs history orders them.
+Sys.sleep(1.1)
+```
+
+```{r}
 #| warning: false
 setwd(here::here(new_project))
 cat("99,0,0,0,0,0\n", file = "data/file_2.csv", append = TRUE)
 invisible(dvs_add("data/file_2.csv", message = "updated file 2, added row 99"))
 ```
+
+# dvs history
+
+`dvs history` reads the log for you. Run it in the project folder with one or
+more files. It lists every add of those files in one table, newest first: the
+time in UTC, the user, the path, the first 12 characters of the BLAKE3 hash,
+and the message.
+
+```{r}
+#| include: false
+Sys.setenv(DVS_PROJECT = here::here(new_project))
+```
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs history data/file_2.csv data/file_1.csv
+```
+
+- `user` is the account name of whoever ran the add, from the operating
+  system. It is not the git identity.
+- The log is in storage, not in git. So `dvs history` lists every add that
+  reached this storage, also an add whose meta file was never committed or
+  pushed. The version this checkout tracks is the hash in its meta file, which
+  `dvs status --with-metadata` shows.
+- It takes files, not folders. A folder is refused with exit code 2. The files
+  need not be on disk. A file with no add in this storage prints `No history`.
+- The log records whole seconds. Two adds in the same second can be listed in
+  either order.
+
+`--json` gives each entry as the log has it, with the full hash, and the time
+as RFC 3339 UTC. Sort by `timestamp` rather than relying on the order of
+`files`:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs history --json data/file_2.csv |
+  jq -r '.files | sort_by(.timestamp) | .[] | [.timestamp, .user, .action.add.file.hashes.blake3] | @tsv'
+```
+
+`dvs availability` says whether storage still holds a version. It takes full
+hashes, not the 12 characters of the table. It prints `present` or `absent` for
+each hash and exits 0 either way, so a script checks the word:
+
+```{bash}
+cd "$DVS_PROJECT"
+dvs history --json data/file_2.csv |
+  jq -r '.files[].action.add.file.hashes.blake3' |
+  xargs dvs availability
+```
+
+R has no history function. The sections below read the log directly.
 
 # Reading the log
 
