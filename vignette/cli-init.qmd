@@ -25,6 +25,7 @@ Arguments:
   <PATH>  Where the data will be stored
 
 Options:
+      --name <NAME>                                   Project name in the storage directory (default: folder name)
       --root-dir <ROOT_DIR>                           Project root (default: cwd)
       --metadata-folder-name <METADATA_FOLDER_NAME>   Metadata folder (default: .dvs)
       --group <GROUP>                                 Unix group for storage and files
@@ -41,7 +42,8 @@ Global Options:
 
 | Flag | Argument | Default | Behavior |
 |---|---|---|---|
-| `<PATH>` | path | required | Storage directory for file contents. |
+| `<PATH>` | path | required | Storage directory for file contents. Several projects can share it. |
+| `--name` | name | folder name | The project's name in the storage directory. A given name joins the project of that name. |
 | `--root-dir` | path | current directory | Where `dvs.toml` and the metadata folder are created. |
 | `--metadata-folder-name` | name | `.dvs` | Name of the metadata folder. |
 | `--group` | group name | current group | Unix group set on the storage directory and stored files. |
@@ -64,7 +66,8 @@ Sys.setenv(DVS_BASE = base)
 ## Storage path
 
 The positional argument is the storage directory. `init` writes `dvs.toml`
-in the project root and records the storage path under `[backend]`.
+in the project root and records the storage path and the project's name under
+`[backend]`. Without `--name`, the name is the project folder's, lowercased.
 
 ```{bash}
 cd "$DVS_BASE"
@@ -73,6 +76,34 @@ cd basic/proj
 dvs init local ../store
 cat dvs.toml
 ```
+
+## Projects in a storage directory
+
+Several projects can share one storage directory, as they share a dvs server.
+Each project keeps its files and its audit log in its own folder there, named
+by the blake3 hash of the project's name, as on the server.
+
+A folder name that is already a project in the storage directory is refused,
+since two unrelated projects can have the same folder name. Giving the name
+with `--name` joins that project.
+
+```{bash}
+cd "$DVS_BASE"
+mkdir -p shared/a/analysis shared/b/analysis shared/c/other shared/store
+cd shared/a/analysis
+dvs init local ../../store
+cd ../../b/analysis
+dvs init local ../../store 2>&1 || true
+cd ../../c/other
+dvs init local ../../store --name analysis
+ls ../../store
+```
+
+Names follow the rule of dvs-server: lowercase letters, digits and dashes,
+starting with a letter or a digit. A `dvs.toml` from before projects has no
+`name`, and its store keeps the files in the storage directory itself. Every
+user of a project with a name needs a dvs that knows projects: an older one
+ignores `name` and does not find the files.
 
 ## `--root-dir`
 
