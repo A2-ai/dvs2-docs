@@ -242,8 +242,8 @@ dvs_status("data/small", recursive = TRUE)
 A file that cannot be retrieved is a row of the result, not an R error. A file
 that fails while it is retrieved has `action` `failed`, and its `code` and
 `message` say why. The other files still complete. `dvs_get()` raises an error
-only for invalid arguments, outside a dvs project, or for a configuration
-error.
+right away for invalid arguments, outside a dvs project, and for a
+configuration error.
 
 The classic failure: a blob missing from storage. Simulate it by deleting
 one blob directly (the meta file knows the hash, and the hash is the storage
